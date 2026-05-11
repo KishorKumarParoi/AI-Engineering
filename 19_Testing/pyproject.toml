@@ -1,0 +1,17 @@
+[project]
+name = "19-testing"
+version = "0.1.0"
+description = "AI Engineering Project: Testing"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "deepseek>=1.0.0",
+    "google-genai>=2.0.1",
+    "groq>=1.2.0",
+    "ipykernel>=7.2.0",
+    "openai>=2.36.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
+    "python-dotenv>=1.2.2",
+    "streamlit>=1.57.0",
+]
