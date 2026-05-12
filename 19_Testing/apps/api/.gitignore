@@ -1,0 +1,66 @@
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+
+# Test and coverage artifacts
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+
+# Build and packaging artifacts
+build/
+dist/
+site/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit local state and caches
+.streamlit/
+
+# Logs and local runtime files
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Local Python version managers
+.python-version
+# Python cache
+__pycache__/
+*.pyc
