@@ -306,6 +306,18 @@ wheels = [
 name = "chatbot-ui"
 version = "0.1.0"
 source = { editable = "apps/chatbot-ui" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "streamlit" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.13.4" },
+    { name = "pydantic-settings", specifier = ">=2.14.1" },
+    { name = "streamlit", specifier = ">=1.57.0" },
+]
 
 [[package]]
 name = "click"
