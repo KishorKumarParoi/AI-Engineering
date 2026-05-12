@@ -4,11 +4,10 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s]: %(message)s:")
 
-project_name = "testing_ai_project"
+project_name = "api"
 
 list_of_files = [
-    ".github/workflows/.gitkeep",
-    f"src/app.py",
+    ".gthub/workflows/.gitkeep",
     f"src/{project_name}/__init__.py",
     f"src/{project_name}/components/__init__.py",
     f"src/{project_name}/utils/__init__.py",
@@ -27,6 +26,7 @@ list_of_files = [
     "setup.py",
     "research/research.ipynb",
     "templates/index.html",
+    "app.py",
     "requirements.txt",
     "README.md",
     ".gitignore",
