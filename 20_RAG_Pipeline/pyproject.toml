@@ -5,12 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "google-genai>=2.2.0",
     "ipykernel>=7.2.0",
     "numpy>=2.4.4",
+    "openai>=2.36.0",
     "pandas>=3.0.3",
+    "python-dotenv>=1.2.2",
 ]
 
 [dependency-groups]
 dev = [
     "matplotlib>=3.10.9",
+    "qdrant-client>=1.18.0",
 ]

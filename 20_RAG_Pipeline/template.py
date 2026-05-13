@@ -23,6 +23,7 @@ list_of_files = [
     "params.yaml",
     "schema.yaml",
     "main.py",
+    ".env",
     "app.py",
     "Dockerfile",
     "docker-compose.yml",
