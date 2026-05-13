@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 from groq import Groq
 from google import genai
-from testing_ai_project.config.configuration import config
+from src.testing_ai_project.config.configuration import config
 
 
 def run_llm(provider, model_name, messages, max_tokens=500):
