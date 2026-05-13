@@ -1,0 +1,16 @@
+[project]
+name = "20-rag-pipeline"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipykernel>=7.2.0",
+    "numpy>=2.4.4",
+    "pandas>=3.0.3",
+]
+
+[dependency-groups]
+dev = [
+    "matplotlib>=3.10.9",
+]

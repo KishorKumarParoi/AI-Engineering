@@ -4,10 +4,11 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s]: %(message)s:")
 
-project_name = "testing_ai_project"
+project_name = "Rag Pipeline"
 
 list_of_files = [
     ".github/workflows/.gitkeep",
+    ".github/workflows/ci-cd.yaml",
     f"src/{project_name}/__init__.py",
     f"src/{project_name}/components/__init__.py",
     f"src/{project_name}/utils/__init__.py",
@@ -24,7 +25,11 @@ list_of_files = [
     "main.py",
     "app.py",
     "Dockerfile",
+    "docker-compose.yml",
+    "Makefile",
     "setup.py",
+    "data/data.jsonl",
+    "documentation/README.md",
     "research/research.ipynb",
     "templates/index.html",
     "requirements.txt",
