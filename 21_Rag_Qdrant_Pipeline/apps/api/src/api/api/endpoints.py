@@ -1,0 +1,48 @@
+from fastapi import Request, APIRouter
+from fastapi.responses import JSONResponse
+
+from api.api.models import RagRequest, RagResponse
+
+import logging
+
+from api.agents.retrieval_generation import rag_pipeline
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+rag_router = APIRouter()
+
+
+@rag_router.post("/")
+def rag(
+    request: Request,
+    payload: RagRequest
+) -> RagResponse:
+    logger.info(f"Received request: {payload}")
+
+    try:
+        answer = rag_pipeline(payload.query)
+        # ensure answer is a str (RagResponse expects a str); coerce None to empty string
+        if answer is None:
+            answer = ""
+        elif not isinstance(answer, str):
+            answer = str(answer)
+        return RagResponse(request_id=request.state.request_id, answer=answer)
+    except Exception as e:
+        logger.exception("RAG pipeline failed")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "request_id": request.state.request_id,
+                "answer": "",
+                "message": f"Failed to generate response: {str(e)}",
+            },
+        )
+
+api_router = APIRouter()
+api_router.include_router(rag_router, prefix="/rag", tags=["RAG"])
+api_router.include_router(rag_router, prefix="/chat", tags=["RAG"])
