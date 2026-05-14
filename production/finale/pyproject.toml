@@ -1,0 +1,10 @@
+[project]
+name = "finale"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "bedrock-agentcore>=0.1.3",
+    "bedrock-agentcore-starter-toolkit>=0.1.10",
+    "pydantic>=2.11.9",
+    "strands-agents>=1.8.0",
+]
