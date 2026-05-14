@@ -31,7 +31,7 @@ def rag(
             answer = ""
         elif not isinstance(answer, str):
             answer = str(answer)
-        return RagResponse(request_id=request.state.request_id, answer=answer)
+        return RagResponse(request_id=request.state.request_id, answer=answer["answer"] if isinstance(answer, dict) and "answer" in answer else answer)
     except Exception as e:
         logger.exception("RAG pipeline failed")
         return JSONResponse(
@@ -45,4 +45,3 @@ def rag(
 
 api_router = APIRouter()
 api_router.include_router(rag_router, prefix="/rag", tags=["RAG"])
-api_router.include_router(rag_router, prefix="/chat", tags=["RAG"])
