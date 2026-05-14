@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+.DS_Store
 # Distribution / packaging
 .Python
 build/
@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Local OS / runtime artifacts
+.DS_Store
+qdrant_storage/
+data/meta_Electronics.jsonl
+data/Software.jsonl
