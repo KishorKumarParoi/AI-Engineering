@@ -8,6 +8,7 @@ dependencies = [
     "google-genai>=1.57.0",
     "groq>=1.0.0",
     "ipykernel>=7.1.0",
+    "langsmith>=0.8.4",
     "openai>=2.15.0",
     "pandas>=2.3.3",
     "pydantic>=2.12.5",
