@@ -1,0 +1,191 @@
+
+from langsmith import traceable, get_current_run_tree
+import openai
+from pydantic import BaseModel
+
+@traceable(
+        name="get_embedding",
+        tags=["embedding", "openai"],
+        run_type="embedding",
+        metadata={"model": "text-embedding-3-small", "ls-provider": "openai"}
+)
+def get_embedding(text, model="text-embedding-3-small"):
+    response = openai.embeddings.create(
+        input=text,
+        model=model
+    )
+
+    current_run = get_current_run_tree()
+    if current_run and response.usage:
+        # `add_metadata` is a method on the run object; call it with a dict
+        try:
+            current_run.add_metadata({
+                "usage_metadata": {
+                    "input_tokens": response.usage.prompt_tokens,
+                    "total_tokens": response.usage.total_tokens,
+                    "embedding_model": model,
+                }
+            })
+        except Exception:
+            # Fallback: ignore metadata errors to avoid breaking embedding
+            logger = __import__("logging").getLogger(__name__)
+            logger.debug("Failed to add embedding usage metadata to run")
+    return response.data[0].embedding
+
+@traceable(
+        name="retrieve_data",
+        tags=["retrieval", "qdrant"],
+        run_type="retriever"
+)
+def retrieve_data(query, qdrant_client, k=5):   
+    query_embedding = get_embedding(query)
+    results = qdrant_client.query_points(
+        collection_name="amazon_reviews_collection",
+        query=query_embedding,
+        limit=k
+    )
+
+    retrieved_context_ids = []
+    retrieve_context = []
+    similarity_scores = []
+    retrieved_context_ratings = []
+    retrieve_context_details = []
+    retrieve_context_product_names = []
+    retrieve_context_helpful_votes = []
+
+    for result in results.points:
+        payload = result.payload or {}
+        retrieved_context_ids.append(payload.get('product_id'))
+        retrieve_context.append(payload.get('review_text', ''))
+        similarity_scores.append(result.score)
+        retrieved_context_ratings.append(payload.get('rating', 0))
+        retrieve_context_helpful_votes.append(payload.get('helpful_votes', 0))
+        retrieve_context_product_names.append(payload.get('product_name', ''))
+        retrieve_context_details.append(payload.get('details', ''))
+
+    return {
+        'retrieved_context_ids': retrieved_context_ids,
+        'retrieve_context': retrieve_context,
+        'similarity_scores': similarity_scores,
+        'retrieved_context_ratings': retrieved_context_ratings,
+        'retrieve_context_details': retrieve_context_details,
+        'retrieve_context_product_names': retrieve_context_product_names,
+        'retrieve_context_helpful_votes': retrieve_context_helpful_votes
+    }
+
+@traceable(
+        name="process_context",
+        tags=["context_processing"],
+        run_type="prompt"
+)
+def process_context(context):
+    formatted_context = []
+    for id, chunk, rating, details, product_name, helpful_votes in zip(context['retrieved_context_ids'], context['retrieve_context'], context['retrieved_context_ratings'], context['retrieve_context_details'], context['retrieve_context_product_names'], context['retrieve_context_helpful_votes']):
+        formatted_context.append(f"ID: {id}\nRating: {rating}\nReview: {chunk}\nDetails: {details}\nProduct Name: {product_name}\nHelpful Votes: {helpful_votes}\n---")
+    return "\n".join(formatted_context)
+
+@traceable(
+        name="build_prompt",
+        tags=["prompt_construction"],
+        run_type="prompt"
+)
+def build_prompt(preprocessed_context, question):
+    prompt = f"""You are a helpful assistant for answering questions about
+      Amazon product reviews. Use the following retrieved context 
+      to answer the question. If the context does not contain relevant information, 
+      say you don't know.
+      Instructions:
+       - Use the retrieved context to answer the question.
+       - If the context does not contain relevant information, say you don't know.
+
+    Context:
+      {preprocessed_context}
+      Question: {question}
+      Answer:"""
+    return prompt
+
+@traceable(
+        name="gen_answer",
+        tags=["answer_generation", "openai"],
+        run_type="llm",
+        metadata={"model": "gpt-5-nano", "ls-provider": "openai"}
+)
+def gen_answer(prompt):
+    # Call may return different shapes depending on client used (OpenAI SDK or a helper
+    # that returns a Pydantic model). Handle both cases and normalize to a dict.
+    response = openai.chat.completions.create(
+        model="gpt-5-nano",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    # Normalize into a consistent gen_response dict
+    gen_response = {
+        "text": None,
+        "usage": None,
+        "model": None,
+        "raw_response": response,
+    }
+
+    # If the client returned a Pydantic model (e.g., RagGenerationResponse), extract fields
+    if isinstance(response, BaseModel):
+        # pydantic v1/v2 compatibility: try attribute access first
+        text_val = getattr(response, "answer", None) or getattr(response, "text", None)
+        if text_val is None:
+            # fall back to model_dump if available
+            try:
+                dumped = response.model_dump() if hasattr(response, "model_dump") else response.dict()
+                text_val = dumped.get("answer") or dumped.get("text")
+            except Exception:
+                text_val = str(response)
+        gen_response.update({
+            "text": text_val,
+            "usage": None,
+            "model": getattr(response, "model", None) or None,
+        })
+    else:
+        # Assume OpenAI-style response (has choices and usage)
+        try:
+            gen_text = response.choices[0].message.content
+        except Exception:
+            # Last-resort stringification
+            gen_text = str(response)
+
+        gen_response.update({
+            "text": gen_text,
+            "usage": {
+                "prompt_tokens": getattr(response.usage, "prompt_tokens", None),
+                "completion_tokens": getattr(response.usage, "completion_tokens", None),
+                "total_tokens": getattr(response.usage, "total_tokens", None),
+            },
+            "model": getattr(response, "model", None) or "gpt-5-nano",
+        })
+
+    current_run = get_current_run_tree()
+    if current_run and gen_response.get("usage"):
+        try:
+            current_run.add_metadata({
+                "usage_metadata": gen_response["usage"]
+            })
+        except Exception:
+            logger = __import__("logging").getLogger(__name__)
+            logger.debug("Failed to add generation usage metadata to run")
+
+    return gen_response
+
+@traceable(
+        name="rag_pipeline",
+        tags=["pipeline", "retrieval_generation"],
+)
+def rag_pipeline(question, qdrant_client, top_k=5):
+    retrieve_context = retrieve_data(question, qdrant_client=qdrant_client, k=top_k)
+    preprocessed_context = process_context(retrieve_context)
+    prompt = build_prompt(preprocessed_context, question)
+    answer = gen_answer(prompt)
+
+    final_result = {
+        "question": question,
+        "answer": answer,
+        "retrieved_context": retrieve_context
+    }
+
+    return final_result
