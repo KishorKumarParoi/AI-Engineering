@@ -1,8 +1,6 @@
 
 from langsmith import traceable, get_current_run_tree
 import openai
-from qdrant_client import QdrantClient
-import os
 
 @traceable(
         name="get_embedding",
@@ -38,9 +36,7 @@ def get_embedding(text, model="text-embedding-3-small"):
         tags=["retrieval", "qdrant"],
         run_type="retriever"
 )
-def retrieve_data(query, qdrant_client=None, k=5):
-    if qdrant_client is None:
-        qdrant_client = QdrantClient(url=os.getenv("QDRANT_URL"), api_key=os.getenv("QDRANT_API_KEY"))
+def retrieve_data(query, qdrant_client, k=5):   
     query_embedding = get_embedding(query)
     results = qdrant_client.query_points(
         collection_name="amazon_reviews_collection",
@@ -139,8 +135,7 @@ def gen_answer(prompt):
         name="rag_pipeline",
         tags=["pipeline", "retrieval_generation"],
 )
-def rag_pipeline(question, top_k=5):
-    qdrant_client = QdrantClient(url=os.getenv("QDRANT_URL"), api_key=os.getenv("QDRANT_API_KEY"))
+def rag_pipeline(question, qdrant_client, top_k=5):
     retrieve_context = retrieve_data(question, qdrant_client=qdrant_client, k=top_k)
     preprocessed_context = process_context(retrieve_context)
     prompt = build_prompt(preprocessed_context, question)

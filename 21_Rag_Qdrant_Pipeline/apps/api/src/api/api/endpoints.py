@@ -1,3 +1,7 @@
+import os
+
+from qdrant_client import QdrantClient
+
 from fastapi import Request, APIRouter
 from fastapi.responses import JSONResponse
 
@@ -14,6 +18,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+qdrant_client = QdrantClient(url=os.getenv("QDRANT_URL"), api_key=os.getenv("QDRANT_API_KEY"))  
+
 rag_router = APIRouter()
 
 
@@ -25,7 +31,7 @@ def rag(
     logger.info(f"Received request: {payload}")
 
     try:
-        answer = rag_pipeline(payload.query)
+        answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
         # ensure answer is a str (RagResponse expects a str); coerce None to empty string
         if answer is None:
             answer = ""
