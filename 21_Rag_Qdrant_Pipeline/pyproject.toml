@@ -9,6 +9,7 @@ dependencies = [
     "groq>=1.0.0",
     "instructor>=1.15.1",
     "ipykernel>=7.1.0",
+    "numpy>=2.4.0",
     "openai>=2.15.0",
     "pandas>=2.3.3",
     "pydantic>=2.12.5",

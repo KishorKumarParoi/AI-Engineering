@@ -5,12 +5,12 @@ from qdrant_client import QdrantClient
 from fastapi import Request, APIRouter
 from fastapi.responses import JSONResponse
 
-from api.api.models import RagRequest, RagResponse
+from api.api.models import RagRequest, RagResponse, RAGUsedContext
 
 import logging
 
-from api.agents.retrieval_generation import rag_pipeline
-
+# from api.agents.retrieval_generation import rag_pipeline
+from api.agents.structured_retrieval_generation import rag_pipeline, rag_pipeline_wrapper
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,13 +31,23 @@ def rag(
     logger.info(f"Received request: {payload}")
 
     try:
-        answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
+        raw_answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
+        answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5)
         # ensure answer is a str (RagResponse expects a str); coerce None to empty string
         if answer is None:
-            answer = ""
+            answer = raw_answer  # fallback to raw answer if wrapper returns None
         elif not isinstance(answer, str):
             answer = str(answer)
-        return RagResponse(request_id=request.state.request_id, answer=answer["answer"] if isinstance(answer, dict) and "answer" in answer else answer)
+        
+        # Extract answer text and context
+        if isinstance(answer, dict) and "answer" in answer:
+            answer_text = str(answer["answer"])
+            used_context = [RAGUsedContext(**ctx) for ctx in answer.get("used_context", [])]
+        else:
+            answer_text = str(answer) if answer else ""
+            used_context = []
+        
+        return RagResponse(request_id=request.state.request_id, answer=answer_text, used_context=used_context)
     except Exception as e:
         logger.exception("RAG pipeline failed")
         return JSONResponse(

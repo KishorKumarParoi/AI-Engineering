@@ -15,13 +15,19 @@ def get_embedding(text, model="text-embedding-3-small"):
     )
 
     current_run = get_current_run_tree()
-    if current_run and response.usage:
-        # `add_metadata` is a method on the run object; call it with a dict
+    # Safely extract usage metadata whether response is an object or dict
+    usage_obj = getattr(response, "usage", None)
+    if usage_obj is None and isinstance(response, dict):
+        usage_obj = response.get("usage")
+
+    if current_run and usage_obj:
         try:
+            input_tokens = getattr(usage_obj, "prompt_tokens", None) if not isinstance(usage_obj, dict) else usage_obj.get("prompt_tokens")
+            total_tokens = getattr(usage_obj, "total_tokens", None) if not isinstance(usage_obj, dict) else usage_obj.get("total_tokens")
             current_run.add_metadata({
                 "usage_metadata": {
-                    "input_tokens": response.usage.prompt_tokens,
-                    "total_tokens": response.usage.total_tokens,
+                    "input_tokens": input_tokens,
+                    "total_tokens": total_tokens,
                     "embedding_model": model,
                 }
             })
@@ -116,13 +122,22 @@ def gen_answer(prompt):
     )
 
     current_run = get_current_run_tree()
+    # Safely extract usage metadata from response or its raw form
     if current_run:
         try:
+            usage_obj = getattr(response, "usage", None)
+            if usage_obj is None and isinstance(response, dict):
+                usage_obj = response.get("usage")
+
+            prompt_tokens = getattr(usage_obj, "prompt_tokens", None) if usage_obj is not None and not isinstance(usage_obj, dict) else (usage_obj.get("prompt_tokens") if isinstance(usage_obj, dict) else None)
+            completion_tokens = getattr(usage_obj, "completion_tokens", None) if usage_obj is not None and not isinstance(usage_obj, dict) else (usage_obj.get("completion_tokens") if isinstance(usage_obj, dict) else None)
+            total_tokens = getattr(usage_obj, "total_tokens", None) if usage_obj is not None and not isinstance(usage_obj, dict) else (usage_obj.get("total_tokens") if isinstance(usage_obj, dict) else None)
+
             current_run.add_metadata({
                 "usage_metadata": {
-                    "input_tokens": response.usage.prompt_tokens,
-                    "output_tokens": response.usage.completion_tokens,
-                    "total_tokens": response.usage.total_tokens,
+                    "input_tokens": prompt_tokens,
+                    "output_tokens": completion_tokens,
+                    "total_tokens": total_tokens,
                     "generation_model": "gpt-5-nano",
                 }
             })
