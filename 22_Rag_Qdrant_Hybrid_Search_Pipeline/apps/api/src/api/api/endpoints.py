@@ -33,7 +33,8 @@ def rag(
     try:
         # raw_answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
         answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5)
-
+        print("Raw answer from RAG pipeline:", answer)
+        
         if answer is None:
             answer_text = "Please try again later."
             used_context = []

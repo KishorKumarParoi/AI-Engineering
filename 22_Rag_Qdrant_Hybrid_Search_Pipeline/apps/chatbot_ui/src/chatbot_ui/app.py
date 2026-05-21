@@ -62,6 +62,18 @@ def _first_image_url(images):
     return None
 
 
+def _escape_html(value):
+    if value is None:
+        return ""
+    return (
+        str(value)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
+
+
 def _format_product_meta(item):
     meta_parts = []
     if item.get("price") is not None:
@@ -167,44 +179,84 @@ def render_suggestions_panel(suggestions):
         st.info("No suggestions available.")
         return
 
+    st.markdown(
+        """
+        <style>
+        .sidebar-suggestions-scroll {
+            max-height: 72vh;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+        .sidebar-suggestion-card {
+            border: 1px solid rgba(49, 51, 63, 0.18);
+            border-radius: 16px;
+            padding: 0.8rem;
+            margin-bottom: 0.75rem;
+            background: rgba(255, 255, 255, 0.92);
+        }
+        .sidebar-suggestion-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            line-height: 1.25;
+            margin: 0.2rem 0 0.4rem 0;
+        }
+        .sidebar-suggestion-meta {
+            font-size: 0.8rem;
+            opacity: 0.78;
+            margin-bottom: 0.45rem;
+        }
+        .sidebar-suggestion-image {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 0.55rem;
+            object-fit: cover;
+            display: block;
+        }
+        .sidebar-suggestion-body {
+            font-size: 0.87rem;
+            line-height: 1.35;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    html_cards = []
     for suggestion in suggestions:
         score = suggestion.get("score")
         score_text = f"Score: {score:.3f}" if isinstance(score, (int, float)) else ""
         image_url = _first_image_url(suggestion.get("images"))
         meta_text = _format_product_meta(suggestion)
 
-        with st.container(border=True):
-            if image_url:
-                st.image(image_url, use_container_width=True)
+        features = suggestion.get("features") or []
+        feature_html = ""
+        if isinstance(features, list) and features:
+            feature_html = "<ul>" + "".join(
+                f"<li>{_escape_html(feature)}</li>" for feature in features[:4]
+            ) + "</ul>"
 
-            st.markdown(f"**{suggestion.get('title', 'Suggestion')}**")
-            if suggestion.get('id'):
-                st.caption(f"ID: {suggestion.get('id')} {('• ' + score_text) if score_text else ''}")
-            else:
-                st.caption(score_text or "")
+        html_cards.append(
+            f"""
+            <div class="sidebar-suggestion-card">
+                {f'<img class="sidebar-suggestion-image" src="{_escape_html(image_url)}" alt="{_escape_html(suggestion.get("title", "Suggestion"))}" />' if image_url else ''}
+                <div class="sidebar-suggestion-title">{_escape_html(suggestion.get('title', 'Suggestion'))}</div>
+                <div class="sidebar-suggestion-meta">
+                    {f'ID: {_escape_html(suggestion.get("id", ""))}' if suggestion.get('id') else ''}
+                    {(' • ' + _escape_html(score_text)) if score_text else ''}
+                </div>
+                {f'<div class="sidebar-suggestion-body">{_escape_html(suggestion.get("text", ""))}</div>' if suggestion.get('text') else ''}
+                {f'<div class="sidebar-suggestion-meta">{_escape_html(meta_text)}</div>' if meta_text else ''}
+                {f'<div class="sidebar-suggestion-body"><strong>Description:</strong> {_escape_html(suggestion.get("description", ""))}</div>' if suggestion.get('description') else ''}
+                {f'<div class="sidebar-suggestion-body"><strong>Features:</strong>{feature_html}</div>' if feature_html else ''}
+            </div>
+            """
+        )
 
-            if suggestion.get('text'):
-                st.write(suggestion.get('text'))
-
-            if meta_text:
-                st.caption(meta_text)
-
-            description = suggestion.get("description")
-            if description:
-                st.caption(f"Description: {description}")
-
-            features = suggestion.get("features") or []
-            if isinstance(features, list) and features:
-                st.write("Features:")
-                for feature in features[:5]:
-                    st.write(f"- {feature}")
+    st.markdown('<div class="sidebar-suggestions-scroll">' + ''.join(html_cards) + '</div>', unsafe_allow_html=True)
 
 
 def render_used_context_panel(used_context):
-    st.markdown("### Used Context")
-    if not used_context:
-        st.info("No used_context data was returned by the API.")
-        return
+    st.markdown("### Products Suggestion")
 
     for item in used_context:
         image_url = _first_image_url(item.get("images"))
@@ -235,10 +287,7 @@ def render_used_context_panel(used_context):
 
 
 def render_about_panel():
-    st.markdown("### About")
-    st.write("The assistant shows one best recommendation in the chat and keeps the richer product cards in the sidebar.")
-    st.write("The Suggestions tab shows product images and a short summary of each retrieved item.")
-    st.write("The Used Context section shows the product details backing the answer, including images and feature bullets.")
+    pass
 
 
 def scroll_to_response_anchor():
@@ -265,19 +314,15 @@ if "used_context" not in st.session_state:
 
 
 with st.sidebar:
-    suggestions_tab, about_tab = st.tabs(["Suggestions", "About"])
-
-    with suggestions_tab:
-        if st.session_state.suggestions:
-            render_suggestions_panel(st.session_state.suggestions)
-        else:
-            st.write("No suggestions available yet.")
+    tabs = st.tabs(["Suggestions"])
+    with tabs[0]:
+        # Prefer explicit suggestions; otherwise derive suggestions from used_context
+        suggestions_to_render = st.session_state.suggestions or normalize_suggestions({"used_context": st.session_state.used_context})
+        if suggestions_to_render:
+            render_suggestions_panel(suggestions_to_render)
 
         st.divider()
         render_used_context_panel(st.session_state.used_context)
-
-    with about_tab:
-        render_about_panel()
 
 
 if prompt := st.chat_input("Hello! How can I assist you today?"):
@@ -290,6 +335,8 @@ if prompt := st.chat_input("Hello! How can I assist you today?"):
         success, response_data = api_call("post", f"{config.API_URL}/rag", json={"query": prompt})
         if success and "answer" in response_data:
             answer = response_data["answer"]
+            # store used_context from the API and derive suggestions from it
+            st.session_state.used_context = response_data.get("used_context", []) or []
             st.session_state.suggestions = normalize_suggestions(response_data)
         else:
             answer = response_data.get("message", "Sorry, I could not generate a response right now.")
