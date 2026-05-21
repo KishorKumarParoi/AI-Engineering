@@ -1,6 +1,7 @@
 
 from unittest import result
 
+from qdrant_client import QdrantClient
 from qdrant_client.models import FieldCondition, Filter, MatchValue
 
 import instructor
@@ -31,6 +32,10 @@ print(f"Qdrant URL present: {bool(qdrant_url)}")
 print(f"Qdrant API Key present: {bool(qdrant_api_key)}")
 print(f"Langsmith API Key present: {bool(langsmith_api_key)}")
 
+qdrant_client = QdrantClient(
+    url=qdrant_url,
+    api_key=qdrant_api_key,
+)
 
 client = instructor.from_openai(openai.OpenAI())
 
