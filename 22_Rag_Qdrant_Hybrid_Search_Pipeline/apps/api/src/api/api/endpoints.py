@@ -31,17 +31,14 @@ def rag(
     logger.info(f"Received request: {payload}")
 
     try:
-        raw_answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
+        # raw_answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
         answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5)
-        # ensure answer is a str (RagResponse expects a str); coerce None to empty string
+
         if answer is None:
-            answer = raw_answer  # fallback to raw answer if wrapper returns None
-        elif not isinstance(answer, str):
-            answer = str(answer)
-        
-        # Extract answer text and context
-        if isinstance(answer, dict) and "answer" in answer:
-            answer_text = str(answer["answer"])
+            answer_text = "Please try again later."
+            used_context = []
+        elif isinstance(answer, dict):
+            answer_text = str(answer.get("answer", ""))
             used_context = [RAGUsedContext(**ctx) for ctx in answer.get("used_context", [])]
         else:
             answer_text = str(answer) if answer else ""

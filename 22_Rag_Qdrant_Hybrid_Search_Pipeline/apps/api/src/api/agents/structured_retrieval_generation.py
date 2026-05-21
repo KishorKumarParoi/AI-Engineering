@@ -44,8 +44,19 @@ class RagGenerationResponse(BaseModel):
     reasoning: str = Field(description="The reasoning behind the answer")
 
 class RAGUsedContext(BaseModel):
-    id: str = Field(description="The ID of the retrieved review")
+    id: str | int = Field(description="The ID of the retrieved review")
     review: str = Field(description="The text of the retrieved review")
+    title: str | None = Field(default=None, description="The product title")
+    description: str | list[str] | None = Field(default=None, description="The product description")
+    categories: list[str] = Field(default_factory=list, description="The product categories")
+    images: list[dict] = Field(default_factory=list, description="The product image variants")
+    videos: list[dict] = Field(default_factory=list, description="The product videos")
+    features: list[str] = Field(default_factory=list, description="The product feature bullets")
+    main_category: str | None = Field(default=None, description="The product main category")
+    store: str | None = Field(default=None, description="The store or brand")
+    price: float | None = Field(default=None, description="The product price")
+    rating_number: int | None = Field(default=None, description="The product rating count")
+    details: dict | None = Field(default=None, description="The product details map")
 
 class RagGenerationResponseReference(BaseModel):
     answer: str = Field(description="The answer to the question")
@@ -359,42 +370,51 @@ def rag_pipeline(question, qdrant_client, top_k=5):
 
 
 def rag_pipeline_wrapper(question, qdrant_client, top_k=5):
-    result = rag_pipeline(question, qdrant_client, top_k)
+    pipeline_result = rag_pipeline(question, qdrant_client, top_k)
 
+    retrieved_context = pipeline_result.get('retrieved_context', {})
     used_context = []
-    dummy_vector = np.zeros(1536).tolist()  # Replace with actual embedding vector if available
 
-    for item in result.get('references', []):
-        payload = qdrant_client.query_points(
-            collection_name="Amazon_Electronics_Data_Collection",
-            query=dummy_vector,
-            limit=1,
-            with_payload=True,
-            query_filter = Filter(
-                         must=[
-                            FieldCondition(
-                                key="product_id",
-                                match=MatchValue(value=item.id)
-                            )]
-            )
-        ).points[0].payload or {}
-        rating_number = payload.get('rating_number', None)
-        used_context.append({
-            "id": item.id,
-            "title": payload.get('text', ''),
-            "description": payload.get('description', ''),
-            "categories": payload.get('categories', []),
-            "images": payload.get('images', []),
-            "videos": payload.get('videos', []),
-            "features": payload.get('features', []),
-            "main_category": payload.get('main_category', ''),
-            "store": payload.get('store', ''),
-            "price": payload.get('price', None),
-            "rating_number": rating_number,
-            "details": payload.get('details', ''),
-        })
+    if isinstance(retrieved_context, dict):
+        retrieved_context_ids = retrieved_context.get('retrieved_context_ids', [])
+        retrieve_context_titles = retrieved_context.get('retrieve_context_titles', [])
+        retrieve_context_texts = retrieved_context.get('retrieve_context', [])
+        retrieve_context_descriptions = retrieved_context.get('retrieve_context_descriptions', [])
+        retrieve_context_categories = retrieved_context.get('retrieve_context_categories', [])
+        retrieve_context_images = retrieved_context.get('retrieve_context_images', [])
+        retrieve_context_videos = retrieved_context.get('retrieve_context_videos', [])
+        retrieve_context_features = retrieved_context.get('retrieve_context_features', [])
+        retrieve_context_main_categories = retrieved_context.get('retrieve_context_main_categories', [])
+        retrieve_context_stores = retrieved_context.get('retrieve_context_stores', [])
+        retrieve_context_prices = retrieved_context.get('retrieve_context_prices', [])
+        retrieve_context_details = retrieved_context.get('retrieve_context_details', [])
+        retrieved_context_rating_numbers = retrieved_context.get('retrieved_context_rating_numbers', [])
 
-    return {   
-            "answer": result["answer"] if "answer" in result else str(result),
-            "used_context": used_context
-        }
+        item_count = len(retrieved_context_ids)
+        for index in range(item_count):
+            title = retrieve_context_titles[index] if index < len(retrieve_context_titles) else ''
+            review = retrieve_context_texts[index] if index < len(retrieve_context_texts) else ''
+            description = retrieve_context_descriptions[index] if index < len(retrieve_context_descriptions) else ''
+            if isinstance(description, list):
+                description = "\n".join(str(item) for item in description if item is not None)
+
+            used_context.append({
+                "id": retrieved_context_ids[index],
+                "title": title or review,
+                "review": review,
+                "description": description,
+                "categories": retrieve_context_categories[index] if index < len(retrieve_context_categories) else [],
+                "images": retrieve_context_images[index] if index < len(retrieve_context_images) else [],
+                "videos": retrieve_context_videos[index] if index < len(retrieve_context_videos) else [],
+                "features": retrieve_context_features[index] if index < len(retrieve_context_features) else [],
+                "main_category": retrieve_context_main_categories[index] if index < len(retrieve_context_main_categories) else '',
+                "store": retrieve_context_stores[index] if index < len(retrieve_context_stores) else '',
+                "price": retrieve_context_prices[index] if index < len(retrieve_context_prices) else None,
+                "rating_number": retrieved_context_rating_numbers[index] if index < len(retrieved_context_rating_numbers) else None,
+                "details": retrieve_context_details[index] if index < len(retrieve_context_details) else '',
+            })
+
+    return {
+        "answer": pipeline_result.get("answer", str(pipeline_result)),
+        "used_context": used_context,
+    }

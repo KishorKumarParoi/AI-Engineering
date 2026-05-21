@@ -23,8 +23,19 @@ class RagRequest(BaseModel):
     query: str = Field(..., description="The user's query to be used in the RAG pipeline")
 
 class RAGUsedContext(BaseModel):
-    id: str = Field(description="The ID of the retrieved review")
+    id: str | int = Field(description="The ID of the retrieved review")
     review: str = Field(description="The text of the retrieved review")
+    title: str | None = Field(default=None, description="The product title")
+    description: str | list[str] | None = Field(default=None, description="The product description")
+    categories: list[str] = Field(default_factory=list, description="The product categories")
+    images: list[dict] = Field(default_factory=list, description="The product image variants")
+    videos: list[dict] = Field(default_factory=list, description="The product videos")
+    features: list[str] = Field(default_factory=list, description="The product feature bullets")
+    main_category: str | None = Field(default=None, description="The product main category")
+    store: str | None = Field(default=None, description="The store or brand")
+    price: float | None = Field(default=None, description="The product price")
+    rating_number: int | None = Field(default=None, description="The product rating count")
+    details: dict | None = Field(default=None, description="The product details map")
 
 class RagResponse(BaseModel):
     request_id: str = Field(..., description="The request ID")

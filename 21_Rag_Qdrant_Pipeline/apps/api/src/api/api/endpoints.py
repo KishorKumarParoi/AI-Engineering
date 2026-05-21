@@ -31,11 +31,11 @@ def rag(
     logger.info(f"Received request: {payload}")
 
     try:
-        raw_answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
+        # raw_answer = rag_pipeline(payload.query, qdrant_client=qdrant_client, top_k=5)
         answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5)
         # ensure answer is a str (RagResponse expects a str); coerce None to empty string
         if answer is None:
-            answer = raw_answer  # fallback to raw answer if wrapper returns None
+            answer = "Please try again later."  # fallback to empty string if wrapper returns None
         elif not isinstance(answer, str):
             answer = str(answer)
         
