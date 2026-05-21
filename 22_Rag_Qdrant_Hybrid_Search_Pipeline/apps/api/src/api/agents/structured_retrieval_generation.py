@@ -357,6 +357,7 @@ def rag_pipeline(question, qdrant_client, top_k=5):
     return final_result
 
 
+
 def rag_pipeline_wrapper(question, qdrant_client, top_k=5):
     result = rag_pipeline(question, qdrant_client, top_k)
 
@@ -365,7 +366,7 @@ def rag_pipeline_wrapper(question, qdrant_client, top_k=5):
 
     for item in result.get('references', []):
         payload = qdrant_client.query_points(
-            collection_name="amazon_reviews_collection",
+            collection_name="Amazon_Electronics_Data_Collection",
             query=dummy_vector,
             limit=1,
             with_payload=True,
@@ -377,11 +378,20 @@ def rag_pipeline_wrapper(question, qdrant_client, top_k=5):
                             )]
             )
         ).points[0].payload or {}
-        helpful_votes = payload.get('helpful_votes', 'N/A')
+        rating_number = payload.get('rating_number', None)
         used_context.append({
             "id": item.id,
-            "review": payload.get('review_text', ''),
-            "helpful_votes": helpful_votes
+            "title": payload.get('text', ''),
+            "description": payload.get('description', ''),
+            "categories": payload.get('categories', []),
+            "images": payload.get('images', []),
+            "videos": payload.get('videos', []),
+            "features": payload.get('features', []),
+            "main_category": payload.get('main_category', ''),
+            "store": payload.get('store', ''),
+            "price": payload.get('price', None),
+            "rating_number": rating_number,
+            "details": payload.get('details', ''),
         })
 
     return {   
