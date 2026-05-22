@@ -23,6 +23,7 @@ members = ["apps/api", "apps/chatbot_ui"]
 
 [dependency-groups]
 dev = [
+    "fastembed>=0.8.0",
     "langgraph>=1.2.0",
     "langsmith>=0.8.4",
     "matplotlib>=3.10.9",
