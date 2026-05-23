@@ -264,7 +264,7 @@ def render_used_context_panel(used_context):
 
         with st.container(border=True):
             if image_url:
-                st.image(image_url, use_container_width=True)
+                st.image(image_url, width="stretch")
 
             st.markdown(f"**{item.get('title', 'Used Context')}**")
             if item.get('id'):
