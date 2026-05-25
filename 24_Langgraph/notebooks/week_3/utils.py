@@ -6,7 +6,11 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, Tool
 import json
 
 def format_ai_message(response):
-    if response.tool_calls:
+    raw_response = response
+    if isinstance(response, (tuple, list)):
+        response = response[0] if response else None
+
+    if response and getattr(response, "tool_calls", None):
         tool_calls = []
         for i, tc in enumerate(response.tool_calls):
             tool_args = getattr(tc, "args", None)
@@ -19,12 +23,12 @@ def format_ai_message(response):
                "args": tool_args
             })
 
-        ai_message = AIMessage(
-            content=response.answer,
-            tool_calls=tool_calls
-        )
+        ai_message = AIMessage(content=getattr(response, "answer", ""), tool_calls=tool_calls)
     else:
-        ai_message = AIMessage(content=response.answer)
+        answer_text = getattr(response, "answer", None)
+        if answer_text is None and isinstance(raw_response, (tuple, list)) and raw_response:
+            answer_text = getattr(raw_response[0], "answer", "")
+        ai_message = AIMessage(content=answer_text or "")
     
     return ai_message
 
