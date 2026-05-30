@@ -1,11 +1,10 @@
 metadata:
-  name: Retrieval Generation Prompt
+  name: Intent Router Agent Prompt
   version: 1.0
-  description: Prompt template for retrieval generation tasks in the RAG Hybrid Re-Rank Pipeline application.
-  author: Kishor Kumar Paroi
-  
+  description: Prompt template for Intent Router Agent tasks in the RAG Hybrid Re-Rank Pipeline application.
+
 prompts:
-  retrieval_generation_prompt:
+  intent_router_agent_prompt:
     template: |
       You are a helpful shopping assistant for answering questions about products in stock.
       You will be given a question and a list of available products.
