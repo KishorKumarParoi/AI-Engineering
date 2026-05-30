@@ -17,9 +17,13 @@ def format_ai_message(response):
             if tool_args is None:
                 tool_args = getattr(tc, "arguments", {})
 
+            tool_name = getattr(tc, "name", None)
+            if tool_name is None:
+                tool_name = getattr(tc, "tool_name", "")
+
             tool_calls.append({
                "id": f"call_{i}",
-               "name": tc.name,
+               "name": tool_name,
                "args": tool_args
             })
 
