@@ -62,9 +62,9 @@ class IntentRouterResponse(BaseModel):
     question_relevant: bool = Field(description="Whether the question is relevant to shopping search")
     answer: str = Field(description="Answer to the question if it is relevant, otherwise can be empty or a polite decline")
 
-class RagGenerationResponse(BaseModel):
-    answer: str = Field(description="The answer to the question")
-    reasoning: str = Field(description="The reasoning behind the answer")
+# class RagGenerationResponse(BaseModel):
+#     answer: str = Field(description="The answer to the question")
+#     reasoning: str = Field(description="The reasoning behind the answer")
 
 class RAGUsedContext(BaseModel):
     id: str | int = Field(description="The ID of the retrieved review")

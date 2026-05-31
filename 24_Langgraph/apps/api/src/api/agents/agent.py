@@ -59,10 +59,7 @@ from api.utils.prompt_managements import prompt_template_config, prompt_template
     metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"}
 )
 def agent_node(state: State) -> dict:
-    prompt_template = prompt_template_config("api/prompts/qa_agent.yaml", "qa_agent_prompt")
-
-    template = Template(prompt_template)
-    prompt = template.render(
+    prompt = prompt_template_config("api/prompts/qa_agent.yaml", "qa_agent_prompt").render(
         available_tools=json.dumps(state.available_tools, ensure_ascii=True, indent=2)
     )
     messages = state.messages
@@ -95,23 +92,95 @@ def agent_node(state: State) -> dict:
 
     ai_message = format_ai_message(response)
 
-    # Populate references: prefer explicit references from the model response,
-    # fall back to any used/retrieved context on the response or state.
-    references = (
+    def _tool_messages(messages: list) -> list[dict]:
+        items = []
+        for message in messages:
+            if getattr(message, "type", None) != "tool":
+                continue
+            items.append({
+                "tool_name": getattr(message, "name", None) or getattr(message, "tool_name", None) or "tool",
+                "tool_call_id": getattr(message, "tool_call_id", None),
+                "content": getattr(message, "content", "") or "",
+                "status": getattr(message, "status", None),
+            })
+        return items
+
+    def _normalize_references(context_items: list[dict]) -> list[dict]:
+        refs = []
+        for item in context_items:
+            content = str(item.get("content", "")).strip()
+            if not content:
+                continue
+            refs.append({
+                "id": item.get("tool_call_id") or item.get("tool_name") or "retrieved_context",
+                "description": content[:300],
+            })
+        seen = set()
+        deduped = []
+        for ref in refs:
+            ref_id = ref.get("id")
+            if ref_id in seen:
+                continue
+            seen.add(ref_id)
+            deduped.append(ref)
+        return deduped
+
+    existing_messages = list(getattr(state, "messages", None) or [])
+    retrieved_context_field = getattr(state, "retrieved_context", None) or _tool_messages(existing_messages)
+    if not retrieved_context_field:
+        retrieved_context_field = [{
+            "tool_name": "get_formatted_context",
+            "tool_call_id": None,
+            "content": "No retrieved context available yet.",
+            "status": "fallback",
+        }]
+
+    references_field = (
         getattr(response, "references", None)
         or getattr(response, "used_context", None)
         or getattr(response, "rag_used_context", None)
-        or getattr(state, "retrieved_context", None)
-        or []
+        or getattr(state, "references", None)
+        or _normalize_references(retrieved_context_field)
     )
+    if not references_field:
+        references_field = [{"id": "retrieved_context", "description": "Retrieved context is available in the state."}]
+
+    tool_calls_field = normalized_tool_calls or getattr(state, "tool_calls", None) or []
+    if not tool_calls_field:
+        query_seed = getattr(state, "expanded_query", []) or [getattr(state, "initial_query", "") or ""]
+        query_seed = [item for item in query_seed if item]
+        tool_calls_field = [
+            {
+                "tool_name": "get_formatted_context",
+                "arguments": {"query": query_item, "top_k": 5},
+            }
+            for query_item in query_seed
+        ] or [{"tool_name": "get_formatted_context", "arguments": {"query": getattr(state, "initial_query", "") or "", "top_k": 5}}]
+
+    available_tools_field = getattr(state, "available_tools", None) or []
+    if not available_tools_field:
+        available_tools_field = [{
+            "name": "get_formatted_context",
+            "description": "Retrieve and format top-k context chunks for a query",
+            "arguments": {"query": "str", "top_k": "int"},
+        }]
+
+    messages_field = existing_messages + [ai_message]
+    if not messages_field:
+        messages_field = [ai_message]
 
     return {
-        "messages": [ai_message],
-        "tool_calls": normalized_tool_calls,
-        "iteration": state.iteration + 1,
-        "answer": response.answer,
-        "final_answer": len(response.tool_calls) == 0,
-        "references": references
+        "messages": messages_field,
+        "tool_calls": tool_calls_field,
+        "retrieved_context": retrieved_context_field,
+        "expanded_query": getattr(state, "expanded_query", []) or [],
+        "initial_query": getattr(state, "initial_query", "") or "",
+        "answer": getattr(response, "answer", None) or getattr(state, "answer", "") or "",
+        "question_relevant": bool(getattr(state, "question_relevant", False)),
+        "available_tools": available_tools_field,
+        "final_answer": len(tool_calls_field) == 0,
+        "iteration": (getattr(state, "iteration", 0) or 0) + 1,
+        "references": references_field,
     }
 
 
