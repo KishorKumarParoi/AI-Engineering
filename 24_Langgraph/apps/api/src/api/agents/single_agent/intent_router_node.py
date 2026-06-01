@@ -203,9 +203,8 @@ def query_expand_node(state: State) -> dict:
                 ordered.append(item)
         return ordered
 
-    template = Template(prompt_template)
     explicit_products = _extract_products(query_text)
-    prompt = template.render(
+    prompt = prompt_template.render(
         query=query_text,
         explicit_products=", ".join(explicit_products) if explicit_products else "None",
     )
@@ -492,7 +491,11 @@ def get_formatted_context(query: str, qdrant_client: QdrantClient, top_k: int = 
        A string of the top k context chunks with IDs and average ratings prepending each chunk, each representing an inventory
        item for a given query.
     """
-    context = retrieve_data(query, qdrant_client=qdrant_client, top_k=top_k)
+    client = qdrant_client or globals().get("qdrant_client")
+    if client is None:
+        raise ValueError("qdrant_client is not available in the notebook or module scope")
+
+    context = retrieve_data(query, qdrant_client=client, top_k=top_k)
     formatted_context = process_context(context)
     return formatted_context
 
@@ -545,8 +548,7 @@ Return one section per query using this format:
   - Price/Ratings: <if available>
 """
 
-    template = Template(prompt_template)
-    prompt = template.render(
+    prompt = prompt_template.render(
         expanded_query=json.dumps(state.expanded_query, ensure_ascii=True),
         preprocessed_context=preprocessed_context,
     )
@@ -656,8 +658,7 @@ def agent_node(state: State) -> dict:
       - If the user's request requires using a tool, set tool_calls with the appropriate function names and arguments.
       """ 
     
-    template = Template(prompt_template)
-    prompt = template.render(
+    prompt = prompt_template.render(
         available_tools=json.dumps(state.available_tools, ensure_ascii=True, indent=2)
     )
     messages = state.messages
@@ -680,13 +681,23 @@ def agent_node(state: State) -> dict:
     if isinstance(response, (tuple, list)):
         response = response[0]
 
-    normalized_tool_calls = [
-        {
-            "tool_name": getattr(tool_call, "tool_name", getattr(tool_call, "tool_name", None)),
-            "arguments": getattr(tool_call, "arguments", {}),
-        }
-        for tool_call in response.tool_calls
-    ]
+    normalized_tool_calls = []
+    for tool_call in response.tool_calls:
+        if isinstance(tool_call, dict):
+            tool_name = tool_call.get("tool_name") or tool_call.get("name")
+            arguments = dict(tool_call.get("arguments") or tool_call.get("args") or {})
+        elif hasattr(tool_call, "model_dump"):
+            tool_call_data = tool_call.model_dump()
+            tool_name = tool_call_data.get("tool_name") or tool_call_data.get("name")
+            arguments = dict(tool_call_data.get("arguments") or tool_call_data.get("args") or {})
+        else:
+            tool_name = getattr(tool_call, "tool_name", getattr(tool_call, "name", None))
+            arguments = dict(getattr(tool_call, "arguments", getattr(tool_call, "args", {})) or {})
+
+        normalized_tool_calls.append({
+            "tool_name": tool_name,
+            "arguments": arguments,
+        })
 
     ai_message = format_ai_message(response)
 
@@ -695,8 +706,8 @@ def agent_node(state: State) -> dict:
         "tool_calls": normalized_tool_calls,
         "iteration": state.iteration + 1,
         "answer": response.answer,
-        "final_answer": len(response.tool_calls) == 0,
-        "references": []
+        "final_answer": len(normalized_tool_calls) == 0,
+        "references": getattr(response, "references", []) or [],
     }
 
 @traceable(
@@ -713,8 +724,7 @@ Question:
 {{query}}
 """
 
-    template = Template(prompt_template)
-    prompt = template.render(query=state.initial_query)
+    prompt = prompt_template.render(query=state.initial_query)
 
     client = instructor.from_openai(OpenAI())
 

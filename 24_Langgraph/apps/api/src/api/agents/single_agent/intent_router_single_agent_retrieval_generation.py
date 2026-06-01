@@ -40,11 +40,16 @@ import instructor
 import json
 import os
 import importlib
+import sys
+from pathlib import Path
 import utils
 from dotenv import load_dotenv
 
+SRC_ROOT = Path(__file__).resolve().parents[3]
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
+
 from tools import get_formatted_context, tool_router
-from agent import agent_node
 from api.utils.prompt_managements import prompt_template_config, prompt_template_registry
 
 load_dotenv()

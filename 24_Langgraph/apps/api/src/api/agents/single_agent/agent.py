@@ -59,7 +59,7 @@ from api.utils.prompt_managements import prompt_template_config, prompt_template
     metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"}
 )
 def agent_node(state: State) -> dict:
-    prompt = prompt_template_config("api/prompts/qa_agent.yaml", "qa_agent_prompt").render(
+    prompt = prompt_template_config("qa_agent.yaml", "qa_agent_prompt").render(
         available_tools=json.dumps(state.available_tools, ensure_ascii=True, indent=2)
     )
     messages = state.messages
@@ -82,13 +82,23 @@ def agent_node(state: State) -> dict:
     if isinstance(response, (tuple, list)):
         response = response[0]
 
-    normalized_tool_calls = [
-        {
-            "tool_name": getattr(tool_call, "tool_name", getattr(tool_call, "name", None)),
-            "arguments": getattr(tool_call, "arguments", getattr(tool_call, "args", {})),
-        }
-        for tool_call in response.tool_calls
-    ]
+    normalized_tool_calls = []
+    for tool_call in response.tool_calls:
+        if isinstance(tool_call, dict):
+            tool_name = tool_call.get("tool_name") or tool_call.get("name")
+            arguments = dict(tool_call.get("arguments") or tool_call.get("args") or {})
+        elif hasattr(tool_call, "model_dump"):
+            tool_call_data = tool_call.model_dump()
+            tool_name = tool_call_data.get("tool_name") or tool_call_data.get("name")
+            arguments = dict(tool_call_data.get("arguments") or tool_call_data.get("args") or {})
+        else:
+            tool_name = getattr(tool_call, "tool_name", getattr(tool_call, "name", None))
+            arguments = dict(getattr(tool_call, "arguments", getattr(tool_call, "args", {})) or {})
+
+        normalized_tool_calls.append({
+            "tool_name": tool_name,
+            "arguments": arguments,
+        })
 
     ai_message = format_ai_message(response)
 
@@ -113,6 +123,7 @@ def agent_node(state: State) -> dict:
                 continue
             refs.append({
                 "id": item.get("tool_call_id") or item.get("tool_name") or "retrieved_context",
+                "review": content,
                 "description": content[:300],
             })
         seen = set()
@@ -125,8 +136,18 @@ def agent_node(state: State) -> dict:
             deduped.append(ref)
         return deduped
 
-    existing_messages = list(getattr(state, "messages", None) or [])
-    retrieved_context_field = getattr(state, "retrieved_context", None) or _tool_messages(existing_messages)
+    def _normalize_items(items: list[Any]) -> list[dict]:
+        normalized = []
+        for item in items or []:
+            if hasattr(item, "model_dump"):
+                normalized.append(item.model_dump())
+            elif isinstance(item, dict):
+                normalized.append(dict(item))
+            else:
+                normalized.append({"value": item})
+        return normalized
+
+    retrieved_context_field = getattr(state, "retrieved_context", None) or _tool_messages(list(getattr(state, "messages", None) or []))
     if not retrieved_context_field:
         retrieved_context_field = [{
             "tool_name": "get_formatted_context",
@@ -143,7 +164,8 @@ def agent_node(state: State) -> dict:
         or _normalize_references(retrieved_context_field)
     )
     if not references_field:
-        references_field = [{"id": "retrieved_context", "description": "Retrieved context is available in the state."}]
+        references_field = [{"id": "retrieved_context", "review": "Retrieved context is available in the state.", "description": "Retrieved context is available in the state."}]
+    references_field = _normalize_items(list(references_field))
 
     tool_calls_field = normalized_tool_calls or getattr(state, "tool_calls", None) or []
     if not tool_calls_field:
@@ -156,6 +178,7 @@ def agent_node(state: State) -> dict:
             }
             for query_item in query_seed
         ] or [{"tool_name": "get_formatted_context", "arguments": {"query": getattr(state, "initial_query", "") or "", "top_k": 5}}]
+    tool_calls_field = _normalize_items(list(tool_calls_field))
 
     available_tools_field = getattr(state, "available_tools", None) or []
     if not available_tools_field:
@@ -164,13 +187,10 @@ def agent_node(state: State) -> dict:
             "description": "Retrieve and format top-k context chunks for a query",
             "arguments": {"query": "str", "top_k": "int"},
         }]
-
-    messages_field = existing_messages + [ai_message]
-    if not messages_field:
-        messages_field = [ai_message]
+    available_tools_field = _normalize_items(list(available_tools_field))
 
     return {
-        "messages": messages_field,
+        "messages": [ai_message],
         "tool_calls": tool_calls_field,
         "retrieved_context": retrieved_context_field,
         "expanded_query": getattr(state, "expanded_query", []) or [],

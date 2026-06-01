@@ -254,18 +254,18 @@ def retriever_node(state) -> dict:
         return text if text else query_text
 
     def _run_single_retrieval(query_text: str, top_k: int) -> dict:
-        result = retrieve_data(query_text, qdrant_client=qdrant_client, top_k=top_k)
+        result: dict[str, Any] = retrieve_data(query_text, qdrant_client=qdrant_client, top_k=top_k)
         result["focus_product"] = _extract_focus_product(query_text)
         result["query_used"] = query_text
         result["top_k"] = top_k
         return result
 
-    state_data = state.model_dump() if hasattr(state, "model_dump") else state
+    state_data: dict[str, Any] = state.model_dump() if hasattr(state, "model_dump") else state
     if not isinstance(state_data, dict):
         state_data = {}
 
     query_text = state_data.get("query_text")
-    top_k = state_data.get("k", 5)
+    top_k = int(state_data.get("k", 5))
 
     def _normalize_queries(raw_queries):
         if isinstance(raw_queries, dict):
@@ -286,7 +286,7 @@ def retriever_node(state) -> dict:
         fallback_query = state_data.get("initial_query", "")
         queries = [fallback_query] if fallback_query else []
 
-    retrieved_context = [_run_single_retrieval(query_item, top_k) for query_item in queries]
+    retrieved_context: list[dict[str, Any]] = [_run_single_retrieval(query_item, top_k) for query_item in queries]
     return {
         "retrieved_context": retrieved_context
     }
@@ -297,7 +297,7 @@ def retriever_node(state) -> dict:
     run_type="retriever",
     tags=["retrieval", "qdrant"]
 )
-def retriever_node_parallel(state: State, k: int = 5, query_text: str = None) -> dict:
+def retriever_node_parallel(state: State, k: int = 5, query_text: Optional[str] = None) -> dict:
     import re
 
     def _extract_focus_product(query_text: str) -> str:
@@ -319,7 +319,7 @@ def retriever_node_parallel(state: State, k: int = 5, query_text: str = None) ->
     if not q:
         return {"retrieved_context": []}
 
-    result = retrieve_data(q, qdrant_client=qdrant_client, top_k=top_k)
+    result: dict[str, Any] = retrieve_data(q, qdrant_client=qdrant_client, top_k=top_k)
     result["focus_product"] = _extract_focus_product(q)
     result["query_used"] = q
     result["top_k"] = top_k
@@ -338,7 +338,7 @@ def process_context(context):
     return formatted_contexts
 
 
-def get_formatted_context(query: str, qdrant_client: QdrantClient, top_k: int = 5) -> str:
+def get_formatted_context(query: str, qdrant_client: Optional[QdrantClient] = None, top_k: int = 5) -> str:
     """
     Get the top k context, each representing an inventory item for a given query.
     Args:
@@ -349,11 +349,15 @@ def get_formatted_context(query: str, qdrant_client: QdrantClient, top_k: int = 
        A string of the top k context chunks with IDs and average ratings prepending each chunk, each representing an inventory
        item for a given query.
     """
-    context = retrieve_data(query, qdrant_client=qdrant_client, top_k=top_k)
+    client = qdrant_client or globals().get("qdrant_client")
+    if client is None:
+        raise ValueError("qdrant_client is not available in the notebook or module scope")
+
+    context = retrieve_data(query, qdrant_client=client, top_k=top_k)
     formatted_context = process_context(context)
     return formatted_context
 
-def aggregator_node(state: State) -> dict:
+def aggregator_node_query_expansion(state: State) -> dict:
     context_blocks = []
     for item in state.retrieved_context:
         if not isinstance(item, dict):
@@ -396,8 +400,7 @@ Return one section per query using this format:
   - Price/Ratings: <if available>
 """
 
-    template = Template(prompt_template)
-    prompt = template.render(
+    prompt = prompt_template.render(
         expanded_query=json.dumps(state.expanded_query, ensure_ascii=True),
         preprocessed_context=preprocessed_context,
     )
@@ -514,9 +517,8 @@ def query_expand_node(state: State) -> dict:
                 ordered.append(item)
         return ordered
 
-    template = Template(prompt_template)
     explicit_products = _extract_products(query_text)
-    prompt = template.render(
+    prompt = prompt_template.render(
         query=query_text,
         explicit_products=", ".join(explicit_products) if explicit_products else "None",
     )
@@ -638,8 +640,7 @@ Return one section per query using this format:
   - Price/Ratings: <if available>
 """
 
-    template = Template(prompt_template)
-    prompt = template.render(
+    prompt = prompt_template.render(
         expanded_query=json.dumps(state.expanded_query, ensure_ascii=True),
         preprocessed_context=preprocessed_context,
     )
@@ -695,8 +696,7 @@ Question:
 {{query}}
 """
 
-    template = Template(prompt_template)
-    prompt = template.render(query=state.initial_query)
+    prompt = prompt_template.render(query=state.initial_query)
 
     client = instructor.from_openai(OpenAI())
 
