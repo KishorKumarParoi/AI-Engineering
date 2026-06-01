@@ -9,11 +9,11 @@ from api.api.models import RagRequest, RagResponse, RAGUsedContext
 
 import logging
 
-# from api.agents.retrieval_generation import rag_pipeline
-# from api.agents.structured_retrieval_generation import rag_pipeline_wrapper
-# from api.agents.hybrid_search_retrieval_generation import rag_pipeline_wrapper
-
-from api.agents.hybrid_search_rerank_retrieval_generation import rag_pipeline_wrapper
+# from api.agents.prod_retrieval_agents.retrieval_generation import rag_pipeline
+# from api.agents.prod_retrieval_agents.structured_retrieval_generation import rag_pipeline_wrapper
+# from api.agents.prod_retrieval_agents.hybrid_search_retrieval_generation import rag_pipeline_wrapper
+# from api.agents.prod_retrieval_agents.hybrid_search_rerank_retrieval_generation import rag_pipeline_wrapper
+from api.agents.prod_retrieval_agents.single_turn_in_retrieval_generation import rag_pipeline_wrapper
 
 logging.basicConfig(
     level=logging.INFO,
