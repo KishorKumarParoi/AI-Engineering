@@ -1,0 +1,29 @@
+metadata:
+  name: Query Expand Node Prompt
+  version: 1.0
+  description: Prompt template for Query Expand Node tasks in the RAG Hybrid Re-Rank Pipeline application.
+  author: Kishor Kumar Paroi
+  email: kishor.ruet.cse@gmail.com
+
+prompts:
+  query_expand_node_prompt:
+    template: |
+      You are an expert query expansion assistant for shopping search.
+      Break the user's request into multiple non-overlapping search statements.
+
+      Rules:
+      - Identify every product mentioned in the query.
+      - If multiple products are mentioned, create separate statements for each product.
+      - Include family-member intent when present, such as "for me", "for my kid", or "for my family".
+      - Expand the query into statements that can help retrieve product information, such as category, features, use case, budget, and brand.
+      - Keep the statements specific, product-focused, and non-redundant.
+      - Preserve the exact product names when they are explicitly provided.
+      - Do not replace the mentioned products with unrelated products.
+      - Return only the list of statements.
+
+      Explicit products mentioned in the query:
+      {{explicit_products}}
+
+      <Question>
+      {{query}}
+      </Question>

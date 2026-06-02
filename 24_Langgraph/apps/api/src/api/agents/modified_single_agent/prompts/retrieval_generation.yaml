@@ -3,6 +3,8 @@ metadata:
   version: 1.0
   description: Prompt template for retrieval generation tasks in the RAG Hybrid Re-Rank Pipeline application.
   author: Kishor Kumar Paroi
+  email: kishor.ruet.cse@gmail.com
+
   
 prompts:
   retrieval_generation_prompt:

@@ -2,6 +2,8 @@ metadata:
   name: Intent Router Agent Prompt
   version: 1.0
   description: Prompt template for Intent Router Agent tasks in the RAG Hybrid Re-Rank Pipeline application.
+  author: Kishor Kumar Paroi
+  email: kishor.ruet.cse@gmail.com
 
 prompts:
   intent_router_agent_prompt:
