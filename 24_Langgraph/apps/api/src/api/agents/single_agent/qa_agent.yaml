@@ -5,7 +5,7 @@ metadata:
   author: Kishor Kumar Paroi
 
 prompts:
-  qa_agent_prompt:
+  qna_agent_prompt:
     template: |
       You are an expert shopping assistant. Your task is to answer the user's question
       by reasoning step-by-step and using the available tools to retrieve necessary information.

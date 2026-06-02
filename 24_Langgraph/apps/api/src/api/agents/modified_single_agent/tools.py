@@ -2,11 +2,14 @@ from pydantic import BaseModel, Field
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send
+from langchain_core.runnables import RunnableConfig
+
 from langsmith import traceable, get_current_run_tree, Client
 from operator import add
-from typing import Any, Annotated, Dict, List
 import yaml
 from jinja2 import Template
+from typing import List, Dict, Any, Annotated
+import os
 
 from langchain_core.messages import BaseMessage, AIMessage, ToolMessage, HumanMessage, SystemMessage
 from langchain_core.tools import BaseTool
@@ -23,7 +26,6 @@ from qdrant_client.models import VectorParams, Distance, PayloadSchemaType, Poin
 from qdrant_client import models
 
 import instructor
-from langsmith import traceable, get_current_run_tree
 
 import pandas as pd
 import openai
@@ -41,14 +43,11 @@ import inspect
 import instructor
 import json
 import os
-import importlib
-import utils
 from dotenv import load_dotenv
 
 load_dotenv()
-importlib.reload(utils)
 
-from utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
+from api.agents.modified_single_agent.utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
 
 ls_client = Client()
 ls_prompt = ls_client.pull_prompt("retrieval_generation_prompt")
@@ -57,53 +56,77 @@ ls_template = ls_prompt.messages[0].prompt.template
 preprocessed_context = "- a \n - b"
 question = "What is a?"
 
+@traceable(
+    name="build_prompt_with_jinja",
+    run_type="prompt",
+    tags=["prompt", "jinja"],
+    metadata={"ls_provider": "jinja2"}
+)
 def build_prompt_with_jinja(preprocessed_context, question):
-    jinja_template = """You are a helpful shopping assistant for answering questions about products in stock.
-      You will be given a question and a list of context
-
-      Instructions:
-      - You need to answer the question based on the provided context only
-      - Never use word context and refer to it as the available products
-      - As an output you need to provide:
-
-      * The answer to the question based on the provided context
-      * The list of the IDs of the chuns that were used to answer the question.
-      only return the ones that are used in the answer.
-      * Short description (1-2 sentences) of the item based on the description provided in the context
-
-      - The short description should have the name of the item.
-      - The answer to the question should contain detailed information about the product and returned with
-      detailed specification in bullet points.
-
-      Context:
-        {{preprocessed_context}}
-      Question: 
-        {{question}}
-    """
+    jinja_template = prompt_template_config("api/agents/modified_single_agent/prompts/build_prompt_with_jinja.yaml", "build_prompt_with_jinja").render()
 
     template = Template(jinja_template)
     rendered_template = template.render(preprocessed_context=preprocessed_context, question=question)
     return rendered_template
 
+@traceable(
+    name="prompt_template_config",
+    run_type="prompt",
+    tags=["prompt", "config"],
+    metadata={"ls_provider": "yaml"}
+)
+
+@traceable(
+    name="prompt_template_config",
+    run_type="prompt",
+    tags=["prompt", "config"],
+    metadata={"ls_provider": "yaml"}
+)
 def prompt_template_config(yaml_file, prompt_key):
-    with open(yaml_file, 'r') as file:
+    # 1. Hardcoded explicit base directory for your exact machine setup
+    base_dir = "/Users/kishorkumarparoi/Desktop/Maven - The AI Engineering Bootcamp /Resources/AIE5-main/24_Langgraph/apps/api/src"
+    
+    # Extract just the filename if it's passed with a long prefix
+    # e.g., "api/agents/modified_single_agent/prompts/intent_router_agent.yaml" -> "intent_router_agent.yaml"
+    filename = os.path.basename(yaml_file)
+    
+    # 2. Directly construct the target path inside your source tree
+    abs_yaml_path = os.path.join(base_dir, "api", "agents", "modified_single_agent", "prompts", filename)
+    
+    # 3. Fallback: If your folder structure doesn't use the 'src' layout, try without it
+    if not os.path.exists(abs_yaml_path):
+        fallback_base = "/Users/kishorkumarparoi/Desktop/Maven - The AI Engineering Bootcamp /Resources/AIE5-main/24_Langgraph/apps/api"
+        abs_yaml_path = os.path.join(fallback_base, "api", "agents", "modified_single_agent", "prompts", filename)
+
+    # 4. Secondary Fallback: If things are completely weird, try matching relative to tools.py's own folder
+    if not os.path.exists(abs_yaml_path):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        abs_yaml_path = os.path.join(current_dir, "prompts", filename)
+
+    print(f"--> [DEBUG] Opening prompt config at verified path: {abs_yaml_path}")
+
+    with open(abs_yaml_path, 'r') as file:
         config = yaml.safe_load(file)
 
     prompt_entry = config['prompts'][prompt_key]
     template_content = prompt_entry['template'] if isinstance(prompt_entry, dict) else prompt_entry
 
     template = Template(template_content)
-
     return template
 
-
+@traceable(
+    name="prompt_template_registry",
+    run_type="prompt",
+    tags=["prompt", "registry"],
+    metadata={"ls_provider": "langsmith"}
+)
 def prompt_template_registry(prompt_name):
     template_content = ls_client.pull_prompt(prompt_name).messages[0].prompt.template
     template = Template(template_content)
     return template
 
 
-print(prompt_template_registry("retrieval_generation_prompt").render(preprocessed_context=preprocessed_context, question=question))
+# print(prompt_template_registry("retrieval_generation_prompt").render(preprocessed_context=preprocessed_context, question=question))
 
 class QueryExpandResponse(BaseModel):
     expanded_query: List[str] = Field(description="List of expanded search statements derived from the initial query")
@@ -164,35 +187,39 @@ class State(BaseModel):
     references: Annotated[List[RAGUsedContext], add] = Field(default_factory=list)
 
 
-load_dotenv()
+# load_dotenv()
 
-# Retrieve API keys from environment variables
-openai_api_key = os.getenv('OPENAI_API_KEY')
-google_api_key = os.getenv('GEMINI_API_KEY')
-qdrant_url = os.getenv('QDRANT_URL')
-qdrant_api_key = os.getenv('QDRANT_API_KEY')
-langsmith_api_key = os.getenv('LANGSMITH_API_KEY')
-if qdrant_url and "qdrant:6333" in qdrant_url:
-    # Docker service host is not resolvable from a local notebook kernel
-    qdrant_url = qdrant_url.replace("qdrant:6333", "localhost:6333")
+# # Retrieve API keys from environment variables
+# openai_api_key = os.getenv('OPENAI_API_KEY')
+# google_api_key = os.getenv('GEMINI_API_KEY')
+# qdrant_url = os.getenv('QDRANT_URL')
+# qdrant_api_key = os.getenv('QDRANT_API_KEY')
+# langsmith_api_key = os.getenv('LANGSMITH_API_KEY')
+# if qdrant_url and "qdrant:6333" in qdrant_url:
+#     # Docker service host is not resolvable from a local notebook kernel
+#     qdrant_url = qdrant_url.replace("qdrant:6333", "localhost:6333")
 
-# Verify keys are loaded
-print(f"OpenAI API Key present: {bool(openai_api_key)}")
-print(f"Google API Key present: {bool(google_api_key)}")
-print(f"Qdrant URL present: {bool(qdrant_url)}")
-print(f"Qdrant API Key present: {bool(qdrant_api_key)}")
-print(f"Langsmith API Key present: {bool(langsmith_api_key)}")
+# # Verify keys are loaded
+# print(f"OpenAI API Key present: {bool(openai_api_key)}")
+# print(f"Google API Key present: {bool(google_api_key)}")
+# print(f"Qdrant URL present: {bool(qdrant_url)}")
+# print(f"Qdrant API Key present: {bool(qdrant_api_key)}")
+# print(f"Langsmith API Key present: {bool(langsmith_api_key)}")
 
-qdrant_client = QdrantClient(
-    url=qdrant_url,
-    api_key=qdrant_api_key,
-)
+# qdrant_client = QdrantClient(
+#     url=qdrant_url,
+#     api_key=qdrant_api_key,
+# )
 
+# if qdrant_url and "qdrant:6333" in qdrant_url:
+#     # Docker service host is not resolvable from a local notebook kernel
+#     qdrant_url = qdrant_url.replace("qdrant:6333", "localhost:6333")
 
 @traceable(
         name="query_expand_node",
         run_type="llm",
-        metadata={"ls_provider": "openai", "ls_model_name": "gpt-4.1-mini"}
+        metadata={"ls_provider": "openai", "ls_model_name": "gpt-4.1-mini"},
+        tags=["query", "expand", "jinja", "openai", "expand_tags"]
 )
 def query_expand_node(state: State) -> dict:
     import re
@@ -202,26 +229,7 @@ def query_expand_node(state: State) -> dict:
     if not query_text:
         return {"expanded_query": []}
 
-    prompt_template = f"""You are an expert query expansion assistant for shopping search.
-    Break the user's request into multiple non-overlapping search statements.
-
-    Rules:
-    - Identify every product mentioned in the query.
-    - If multiple products are mentioned, create separate statements for each product.
-    - Include family-member intent when present, such as "for me", "for my kid", or "for my family".
-    - Expand the query into statements that can help retrieve product information, such as category, features, use case, budget, and brand.
-    - Keep the statements specific, product-focused, and non-redundant.
-    - Preserve the exact product names when they are explicitly provided.
-    - Do not replace the mentioned products with unrelated products.
-    - Return only the list of statements.
-
-    Explicit products mentioned in the query:
-    {{explicit_products}}
-
-    <Question>
-    {{query}}
-    </Question>
-    """
+    prompt_template = prompt_template_config("api/agents/modified_single_agent/prompts/query_expand_node.yaml", "query_expand_node_prompt").render()
 
     def _extract_products(text: str) -> list[str]:
         text = re.sub(
@@ -310,7 +318,11 @@ def query_expand_node(state: State) -> dict:
     return {"expanded_query": statements}
 
 
-
+@traceable(
+    name="query_expand_conditional_edges",
+    run_type="llm",
+    tags=["query", "expand", "conditional_edges"],
+)
 def query_expand_conditional_edges(state):
     import re
 
@@ -544,25 +556,28 @@ def process_context(context):
         formatted_contexts += f"Product ID: {id}\nDescription: {chunk}\nRating: {rating}\n\n"
     return formatted_contexts
 
-def get_formatted_context(query: str, qdrant_client: QdrantClient = None, top_k: int = 5) -> str:
+
+@traceable(
+    name="get_formatted_context",
+    run_type="retriever",
+    tags=["retrieval", "formatting", "qdrant"]
+)
+def get_formatted_context(query: str, qdrant_client: QdrantClient = None, top_k: int = 5, *, config: RunnableConfig = None) -> str:
     """
     Get the top k context, each representing an inventory item for a given query.
-    Args:
-       query (str): The query to get the top k context for
-       qdrant_client (QdrantClient): The Qdrant client to use for retrieval. If omitted,
-           the notebook-level `qdrant_client` is used.
-       top_k (int): The number of context chunks to retrieve, works best with 5 or more
-    Returns:
-       A string of the top k context chunks with IDs and average ratings prepending each chunk, each representing an inventory
-       item for a given query.
     """
     client = qdrant_client or globals().get("qdrant_client")
+    
+    # Extract the client out of LangGraph's background configuration layer
+    if client is None and config is not None:
+        client = config.get("configurable", {}).get("qdrant_client", None)
+        
+    # Final backup helper if it's missing everywhere
     if client is None:
         raise ValueError("qdrant_client is not available in the notebook scope")
 
     context = retrieve_data(query, qdrant_client=client, top_k=top_k)
-    formatted_context = process_context(context)
-    return formatted_context
+    return process_context(context)
 
 @traceable(
     name="aggregator_node",
@@ -596,22 +611,7 @@ def aggregator_node(state: State) -> dict:
 
     preprocessed_context = json.dumps(context_blocks, ensure_ascii=True, indent=2)
 
-    prompt_template = """You are an expert shopping assistant.
-
-Use only the provided evidence and produce concise recommendations for each query in expanded_query.
-
-expanded_query:
-{{expanded_query}}
-
-Evidence:
-{{preprocessed_context}}
-
-Return one section per query using this format:
-- Query: <query>
-  - Best option: <short title>
-  - Why: <short reason>
-  - Price/Ratings: <if available>
-"""
+    prompt_template = prompt_template_config("api/agents/modified_single_agent/prompts/aggregator_node.yaml", "aggregator_node_prompt").render()
 
     template = Template(prompt_template)
     prompt = template.render(

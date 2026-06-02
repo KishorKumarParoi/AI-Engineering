@@ -1,15 +1,58 @@
+
 from pydantic import BaseModel, Field
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send
 from langsmith import traceable, get_current_run_tree, Client
 
-from tools import AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context
-from utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
-from agent import agent_node, intent_router_node, intent_router_conditional_edges, tool_router
+from api.agents.modified_single_agent.tools import AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context
+from api.agents.modified_single_agent.utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
+from api.agents.modified_single_agent.agent import agent_node, intent_router_node, intent_router_conditional_edges, tool_router, intent_router_route
 
+@traceable(
+    name="old_compile_graph",
+    run_type="llm",
+    tags=["graph_compilation"],
+)
+def old_compile_graph():
+    workflow = StateGraph(State)
+    workflow.add_node("query_expand_node", query_expand_node)
+    workflow.add_node("retriever_node_parallel", retriever_node_parallel)
+    workflow.add_node("aggregator_node", aggregator_node)
+    workflow.add_node("intent_router_node", intent_router_node)
 
-def compile_agent_graph():
+    workflow.add_edge(START, "intent_router_node")
+    workflow.add_conditional_edges(
+        "intent_router_node",
+        intent_router_route,
+        {
+            "query_expand_node": "query_expand_node",
+            "end": END,
+        },
+    )
+    workflow.add_conditional_edges("query_expand_node", query_expand_conditional_edges)
+    workflow.add_edge("retriever_node_parallel", "aggregator_node")
+    workflow.add_edge("aggregator_node", END)
+
+    graph = workflow.compile()
+    return graph
+
+def old_run_graph(query = "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?", initial_state=None):
+    initial_state = {
+        "initial_query": query
+    }
+
+    graph = old_compile_graph()
+    result = graph.invoke(initial_state)
+    print(result.get("answer", []))
+    return result.get("answer", "")
+
+@traceable(
+    name="compile_agent_graph",
+    run_type="llm",
+    tags=["execution"]
+)
+def compile_agent_graph(qdrant_client=None):
 
     workflow = StateGraph(State)
 
@@ -48,7 +91,7 @@ def compile_agent_graph():
     return graph, tool_descriptions
 
 @traceable(
-    name="execute_agent",
+    name="normalize_graph_result",
     run_type="llm",
     tags=["execution"]
 )
@@ -270,9 +313,13 @@ def _normalize_graph_result(result: dict, query_text: str) -> dict:
         normalized['final_answer'] = bool(normalized.get('final_answer')) or last_assistant_finished
         return normalized
 
-    # Ensure the invocation state includes `initial_query` and a user message so retriever nodes run as expected
-def run_agent_graph(role, query):
-    graph, tool_descriptions = compile_agent_graph()
+@traceable(
+    name="run_agent_graph",
+    run_type="llm",
+    tags=["execution"]
+)
+def run_agent_graph(role,qdrant_client, query):
+    graph, tool_descriptions = compile_agent_graph(qdrant_client)
 
     initial_state = {
     "messages": [{
@@ -290,6 +337,10 @@ def run_agent_graph(role, query):
     if 'messages' not in invoke_state or not invoke_state.get('messages'):
         invoke_state['messages'] = [{'role': 'user', 'content': query}]
 
-    result = _normalize_graph_result(graph.invoke(invoke_state), query)
+    run_config = {"configurable": {"qdrant_client": qdrant_client}}
+    result = _normalize_graph_result(graph.invoke(invoke_state, config=run_config), query)
     # print(result.get('answer', ''))
     return result.get('answer', '')
+
+# result = run_agent_graph("user", None, "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?")
+# print(result)

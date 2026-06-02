@@ -1,40 +1,16 @@
-from pydantic import BaseModel, Field
-from langgraph.prebuilt import ToolNode
-from langgraph.graph import StateGraph, START, END
-from langgraph.types import Send
 from langsmith import traceable, get_current_run_tree, Client
-from operator import add
-from typing import Any, Annotated, Dict, List
-import yaml
 from jinja2 import Template
-
 from langchain_core.messages import convert_to_openai_messages, convert_to_messages
-
-from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, Distance, PayloadSchemaType, PointStruct, SparseVectorParams, Document,Prefetch, FusionQuery
-from qdrant_client import models
-
 import instructor
-
-import pandas as pd
-
 from jinja2 import Template
-from typing import List, Dict, Any, Optional, Union
-from IPython.display import Image, display
-from operator import add
 from openai import OpenAI
 
 import instructor
 import json
-import importlib
-import utils
-from dotenv import load_dotenv
 
-load_dotenv()
-importlib.reload(utils)
 
-from tools import AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context
-from utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
+from api.agents.modified_single_agent.tools import AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context
+from api.agents.modified_single_agent.utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
 
 @traceable(
     name="agent_node",
@@ -43,7 +19,7 @@ from utils import format_ai_message, parse_function_definition, get_type_from_an
     metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"},
 )
 def agent_node(state: State) -> dict:
-    prompt = prompt_template_config("prompts/qa_agent.yaml", "qa_agent_prompt").render(
+    prompt = prompt_template_config("api/agents/modified_single_agent/prompts/qna_agent.yaml", "qna_agent_prompt").render(
         available_tools=json.dumps(getattr(state, 'available_tools', []) or [], ensure_ascii=True, indent=2)
     )
 
@@ -187,7 +163,7 @@ def agent_node(state: State) -> dict:
     }
 
 @traceable(
-    name="intent_router_node",
+    name="old_intent_router_node",
     run_type="llm",
     tags=["routing", "openai"],
     metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"}
@@ -220,63 +196,6 @@ Question:
         "answer": response.answer
     }
 
-
-def intent_router_route(state):
-   state_data = state.model_dump() if hasattr(state, "model_dump") else state
-   question_relevant = False
-
-   if isinstance(state_data, dict):
-      question_relevant = bool(state_data.get("question_relevant", False))
-   else:
-      question_relevant = bool(getattr(state, "question_relevant", False))
-
-   if question_relevant:
-      return "query_expand_node"
-   return END
-
-def tool_router(state: State) -> str:
-    """Decide whether to continue or end"""
-    if state.final_answer:
-        return "end"
-    elif state.iteration > 2:
-        return "end"
-    elif len(state.tool_calls) > 0:
-        return "tools"
-    else:
-        return "end"
-
-def old_compile_graph():
-    workflow = StateGraph(State)
-    workflow.add_node("query_expand_node", query_expand_node)
-    workflow.add_node("retriever_node_parallel", retriever_node_parallel)
-    workflow.add_node("aggregator_node", aggregator_node)
-    workflow.add_node("intent_router_node", intent_router_node)
-
-    workflow.add_edge(START, "intent_router_node")
-    workflow.add_conditional_edges(
-        "intent_router_node",
-        intent_router_route,
-        {
-            "query_expand_node": "query_expand_node",
-            "end": END,
-        },
-    )
-    workflow.add_conditional_edges("query_expand_node", query_expand_conditional_edges)
-    workflow.add_edge("retriever_node_parallel", "aggregator_node")
-    workflow.add_edge("aggregator_node", END)
-
-    graph = workflow.compile()
-
-def old_run_graph(query = "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?", initial_state=None):
-    initial_state = {
-        "initial_query": query
-    }
-
-    graph = old_compile_graph()
-    result = graph.invoke(initial_state)
-    print(result.get("answer", []))
-
-
 @traceable(
     name="intent_router_node",
     run_type="llm",
@@ -284,7 +203,7 @@ def old_run_graph(query = "Can I get a Tablet for my kid, a watch for me, a lapt
     metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"}
 )
 def intent_router_node(state: State) -> dict:
-    prompt_template = prompt_template_config("prompts/intent_router_agent.yaml", "intent_router_agent_prompt").render()
+    prompt_template = prompt_template_config("api/agents/modified_single_agent/prompts/intent_router_agent.yaml", "intent_router_agent_prompt").render()
 
     template = Template(prompt_template)
     prompt = template.render()
@@ -316,3 +235,42 @@ def intent_router_conditional_edges(state):
         return "agent_node"
     else:
         return "end"
+
+@traceable(
+    name="intent_router_route",
+    run_type="llm",
+    tags=["routing", "openai"],
+    metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"}
+)
+def intent_router_route(state):
+   state_data = state.model_dump() if hasattr(state, "model_dump") else state
+   question_relevant = False
+
+   if isinstance(state_data, dict):
+      question_relevant = bool(state_data.get("question_relevant", False))
+   else:
+      question_relevant = bool(getattr(state, "question_relevant", False))
+
+   if question_relevant:
+      return "query_expand_node"
+   return END
+
+@traceable(
+    name="tool_router",
+    run_type="llm",
+    tags=["routing", "openai"],
+    metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"}
+)
+def tool_router(state: State) -> str:
+    """Decide whether to continue or end"""
+    if state.final_answer:
+        return "end"
+    elif state.iteration > 2:
+        return "end"
+    elif len(state.tool_calls) > 0:
+        return "tools"
+    else:
+        return "end"
+
+
+

@@ -59,7 +59,7 @@ from api.utils.prompt_managements import prompt_template_config, prompt_template
     metadata={"model": "gpt-4.1-mini", "ls-provider": "openai"}
 )
 def agent_node(state: State) -> dict:
-    prompt = prompt_template_config("qa_agent.yaml", "qa_agent_prompt").render(
+    prompt = prompt_template_config("qa_agent.yaml", "qna_agent_prompt").render(
         available_tools=json.dumps(state.available_tools, ensure_ascii=True, indent=2)
     )
     messages = state.messages

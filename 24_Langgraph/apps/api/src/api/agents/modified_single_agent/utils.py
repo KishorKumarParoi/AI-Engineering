@@ -3,8 +3,14 @@ import inspect
 from typing import Dict, Any
 from unittest import result
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
-import json
 
+from langsmith import traceable
+
+@traceable(
+    name="format_ai_message",
+    run_type="llm",
+    tags=["utility"]
+)
 def format_ai_message(response):
     raw_response = response
     if isinstance(response, (tuple, list)):
@@ -36,7 +42,11 @@ def format_ai_message(response):
     
     return ai_message
 
-
+@traceable(
+    name="format_human_message",
+    run_type="llm",
+    tags=["utility"]
+)
 def parse_function_definition(function_def: str) -> Dict[str, Any]:
     """
     Parses a function definition string to extract metadata including type hints.
@@ -95,6 +105,11 @@ def parse_function_definition(function_def: str) -> Dict[str, Any]:
 
     return result
 
+@traceable(
+    name="get_type_from_annotation",
+    run_type="llm",
+    tags=["utility"]
+)
 def get_type_from_annotation(annotation) -> str:
     """Converts a type annotation AST node to a string representation."""
 
@@ -119,6 +134,11 @@ def get_type_from_annotation(annotation) -> str:
             return type_map.get(base_type, base_type)
     return "string"
 
+@traceable(
+    name="parse_docstring_params",
+    run_type="llm",
+    tags=["utility"]
+)
 def parse_docstring_params(docstring: str) -> Dict[str, str]:
     """Extract parameter description from docstring (handles both Args: and parameters: formats)"""
     params = {}
@@ -143,6 +163,11 @@ def parse_docstring_params(docstring: str) -> Dict[str, str]:
                 params[current_param] += ' ' + stripped
     return params
 
+@traceable(
+    name="get_tool_descriptions",
+    run_type="llm",
+    tags=["utility"]
+)
 def get_tool_descriptions(function_list):
     """Extract tool descriptions from the function list."""
     descriptions = []
