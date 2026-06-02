@@ -215,6 +215,14 @@ class State(BaseModel):
 #     # Docker service host is not resolvable from a local notebook kernel
 #     qdrant_url = qdrant_url.replace("qdrant:6333", "localhost:6333")
 
+def get_qdrant_client():
+    """Forces the absolute container URL bypass to test the connection."""
+    # Hardcode the internal compose service domain name directly
+    qdrant_url = "http://qdrant:6333"
+    
+    print(f"--> [DEBUG] OVERRIDE: Connecting directly to: {qdrant_url}")
+    return QdrantClient(url=qdrant_url, api_key=os.getenv('QDRANT_API_KEY'))
+
 @traceable(
         name="query_expand_node",
         run_type="llm",
@@ -413,11 +421,10 @@ def get_embeddings_batch(text_list, model= "text-embedding-3-small", batch_size=
         run_type="retriever"
 )
 def retrieve_data(query, qdrant_client, top_k=5):
-    client = qdrant_client if qdrant_client is not None else globals().get("qdrant_client")
-
+    client = qdrant_client or (globals().get("qdrant_client") or get_qdrant_client())
     query_embedding = get_embedding(query)
 
-    search_result = qdrant_client.query_points(
+    search_result = client.query_points(
         collection_name=os.getenv("collection_name", "Amazon_Electronics_Products"),
         prefetch = [
             Prefetch(

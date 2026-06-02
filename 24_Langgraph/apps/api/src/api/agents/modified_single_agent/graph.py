@@ -340,7 +340,7 @@ def run_agent_graph(role,qdrant_client, query):
     run_config = {"configurable": {"qdrant_client": qdrant_client}}
     result = _normalize_graph_result(graph.invoke(invoke_state, config=run_config), query)
     # print(result.get('answer', ''))
-    return result.get('answer', '')
+    return result
 
 # result = run_agent_graph("user", None, "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?")
 # print(result)
