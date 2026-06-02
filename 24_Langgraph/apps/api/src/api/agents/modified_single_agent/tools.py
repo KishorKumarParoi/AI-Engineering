@@ -344,6 +344,7 @@ def query_expand_conditional_edges(state):
                 {
                     "k": 10,
                     "query_text": query_text,
+                    "qdrant_client": state_data.get("qdrant_client", None) if isinstance(state_data, dict) else getattr(state, "qdrant_client", None),
                     "focus_product": _extract_focus_product(query_text),
                 }
             )
@@ -412,9 +413,12 @@ def get_embeddings_batch(text_list, model= "text-embedding-3-small", batch_size=
         run_type="retriever"
 )
 def retrieve_data(query, qdrant_client, top_k=5):
+    client = qdrant_client if qdrant_client is not None else globals().get("qdrant_client")
+
     query_embedding = get_embedding(query)
+
     search_result = qdrant_client.query_points(
-        collection_name="Amazon_Electronics_Products",
+        collection_name=os.getenv("collection_name", "Amazon_Electronics_Products"),
         prefetch = [
             Prefetch(
             query = query_embedding,
@@ -517,7 +521,7 @@ def retriever_node(state) -> dict:
     run_type="retriever",
     tags=["retrieval", "qdrant"]
 )
-def retriever_node_parallel(state: State, k: int = 5, query_text: str = None) -> dict:
+def retriever_node_parallel(state: State, k: int = 5, qdrant_client: QdrantClient = None, query_text: str = None) -> dict:
     import re
 
     def _extract_focus_product(query_text: str) -> str:
@@ -562,7 +566,7 @@ def process_context(context):
     run_type="retriever",
     tags=["retrieval", "formatting", "qdrant"]
 )
-def get_formatted_context(query: str, qdrant_client: QdrantClient = None, top_k: int = 5, *, config: RunnableConfig = None) -> str:
+def get_formatted_context(query: str, qdrant_client: QdrantClient, top_k: int = 5, *, config: RunnableConfig = None) -> str:
     """
     Get the top k context, each representing an inventory item for a given query.
     """
