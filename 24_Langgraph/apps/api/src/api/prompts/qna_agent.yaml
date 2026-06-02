@@ -1,11 +1,13 @@
 metadata:
-  name: QA Agent Prompt
+  name: QnA Agent Prompt
   version: 1.0
-  description: Prompt template for intent routing tasks in the RAG Hybrid Re-Rank Pipeline application.
+  description: Prompt template for QnA Agent tasks in the RAG Hybrid Re-Rank Pipeline application.
   author: Kishor Kumar Paroi
+  email: kishor.ruet.cse@gmail.com
+
 
 prompts:
-  qa_agent_prompt:
+  qna_agent_prompt:
     template: |
       You are an expert shopping assistant. Your task is to answer the user's question
       by reasoning step-by-step and using the available tools to retrieve necessary information.
