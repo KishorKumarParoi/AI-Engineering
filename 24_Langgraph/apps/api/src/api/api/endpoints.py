@@ -42,14 +42,16 @@ print(f"Qdrant URL present: {bool(qdrant_url)}")
 print(f"Qdrant API Key present: {bool(qdrant_api_key)}")
 print(f"Langsmith API Key present: {bool(langsmith_api_key)}")
 
-qdrant_client = QdrantClient(
-    url=qdrant_url,
-    api_key=qdrant_api_key,
-)
+# Keep your robust Docker bridge routing url
+ACTIVE_CONTAINER_URL = "http://qdrant:6333" if os.path.exists('/.dockerenv') else os.getenv('QDRANT_URL', 'http://localhost:6333')
 
-if qdrant_url and "qdrant:6333" in qdrant_url:
-    # Docker service host is not resolvable from a local notebook kernel
-    qdrant_url = qdrant_url.replace("qdrant:6333", "localhost:6333")
+print(f"--> [DOCKER-NETWORK] Instantiating Qdrant Target: {ACTIVE_CONTAINER_URL}")
+
+qdrant_client = QdrantClient(
+    url=ACTIVE_CONTAINER_URL,
+    api_key=os.getenv('QDRANT_API_KEY'),
+    check_compatibility=False,  # <-- CRITICAL: Stops the client from crashing when checking the version on boot
+)
 
 rag_router = APIRouter()
 
