@@ -344,3 +344,6 @@ def run_agent_graph(role,qdrant_client, query):
 
 # result = run_agent_graph("user", None, "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?")
 # print(result)
+# Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?
+# Can I you provide best Laptop for my wife, a Tablet for my kid, a Watch for myself, an Water Bottle, and a Waterproof Speaker for our party next week?
+# Can I Get Best Laptop?

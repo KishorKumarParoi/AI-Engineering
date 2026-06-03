@@ -442,6 +442,13 @@ def retrieve_data(query, qdrant_client, top_k=5):
     retrieved_context_prices = []
     retrieved_context_images = []
     retrieved_context_rating_numbers = []
+    retrieved_context_titles = []
+    retrieved_context_details = []
+    retrieved_context_features = []
+    retrieved_context_brands = []
+    retrieved_context_sizes = []
+    retrieved_context_colors = []
+    retrieved_context_main_categories = []
 
     for result in search_result.points:
         payload = result.payload or {}
@@ -458,6 +465,19 @@ def retrieve_data(query, qdrant_client, top_k=5):
         retrieved_context_prices.append(payload.get('price'))
         retrieved_context_images.append(payload.get('image_url') or payload.get('images') or [])
         retrieved_context_rating_numbers.append(payload.get('rating_number'))
+        retrieved_context_titles.append(payload.get('title') or payload.get('text') or "")
+        retrieved_context_details.append(payload.get('details') or {})
+        retrieved_context_features.append(payload.get('features') or [])
+        retrieved_context_brands.append(payload.get('brand') or payload.get('store') or "")
+        details = payload.get('details') or {}
+        if isinstance(details, dict):
+            retrieved_context_sizes.append(details.get('size') or "")
+            retrieved_context_colors.append(details.get('color') or "")
+            retrieved_context_main_categories.append(payload.get('main_category') or details.get('main_category') or "")
+        else:
+            retrieved_context_sizes.append("")
+            retrieved_context_colors.append("")
+            retrieved_context_main_categories.append(payload.get('main_category') or "")
 
     return {
         "retrieved_context_ids": retrieved_context_ids,
@@ -467,6 +487,13 @@ def retrieve_data(query, qdrant_client, top_k=5):
         "retrieved_context_prices": retrieved_context_prices,
         "retrieved_context_images": retrieved_context_images,
         "retrieved_context_rating_numbers": retrieved_context_rating_numbers
+        ,"retrieved_context_titles": retrieved_context_titles,
+        "retrieved_context_details": retrieved_context_details,
+        "retrieved_context_features": retrieved_context_features,
+        "retrieved_context_brands": retrieved_context_brands,
+        "retrieved_context_sizes": retrieved_context_sizes,
+        "retrieved_context_colors": retrieved_context_colors,
+        "retrieved_context_main_categories": retrieved_context_main_categories,
     }
 
 @traceable(
