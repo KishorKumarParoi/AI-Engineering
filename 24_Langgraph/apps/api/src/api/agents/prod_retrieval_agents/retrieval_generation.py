@@ -59,7 +59,7 @@ def get_embedding(text, model="text-embedding-3-small"):
 def retrieve_data(query, qdrant_client=qdrant_client, k=5):
     query_embedding = get_embedding(query)
     results = qdrant_client.query_points(
-        collection_name="Amazon_Electronics_Data_Collection",
+        collection_name="Amazon_Electronics_Products",
         query=query_embedding,
         limit=k,
         with_payload=True,

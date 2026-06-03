@@ -187,6 +187,11 @@ class State(BaseModel):
     references: Annotated[List[RAGUsedContext], add] = Field(default_factory=list)
 
 
+@traceable(
+    name="get_qdrant_client",
+    run_type="retriever",
+    tags=["qdrant", "client"]
+)
 def get_qdrant_client():
     """Forces the absolute container URL bypass to test the connection."""
     # Hardcode the internal compose service domain name directly
