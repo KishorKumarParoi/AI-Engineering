@@ -22,20 +22,36 @@ services:
     restart: unless-stopped
     volumes:
       - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/scripts:/app/apps/api/scripts
+      - ./data:/app/data
   
   qdrant:
     image: qdrant/qdrant:latest
     ports:
-      - "6333:6333"
-      - "6334:6334"
-    environment:
-      - QDRANT__SERVICE__HTTP__HOST=0.0.0.0  # <-- CRITICAL: Tells Qdrant to listen to requests from other containers
+      - 6333:6333
+      - 6334:6334
     volumes:
       - ./qdrant_storage:/qdrant/storage:z
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/6333 && exec 3>&-"]
+      test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/6333 && exec 3>&-"]
       interval: 5s
       timeout: 3s
       retries: 5
       start_period: 10s
+
+  ingest:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/scripts:/app/apps/api/scripts
+      - ./data:/app/data
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    restart: 'no'
+    command: ["python", "/app/apps/api/scripts/ingest_qdrant.py"]

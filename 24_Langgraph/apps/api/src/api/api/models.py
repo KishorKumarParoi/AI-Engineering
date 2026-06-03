@@ -228,6 +228,7 @@ class RagResponse(BaseModel):
     request_id: str = Field(..., description="The request ID")
     answer: str = Field(..., description="The answer to the query")
     used_context: list[RAGUsedContext] = Field([], description="The context that was used to generate the answer")
+    suggestions: list[str] = Field([], description="Concise follow-up suggestions or actions to show in the UI")
 
 client = instructor.from_openai(openai.OpenAI())
 

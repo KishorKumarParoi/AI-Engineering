@@ -24,6 +24,7 @@ from langchain_protocol import Literal
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PayloadSchemaType, PointStruct, SparseVectorParams, Document,Prefetch, FusionQuery
 from qdrant_client import models
+from qdrant_client.http.exceptions import UnexpectedResponse
 
 import instructor
 
@@ -400,24 +401,39 @@ def get_embeddings_batch(text_list, model= "text-embedding-3-small", batch_size=
 def retrieve_data(query, qdrant_client, top_k=5):
     client = qdrant_client or (globals().get("qdrant_client") or get_qdrant_client())
     query_embedding = get_embedding(query)
+    try:
+        search_result = client.query_points(
+            collection_name=os.getenv("collection_name", "Amazon_Electronics_Products"),
+            query=query_embedding,
+            limit=top_k,
+            with_payload=True,
+        )
+    except UnexpectedResponse as e:
+        status_code = getattr(e, 'status_code', None)
+        if status_code == 404:
+            # Create collection with expected vector params to avoid future 404s
+            collection_name = os.getenv("collection_name", "Amazon_Electronics_Products")
+            try:
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+                )
+            except Exception:
+                # If create fails, re-raise original UnexpectedResponse
+                raise
 
-    search_result = client.query_points(
-        collection_name=os.getenv("collection_name", "Amazon_Electronics_Products"),
-        prefetch = [
-            Prefetch(
-            query = query_embedding,
-            using= "text-embedding-3-small",
-            limit = 20
-           ),
-           Prefetch(
-            query = Document(text=query, model="qdrant/bm25"),
-            using= "bm25",
-            limit = 20
-           )
-        ],
-        query=FusionQuery(fusion=models.Fusion.RRF),
-        limit=top_k
-    )
+            # Return empty structured result so caller can continue gracefully
+            return {
+                "retrieved_context_ids": [],
+                "retrieved_contexts": [],
+                "similarity_scores": [],
+                "retrieved_context_ratings": [],
+                "retrieved_context_prices": [],
+                "retrieved_context_images": [],
+                "retrieved_context_rating_numbers": [],
+            }
+        else:
+            raise
 
     retrieved_context_ids = []
     retrieved_contexts = []
@@ -428,13 +444,20 @@ def retrieve_data(query, qdrant_client, top_k=5):
     retrieved_context_rating_numbers = []
 
     for result in search_result.points:
-        retrieved_context_ids.append(result.payload['parent_asin'])
-        retrieved_contexts.append(result.payload['processed_description'])
+        payload = result.payload or {}
+        retrieved_context_ids.append(payload.get('parent_asin') or payload.get('product_id') or result.id)
+        retrieved_contexts.append(
+            payload.get('processed_description')
+            or payload.get('description')
+            or payload.get('text')
+            or payload.get('title')
+            or ""
+        )
         similarity_scores.append(result.score)
-        retrieved_context_ratings.append(result.payload['average_rating'])
-        retrieved_context_prices.append(result.payload['price'])
-        retrieved_context_images.append(result.payload['image_url'])
-        retrieved_context_rating_numbers.append(result.payload['rating_number'])
+        retrieved_context_ratings.append(payload.get('average_rating'))
+        retrieved_context_prices.append(payload.get('price'))
+        retrieved_context_images.append(payload.get('image_url') or payload.get('images') or [])
+        retrieved_context_rating_numbers.append(payload.get('rating_number'))
 
     return {
         "retrieved_context_ids": retrieved_context_ids,

@@ -4,13 +4,14 @@ import pandas as pd
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.http.exceptions import UnexpectedResponse  # Moved up here to avoid NameError
+import threading
 
 from fastapi import Request, APIRouter
 from fastapi.responses import JSONResponse
 
 from api.api.models import RagRequest, RagResponse, RAGUsedContext
 from api.agents.prod_retrieval_agents.single_turn_in_retrieval_generation import rag_pipeline_wrapper
-from api.api.populate_data import populate_qdrant, retrieve_data
+from api.api.populate_data import populate_qdrant, retrieve_data, ensure_collection_exists
 
 logging.basicConfig(
     level=logging.INFO,
@@ -49,63 +50,69 @@ qdrant_client = QdrantClient(
     check_compatibility=False,  # Stops the client from crashing when checking version on boot
 )
 
+# Simple lock to avoid concurrent population from multiple requests
+_population_lock = threading.Lock()
+
 DATA_PATH = "data/Data_With_Images.jsonl" 
+
+
+def _collection_count_value(collection_count):
+    if collection_count is None:
+        return None
+    if isinstance(collection_count, int):
+        return collection_count
+    return getattr(collection_count, "count", None)
 
 # 1. RUN DATA POPULATION AT APP BOOT LIFECYCLE (PROVISIONED WITH WHITE-SPACE STRIPPER)
 try:
     COLLECTION_NAME = os.environ.get("collection_name") or "Amazon_Electronics_Products"
         
+    # Ensure collection exists (creates with retries if Qdrant isn't ready yet)
     try:
-        qdrant_data = qdrant_client.get_collection(collection_name=COLLECTION_NAME)
-        logger.info("Qdrant collection metadata retrieved successfully: %s", qdrant_data)
-    except UnexpectedResponse as e:
-        if e.status_code == 404:
-            logger.warning(f"Collection '{COLLECTION_NAME}' does not exist. Initializing populate routine...")
-            
+        ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME, retries=12, delay=2)
+
+        # If collection exists but is empty, attempt to populate from local data file
+        try:
+            collection_count = qdrant_client.count(collection_name=COLLECTION_NAME)
+        except Exception:
+            collection_count = None
+        collection_count_value = _collection_count_value(collection_count)
+
+        if collection_count_value in (0, None):
+            logger.info(f"Collection '{COLLECTION_NAME}' is empty or unknown size ({collection_count_value}). Attempting population if data exists...")
             try:
                 if not os.path.exists(DATA_PATH):
                     current_dir = os.path.dirname(os.path.abspath(__file__))
                     print(f"Current directory for data path resolution: {current_dir}")
-                    # Climbs up 5 levels dynamically to project root and joins 'data/Data_With_Images.jsonl'
-                    DATA_PATH = os.path.abspath(os.path.join(
-                        current_dir, 
-                        "../../../../../data/Data_With_Images.jsonl"
-                    ))
-                
-                # Check file baseline
+                    DATA_PATH = os.path.abspath(os.path.join(current_dir, "../../../../../data/Data_With_Images.jsonl"))
+
                 if os.path.exists(DATA_PATH) and os.path.getsize(DATA_PATH) > 0:
-                    # Clean trailing whitespaces/newlines out of stream to prevent ValueError
                     with open(DATA_PATH, 'r', encoding='utf-8') as f:
                         valid_lines = [line.strip() for line in f if line.strip()]
-                    
-                    if not valid_lines:
-                        raise ValueError("Data file is empty or contains only whitespace lines.")
-                    
-                    from io import StringIO
-                    clean_json_stream = StringIO("\n".join(valid_lines))
-                    
-                    df = pd.read_json(clean_json_stream, lines=True)
-                    logger.info(f"Successfully loaded dataset of shape: {df.shape}")
-                    
-                    # Recreates and populates vector space schemas dynamically!
-                    populate_qdrant(df, qdrant_client, collection_name=COLLECTION_NAME)
+
+                    if valid_lines:
+                        from io import StringIO
+                        clean_json_stream = StringIO("\n".join(valid_lines))
+                        df = pd.read_json(clean_json_stream, lines=True)
+                        logger.info(f"Successfully loaded dataset of shape: {df.shape}")
+                        populate_qdrant(df, qdrant_client, collection_name=COLLECTION_NAME)
+                    else:
+                        logger.warning("Data file exists but contains no valid lines; skipping population.")
                 else:
-                    raise FileNotFoundError()
-                
-                # 2. Testing with sample query to see if retrieval works now
-                try:
-                    sample_answer = retrieve_data(qdrant_client, query="What kind of Laptop do you offer?", collection_name=COLLECTION_NAME, k=10)
-                    print("Sample retrieval answer:", sample_answer)
-                except Exception as look_err:
-                    logger.error(f"Error during sample retrieval after population: {look_err}")
-                    
-            except FileNotFoundError:
-                raise ValueError(
-                    f"Could not automatically populate because data file wasn't found at {DATA_PATH}. "
-                    f"Please verify your Docker compose volume mount paths."
-                )
-        else:
-            raise e
+                    logger.info(f"No data file found at {DATA_PATH}; skipping auto-population.")
+
+            except Exception as pop_err:
+                logger.error(f"Population routine failed: {pop_err}")
+
+        # 2. Testing with sample query to see if retrieval works now
+        try:
+            sample_answer = retrieve_data(qdrant_client, query="What kind of Laptop do you offer?", collection_name=COLLECTION_NAME, k=10)
+            print("Sample retrieval answer:", sample_answer)
+        except Exception as look_err:
+            logger.error(f"Error during sample retrieval after population: {look_err}")
+
+    except Exception as e:
+        logger.exception(f"Failed to ensure collection exists: {e}")
 except Exception as init_err:
     logger.exception(f"Initialization failed: {init_err}")
 
@@ -120,6 +127,57 @@ def rag(
     logger.info(f"Received request: {payload}")
 
     try:  # <-- FIXED: Restored missing parent try-block here
+        # Ensure collection exists and populate on-demand if empty
+        try:
+            ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME)
+        except Exception as e:
+            logger.warning(f"Could not ensure collection exists before request: {e}")
+
+        try:
+            collection_count = qdrant_client.count(collection_name=COLLECTION_NAME)
+        except Exception:
+            collection_count = None
+        collection_count_value = _collection_count_value(collection_count)
+
+        if collection_count_value in (0, None):
+            # Acquire lock so only one request populates at a time
+            if _population_lock.acquire(blocking=False):
+                try:
+                    # Re-check inside lock
+                    try:
+                        collection_count = qdrant_client.count(collection_name=COLLECTION_NAME)
+                    except Exception:
+                        collection_count = None
+                    collection_count_value = _collection_count_value(collection_count)
+
+                    if collection_count_value in (0, None):
+                        logger.info("On-demand population: collection empty, attempting to upsert data before answering request")
+                        try:
+                            # Resolve DATA_PATH similar to startup logic
+                            if not os.path.exists(DATA_PATH):
+                                current_dir = os.path.dirname(os.path.abspath(__file__))
+                                DATA_FILE = os.path.abspath(os.path.join(current_dir, "../../../../../data/Data_With_Images.jsonl"))
+                            else:
+                                DATA_FILE = DATA_PATH
+
+                            if os.path.exists(DATA_FILE) and os.path.getsize(DATA_FILE) > 0:
+                                with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                                    valid_lines = [line.strip() for line in f if line.strip()]
+
+                                if valid_lines:
+                                    from io import StringIO
+                                    clean_json_stream = StringIO("\n".join(valid_lines))
+                                    df = pd.read_json(clean_json_stream, lines=True)
+                                    populate_qdrant(df, qdrant_client, collection_name=COLLECTION_NAME)
+                                else:
+                                    logger.warning("On-demand population skipped: data file contains no valid lines")
+                            else:
+                                logger.warning(f"On-demand population skipped: data file not found at {DATA_FILE}")
+                        except Exception as pop_err:
+                            logger.exception(f"On-demand population failed: {pop_err}")
+                finally:
+                    _population_lock.release()
+
         # 3. Execute your core multi-agent LangGraph workflow
         answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5)
         logger.info("Raw answer from RAG pipeline: %s", answer)
@@ -127,14 +185,23 @@ def rag(
         if answer is None:
             answer_text = "Please try again later."
             used_context = []
+            suggestions = [
+                "Try again later or refine your query.",
+            ]
         elif isinstance(answer, dict):
             answer_text = str(answer.get("answer", ""))
             used_context = [RAGUsedContext(**ctx) for ctx in answer.get("used_context", [])]
+            suggestions = [
+                "Refine your query (e.g., ask about price or features)",
+                "Request similar products",
+                "Ask for product images or details",
+            ]
         else:
             answer_text = str(answer) if answer else ""
             used_context = []
+            suggestions = ["Refine your query for better matches."]
         
-        return RagResponse(request_id=request.state.request_id, answer=answer_text, used_context=used_context)
+        return RagResponse(request_id=request.state.request_id, answer=answer_text, used_context=used_context, suggestions=suggestions)
         
     except Exception as e:
         logger.exception("RAG pipeline failed")

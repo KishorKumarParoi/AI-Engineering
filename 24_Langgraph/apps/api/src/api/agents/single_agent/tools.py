@@ -195,20 +195,9 @@ def retrieve_data(query, qdrant_client, top_k=5):
     query_embedding = get_embedding(query)
     search_result = qdrant_client.query_points(
         collection_name="Amazon_Electronics_Products",
-        prefetch = [
-            Prefetch(
-            query = query_embedding,
-            using= "text-embedding-3-small",
-            limit = 20
-           ),
-           Prefetch(
-            query = Document(text=query, model="qdrant/bm25"),
-            using= "bm25",
-            limit = 20
-           )
-        ],
-        query=FusionQuery(fusion=models.Fusion.RRF),
-        limit=top_k
+        query=query_embedding,
+        limit=top_k,
+        with_payload=True,
     )
 
     retrieved_context_ids = []
@@ -220,13 +209,14 @@ def retrieve_data(query, qdrant_client, top_k=5):
     retrieved_context_rating_numbers = []
 
     for result in search_result.points:
-        retrieved_context_ids.append(result.payload['parent_asin'])
-        retrieved_contexts.append(result.payload['processed_description'])
+        payload = result.payload or {}
+        retrieved_context_ids.append(payload.get('parent_asin') or payload.get('product_id') or result.id)
+        retrieved_contexts.append(payload.get('processed_description') or payload.get('description') or payload.get('text') or payload.get('title') or "")
         similarity_scores.append(result.score)
-        retrieved_context_ratings.append(result.payload['average_rating'])
-        retrieved_context_prices.append(result.payload['price'])
-        retrieved_context_images.append(result.payload['image_url'])
-        retrieved_context_rating_numbers.append(result.payload['rating_number'])
+        retrieved_context_ratings.append(payload.get('average_rating'))
+        retrieved_context_prices.append(payload.get('price'))
+        retrieved_context_images.append(payload.get('image_url') or payload.get('images') or [])
+        retrieved_context_rating_numbers.append(payload.get('rating_number'))
 
     return {
         "retrieved_context_ids": retrieved_context_ids,

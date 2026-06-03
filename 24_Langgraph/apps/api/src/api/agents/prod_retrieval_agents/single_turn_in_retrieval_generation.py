@@ -2,31 +2,11 @@ from api.agents.modified_single_agent.graph import run_agent_graph
 from langsmith import traceable, get_current_run_tree
 from pydantic import BaseModel, Field, Field
 import openai
+import instructor
 
 from api.agents.modified_single_agent.tools import retrieve_data, process_context, get_formatted_context, AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context
 from api.agents.modified_single_agent.utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
 from api.agents.modified_single_agent.agent import agent_node, intent_router_node, intent_router_conditional_edges, tool_router, intent_router_route
-
-class RAGUsedContext(BaseModel):
-    id: str | int = Field(description="The ID of the retrieved review")
-    review: str = Field(description="The text of the retrieved review")
-    title: str | None = Field(default=None, description="The product title")
-    description: str | list[str] | None = Field(default=None, description="The product description")
-    categories: list[str] = Field(default_factory=list, description="The product categories")
-    images: list[dict] = Field(default_factory=list, description="The product image variants")
-    videos: list[dict] = Field(default_factory=list, description="The product videos")
-    features: list[str] = Field(default_factory=list, description="The product feature bullets")
-    main_category: str | None = Field(default=None, description="The product main category")
-    store: str | None = Field(default=None, description="The store or brand")
-    price: float | None = Field(default=None, description="The product price")
-    rating_number: int | None = Field(default=None, description="The product rating count")
-    details: dict | None = Field(default=None, description="The product details map")
-
-class RagGenerationResponseReference(BaseModel):
-    answer: str = Field(description="The answer to the question")
-    reasoning: str = Field(description="The reasoning behind the answer")
-    used_context: list[RAGUsedContext] = Field(description="The list of retrieved reviews used to generate the answer")
-    references: list[RAGUsedContext] = Field(description="The list of references used to generate the answer")
     
 class RagGenerationResponse(BaseModel):
     answer: str = Field(description="The answer to the question")
@@ -38,7 +18,7 @@ def process_context(retrieve_context):
         preprocessed_context += f"Product {idx+1}:\n{context}\n\n"
     return preprocessed_context
 
-client = openai.OpenAI()  # Initialize your OpenAI client here
+client = instructor.from_openai(openai.OpenAI())  # Instructor wrapper for structured responses
 
 @traceable(
         name="build_prompt",
