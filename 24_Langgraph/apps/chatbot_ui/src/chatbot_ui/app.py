@@ -1,307 +1,369 @@
-import streamlit as st
-import streamlit.components.v1 as components
+from __future__ import annotations
+
+import html
+from typing import Any
+
 import requests
+import streamlit as st
+
 from chatbot_ui.core.config import config
 
-st.set_page_config(page_title="Ecommerce Assistant",layout="wide", initial_sidebar_state="expanded", page_icon="🤖")
 
-def api_call(method, url, **kwargs):
+st.set_page_config(
+    page_title="Ecommerce Assistant",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    page_icon="🛍️",
+)
 
-    def _show_error_popup(message):
-        """Show error message as a popup in the top-right corner."""
-        st.session_state["error_popup"] = {
-            "visible": True,
-            "message": message,
-        }
 
+st.markdown(
+    """
+    <style>
+    .app-shell {
+        max-width: 1360px;
+        margin: 0 auto;
+    }
+    .hero {
+        padding: 1rem 1.2rem;
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(15,23,42,0.98), rgba(30,41,59,0.94));
+        color: white;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+        margin-bottom: 1rem;
+    }
+    .hero h1 {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1.15;
+    }
+    .hero p {
+        margin: 0.45rem 0 0 0;
+        color: rgba(255,255,255,0.82);
+    }
+    .answer-card {
+        border: 1px solid rgba(148,163,184,0.18);
+        border-radius: 22px;
+        padding: 1rem 1rem 0.9rem 1rem;
+        background: #ffffff;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+        margin-bottom: 0.9rem;
+    }
+    .answer-heading {
+        font-weight: 800;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        color: #0f172a;
+    }
+    .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 0.4rem;
+    }
+    .pill {
+        border-radius: 999px;
+        padding: 0.34rem 0.7rem;
+        font-size: 0.8rem;
+        background: rgba(37, 99, 235, 0.1);
+        color: #0f172a;
+        border: 1px solid rgba(37, 99, 235, 0.15);
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 0.9rem;
+        margin-top: 0.8rem;
+    }
+    .card {
+        border: 1px solid rgba(148,163,184,0.16);
+        border-radius: 18px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    }
+    .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #f8fafc;
+        display: block;
+    }
+    .card-body {
+        padding: 0.85rem;
+    }
+    .card-title {
+        font-weight: 800;
+        font-size: 0.98rem;
+        line-height: 1.3;
+        margin-bottom: 0.35rem;
+        color: #0f172a;
+    }
+    .card-meta {
+        font-size: 0.8rem;
+        opacity: 0.82;
+        margin-bottom: 0.45rem;
+        color: #334155;
+    }
+    .card-desc {
+        font-size: 0.86rem;
+        line-height: 1.4;
+        color: #334155;
+    }
+    .sidebar-title {
+        font-weight: 800;
+        font-size: 1rem;
+        margin-bottom: 0.1rem;
+        color: #0f172a;
+    }
+    .sidebar-subtitle {
+        font-size: 0.84rem;
+        color: #64748b;
+        margin-bottom: 0.75rem;
+    }
+    .sidebar-card {
+        border: 1px solid rgba(148,163,184,0.18);
+        border-radius: 16px;
+        overflow: hidden;
+        background: white;
+        margin-bottom: 0.8rem;
+    }
+    .sidebar-card img {
+        width: 100%;
+        height: 148px;
+        object-fit: cover;
+        display: block;
+        background: #f8fafc;
+    }
+    .sidebar-card-body {
+        padding: 0.75rem;
+    }
+    .sidebar-card-title {
+        font-weight: 800;
+        font-size: 0.92rem;
+        line-height: 1.3;
+        margin-bottom: 0.25rem;
+    }
+    .sidebar-card-meta {
+        font-size: 0.78rem;
+        opacity: 0.8;
+        margin-bottom: 0.35rem;
+    }
+    .sidebar-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        margin-top: 0.35rem;
+    }
+    .sidebar-badge {
+        padding: 0.18rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.73rem;
+        background: rgba(15, 23, 42, 0.06);
+        color: #0f172a;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+def api_call(method: str, url: str, **kwargs):
     try:
-        response = getattr(requests, method)(url, **kwargs)
-
+        response = getattr(requests, method)(url, timeout=120, **kwargs)
         try:
-            response_data = response.json()
-        except requests.exceptions.JSONDecodeError:
-            response_data = {"message": "Invalid response format from server"}
-
-        if response.ok:
-            return True, response_data
-
-        return False, response_data
-
-    except requests.exceptions.ConnectionError:
-        _show_error_popup("Connection error. Please check your network connection.")
-        return False, {"message": "Connection error"}
-    except requests.exceptions.Timeout:
-        _show_error_popup("The request timed out. Please try again later.")
-        return False, {"message": "Request timeout"}
-    except Exception as e:
-        _show_error_popup(f"An unexpected error occurred: {str(e)}")
-        return False, {"message": str(e)}
+            payload = response.json()
+        except Exception:
+            payload = {"message": "Invalid response format from server"}
+        return response.ok, payload
+    except requests.exceptions.RequestException as exc:
+        return False, {"message": str(exc)}
 
 
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I assist you today?"}]
-
-if "suggestions" not in st.session_state:
-    st.session_state.suggestions = []
-
-if "used_context" not in st.session_state:
-    st.session_state.used_context = []
+def _escape(value: Any) -> str:
+    return html.escape("" if value is None else str(value))
 
 
-def _first_image_url(images):
-    if not isinstance(images, list) or not images:
+def _as_list(value: Any) -> list:
+    if isinstance(value, list):
+        return value
+    if value is None:
+        return []
+    return [value]
+
+
+def _ensure_dict(value: Any) -> dict:
+    if isinstance(value, dict):
+        return value
+    return {}
+
+
+def _image_url(item: dict) -> str | None:
+    images = _as_list(item.get("images"))
+    if not images:
         return None
-
-    first_image = images[0]
-    if isinstance(first_image, dict):
-        return first_image.get("hi_res") or first_image.get("large") or first_image.get("thumb")
-
-    if isinstance(first_image, str):
-        return first_image
-
+    first = images[0]
+    if isinstance(first, dict):
+        return first.get("hi_res") or first.get("large") or first.get("thumb")
+    if isinstance(first, str):
+        return first
     return None
 
 
-def _escape_html(value):
-    if value is None:
-        return ""
-    return (
-        str(value)
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
+def _meta_text(item: dict) -> str:
+    details = item.get("details") or {}
+    bits = []
 
+    for key, label in [
+        ("price", "Price"),
+        ("rating_number", "Ratings"),
+        ("average_rating", "Avg rating"),
+        ("brand", "Brand"),
+        ("size", "Size"),
+        ("color", "Color"),
+        ("store", "Store"),
+        ("main_category", "Category"),
+    ]:
+        value = item.get(key)
+        if value not in (None, "", [], {}):
+            bits.append(f"{label}: {value}")
 
-def _format_product_meta(item):
-    meta_parts = []
-    if item.get("price") is not None:
-        meta_parts.append(f"Price: {item.get('price')}")
-    if item.get("store"):
-        meta_parts.append(item.get("store"))
-    if item.get("main_category"):
-        meta_parts.append(item.get("main_category"))
+    if isinstance(details, dict):
+        for key in ["size", "color", "brand", "material", "style", "capacity", "storage"]:
+            value = details.get(key)
+            if value not in (None, "", [], {}):
+                bits.append(f"{key.title()}: {value}")
+
     categories = item.get("categories") or []
     if isinstance(categories, list) and categories:
-        meta_parts.append(", ".join(categories[:3]))
-    return " • ".join([part for part in meta_parts if part])
+        bits.append(", ".join(str(x) for x in categories[:3] if x))
+
+    return " • ".join(bits)
 
 
-def normalize_suggestions(response_data):
-    suggestions = []
-
+def _normalize_suggestions(response_data: dict) -> list[dict]:
+    suggestions: list[dict] = []
     if not isinstance(response_data, dict):
         return suggestions
 
-    retrieved_context = response_data.get("retrieved_context", {})
+    explicit = response_data.get("suggestions")
+    if isinstance(explicit, list) and explicit:
+        for item in explicit:
+            if isinstance(item, str) and item.strip():
+                suggestions.append({
+                    "id": item[:40],
+                    "title": item.strip(),
+                    "text": item.strip(),
+                    "images": [],
+                    "features": [],
+                    "price": None,
+                    "rating_number": None,
+                    "size": "",
+                    "brand": "",
+                    "color": "",
+                    "details": {},
+                })
+        return suggestions
 
-    if isinstance(retrieved_context, dict):
-        ids = retrieved_context.get("retrieved_context_ids") or []
-        titles = retrieved_context.get("retrieve_context_titles") or []
-        texts = retrieved_context.get("retrieve_context") or []
-        scores = retrieved_context.get("similarity_scores") or []
-        prices = retrieved_context.get("retrieve_context_prices") or []
-        stores = retrieved_context.get("retrieve_context_stores") or []
-        categories = retrieved_context.get("retrieve_context_categories") or []
-        descriptions = retrieved_context.get("retrieve_context_descriptions") or []
-        details = retrieved_context.get("retrieve_context_details") or []
-        features = retrieved_context.get("retrieve_context_features") or []
-        images = retrieved_context.get("retrieve_context_images") or []
-        videos = retrieved_context.get("retrieve_context_videos") or []
-        main_categories = retrieved_context.get("retrieve_context_main_categories") or []
-        rating_numbers = retrieved_context.get("retrieved_context_rating_numbers") or []
+    used_context = response_data.get("used_context", []) or []
+    if not isinstance(used_context, list):
+        return suggestions
 
-        item_count = max(
-            len(ids),
-            len(titles),
-            len(texts),
-            len(scores),
-            len(prices),
-            len(stores),
-            len(categories),
-            len(descriptions),
-            len(details),
-            len(features),
-            len(images),
-            len(videos),
-            len(main_categories),
-            len(rating_numbers),
-        )
+    for item in used_context:
+        if not isinstance(item, dict):
+            continue
 
-        for index in range(item_count):
-            title = titles[index] if index < len(titles) else ""
-            text = texts[index] if index < len(texts) else ""
-            suggestions.append({
-                "id": ids[index] if index < len(ids) else "",
-                "title": title or text[:80],
-                "text": text,
-                "score": scores[index] if index < len(scores) else None,
-                "price": prices[index] if index < len(prices) else None,
-                "store": stores[index] if index < len(stores) else "",
-                "categories": categories[index] if index < len(categories) else [],
-                "description": descriptions[index] if index < len(descriptions) else "",
-                "details": details[index] if index < len(details) else {},
-                "features": features[index] if index < len(features) else [],
-                "images": images[index] if index < len(images) else [],
-                "videos": videos[index] if index < len(videos) else [],
-                "main_category": main_categories[index] if index < len(main_categories) else "",
-                "rating_number": rating_numbers[index] if index < len(rating_numbers) else None,
-            })
+        description = item.get("description", "")
+        if isinstance(description, list):
+            description = " ".join(str(x) for x in description if x)
 
-    elif isinstance(response_data.get("used_context"), list):
-        for item in response_data.get("used_context", []):
-            if not isinstance(item, dict):
-                continue
-            suggestions.append({
-                "id": item.get("id", ""),
-                "title": item.get("title") or item.get("review", "")[:80],
-                "text": item.get("review", ""),
-                "score": item.get("score"),
-                "price": item.get("price"),
-                "store": item.get("store", ""),
-                "categories": item.get("categories", []),
-                "description": item.get("description", ""),
-                "details": item.get("details", {}),
-                "features": item.get("features", []),
-                "images": item.get("images", []),
-                "videos": item.get("videos", []),
-                "main_category": item.get("main_category", ""),
-                "rating_number": item.get("rating_number"),
-            })
+        suggestions.append({
+            "id": item.get("id", ""),
+            "title": item.get("title") or item.get("review", "")[:80] or "Product",
+            "text": item.get("review", ""),
+            "images": item.get("images", []),
+            "features": item.get("features", []),
+            "price": item.get("price"),
+            "rating_number": item.get("rating_number"),
+            "size": item.get("size", ""),
+            "brand": item.get("brand", ""),
+            "color": item.get("color", ""),
+            "details": item.get("details", {}),
+            "description": description,
+            "store": item.get("store", ""),
+            "main_category": item.get("main_category", ""),
+            "categories": item.get("categories", []),
+        })
 
     return suggestions
 
 
-def render_suggestions_panel(suggestions):
-    st.markdown("### Suggestions")
-    if not suggestions:
-        st.info("No suggestions available.")
+def _normalize_products(response_data: dict) -> list[dict]:
+    return _normalize_suggestions(response_data)
+
+
+def _render_sidebar_products(products: list[dict]):
+    st.markdown('<div class="sidebar-title">Suggestions & Products</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-subtitle">Quick follow-ups and product cards from the current answer.</div>', unsafe_allow_html=True)
+
+    if not products:
+        st.info("No product cards available yet.")
         return
 
-    st.markdown(
-        """
-        <style>
-        .sidebar-suggestions-scroll {
-            max-height: 72vh;
-            overflow-y: auto;
-            padding-right: 0.25rem;
-        }
-        .sidebar-suggestion-card {
-            border: 1px solid rgba(49, 51, 63, 0.18);
-            border-radius: 16px;
-            padding: 0.8rem;
-            margin-bottom: 0.75rem;
-            background: rgba(255, 255, 255, 0.92);
-        }
-        .sidebar-suggestion-title {
-            font-weight: 700;
-            font-size: 0.95rem;
-            line-height: 1.25;
-            margin: 0.2rem 0 0.4rem 0;
-        }
-        .sidebar-suggestion-meta {
-            font-size: 0.8rem;
-            opacity: 0.78;
-            margin-bottom: 0.45rem;
-        }
-        .sidebar-suggestion-image {
-            width: 100%;
-            border-radius: 12px;
-            margin-bottom: 0.55rem;
-            object-fit: cover;
-            display: block;
-        }
-        .sidebar-suggestion-body {
-            font-size: 0.87rem;
-            line-height: 1.35;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    html_cards = []
-    for suggestion in suggestions:
-        score = suggestion.get("score")
-        score_text = f"Score: {score:.3f}" if isinstance(score, (int, float)) else ""
-        image_url = _first_image_url(suggestion.get("images"))
-        meta_text = _format_product_meta(suggestion)
-
-        features = suggestion.get("features") or []
-        feature_html = ""
-        if isinstance(features, list) and features:
-            feature_html = "<ul>" + "".join(
-                f"<li>{_escape_html(feature)}</li>" for feature in features[:4]
-            ) + "</ul>"
-
-        html_cards.append(
-            f"""
-            <div class="sidebar-suggestion-card">
-                {f'<img class="sidebar-suggestion-image" src="{_escape_html(image_url)}" alt="{_escape_html(suggestion.get("title", "Suggestion"))}" />' if image_url else ''}
-                <div class="sidebar-suggestion-title">{_escape_html(suggestion.get('title', 'Suggestion'))}</div>
-                <div class="sidebar-suggestion-meta">
-                    {f'ID: {_escape_html(suggestion.get("id", ""))}' if suggestion.get('id') else ''}
-                    {(' • ' + _escape_html(score_text)) if score_text else ''}
-                </div>
-                {f'<div class="sidebar-suggestion-body">{_escape_html(suggestion.get("text", ""))}</div>' if suggestion.get('text') else ''}
-                {f'<div class="sidebar-suggestion-meta">{_escape_html(meta_text)}</div>' if meta_text else ''}
-                {f'<div class="sidebar-suggestion-body"><strong>Description:</strong> {_escape_html(suggestion.get("description", ""))}</div>' if suggestion.get('description') else ''}
-                {f'<div class="sidebar-suggestion-body"><strong>Features:</strong>{feature_html}</div>' if feature_html else ''}
-            </div>
-            """
-        )
-
-    st.markdown('<div class="sidebar-suggestions-scroll">' + ''.join(html_cards) + '</div>', unsafe_allow_html=True)
-
-
-def render_used_context_panel(used_context):
-    st.markdown("### Products Suggestion")
-
-    for item in used_context:
-        image_url = _first_image_url(item.get("images"))
-        meta_text = _format_product_meta(item)
-
+    for product in products[:8]:
+        product = _ensure_dict(product)
+        image_url = _image_url(product)
+        meta = _meta_text(product)
+        features = _as_list(product.get("features"))
         with st.container(border=True):
             if image_url:
-                st.image(image_url, width="stretch")
+                st.image(image_url, use_container_width=True)
+            st.markdown(f"**{product.get('title', 'Product')}**")
+            if product.get("id"):
+                st.caption(f"ID: {product.get('id')}")
+            if meta:
+                st.caption(meta)
+            if product.get("description"):
+                st.caption(str(product.get("description"))[:220])
 
-            st.markdown(f"**{item.get('title', 'Used Context')}**")
-            if item.get('id'):
-                st.caption(f"ID: {item.get('id')}")
+            badge_cols = st.columns(2)
+            badges = [
+                ("Price", product.get("price")),
+                ("Size", product.get("size")),
+                ("Brand", product.get("brand")),
+                ("Rating", product.get("rating_number")),
+            ]
+            for i, (label, value) in enumerate(badges[:2]):
+                if value not in (None, "", [], {}):
+                    badge_cols[i].caption(f"{label}: {value}")
+            for i, (label, value) in enumerate(badges[2:]):
+                if value not in (None, "", [], {}):
+                    badge_cols[i].caption(f"{label}: {value}")
 
-            if item.get('review'):
-                st.write(item.get('review'))
-
-            if meta_text:
-                st.caption(meta_text)
-
-            if item.get("description"):
-                st.caption(f"Description: {item.get('description')}")
-
-            features = item.get("features") or []
-            if isinstance(features, list) and features:
-                st.write("Details:")
-                for feature in features[:5]:
-                    st.write(f"- {feature}")
-
-
-def render_about_panel():
-    pass
+            if features:
+                st.markdown("**Highlights**")
+                for feature in features[:4]:
+                    if feature:
+                        st.markdown(f"- {feature}")
 
 
-def scroll_to_response_anchor():
-    components.html(
-        """
-        <script>
-        const anchor = window.parent.document.getElementById('assistant-response-anchor');
-        if (anchor) {
-            anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
-        </script>
-        """,
-        height=0,
-    )
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "assistant", "content": "Hello. Ask me about a product and I will show matching items and suggestions."}]
+if "suggestions" not in st.session_state:
+    st.session_state.suggestions = []
+if "used_context" not in st.session_state:
+    st.session_state.used_context = []
+
+
+st.markdown(
+    """
+    <div class="hero">
+      <h1>Ecommerce Assistant</h1>
+      <p>Search products, get concise answers, and browse matching product cards with images and quick suggestions.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 for message in st.session_state.messages:
@@ -309,44 +371,73 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
-if "used_context" not in st.session_state:
-    st.session_state.used_context = []
-
-
 with st.sidebar:
-    tabs = st.tabs(["Suggestions"])
-    with tabs[0]:
-        # Prefer explicit suggestions; otherwise derive suggestions from used_context
-        suggestions_to_render = st.session_state.suggestions or normalize_suggestions({"used_context": st.session_state.used_context})
-        if suggestions_to_render:
-            render_suggestions_panel(suggestions_to_render)
+    st.markdown("### Suggestions")
+    if st.session_state.suggestions:
+        for suggestion in st.session_state.suggestions[:4]:
+            suggestion = _ensure_dict(suggestion)
+            st.info(suggestion.get("title", "Suggestion"))
+    else:
+        st.info("No suggestions yet. Ask a question to see quick follow-ups.")
 
-        st.divider()
-        render_used_context_panel(st.session_state.used_context)
+    st.divider()
+    _render_sidebar_products(_normalize_products({"used_context": st.session_state.used_context}))
 
 
-if prompt := st.chat_input("Hello! How can I assist you today?"):
+prompt = st.chat_input("Ask about a laptop, price, size, brand, or similar products...")
+if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        st.markdown('<div id="assistant-response-anchor"></div>', unsafe_allow_html=True)
         success, response_data = api_call("post", f"{config.API_URL}/rag", json={"query": prompt})
-        if success and "answer" in response_data:
-            answer = response_data["answer"]
-            # store used_context from the API and derive suggestions from it
+
+        if success and isinstance(response_data, dict):
+            answer = response_data.get("answer") or response_data.get("message") or "No answer returned."
             st.session_state.used_context = response_data.get("used_context", []) or []
-            st.session_state.suggestions = normalize_suggestions(response_data)
+            st.session_state.suggestions = _normalize_suggestions(response_data)
         else:
             answer = response_data.get("message", "Sorry, I could not generate a response right now.")
-            st.session_state.suggestions = []
             st.session_state.used_context = []
+            st.session_state.suggestions = []
 
-        st.markdown("#### Best suggestion")
+        st.markdown('<div class="answer-card">', unsafe_allow_html=True)
+        st.markdown('<div class="answer-heading">Best answer</div>', unsafe_allow_html=True)
         st.write(answer)
-        st.caption("Open the sidebar to browse the images, product details, and used context.")
+
+        if st.session_state.suggestions:
+            st.markdown('<div class="answer-heading">Suggestions</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="pill-row">' + ''.join(
+                    f'<span class="pill">{_escape(item.get("title", ""))}</span>'
+                    for item in st.session_state.suggestions[:4]
+                ) + '</div>',
+                unsafe_allow_html=True,
+            )
+
+        if st.session_state.used_context:
+            st.markdown('<div class="answer-heading">Products used</div>', unsafe_allow_html=True)
+            cols = st.columns(min(3, len(st.session_state.used_context)))
+            for index, item in enumerate(st.session_state.used_context[:3]):
+                item = _ensure_dict(item)
+                with cols[index]:
+                    image_url = _image_url(item)
+                    if image_url:
+                        st.image(image_url, use_container_width=True)
+                    st.markdown(f"**{item.get('title', 'Product')}**")
+                    meta = _meta_text(item)
+                    if meta:
+                        st.caption(meta)
+                    description = item.get("description") or item.get("review") or ""
+                    if isinstance(description, list):
+                        description = " ".join(str(x) for x in description if x)
+                    if description:
+                        st.caption(str(description)[:220])
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.caption("Open the sidebar for richer product cards, images, and follow-up suggestions.")
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
-    scroll_to_response_anchor()
     st.rerun()
