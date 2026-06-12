@@ -1,0 +1,44 @@
+[project]
+name = "api"
+version = "0.1.0"
+description = "Rag Pipeline API"
+readme = "README.md"
+authors = [
+    { name = "kishor kumar paroi", email = "kishor.ruet.cse@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.128.0",
+    "fastembed>=0.8.0",
+    "google-genai>=1.57.0",
+    "groq>=1.0.0",
+    "instructor>=1.15.1",
+    "ipython>=9.9.0",
+    "langchain-core>=1.4.0",
+    "langgraph>=1.2.0",
+    "langsmith>=0.8.4",
+    "openai>=2.15.0",
+    "pandas>=2.3.3",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
+    "pyyaml>=6.0.3",
+    "qdrant-client>=1.18.0",
+    "uvicorn>=0.40.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+shared = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/api"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "tests/",
+    "README.md",
+]

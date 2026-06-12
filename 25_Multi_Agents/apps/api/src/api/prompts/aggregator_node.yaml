@@ -1,0 +1,30 @@
+metadata:
+  name: Aggregator Prompt
+  version: 1.0
+  description: Prompt template for Aggregator Node tasks in the RAG Hybrid Re-Rank Pipeline application.
+  author: Kishor Kumar Paroi
+  email: kishor.ruet.cse@gmail.com
+   
+
+prompts:
+  aggregator_node_prompt:
+    template: |
+      You are an expert shopping assistant. 
+      Use only the provided evidence and produce concise recommendations for each query in expanded_query.
+
+      expanded_query:
+      {{expanded_query}}
+
+      Evidence:
+      {{preprocessed_context}}
+
+      Return one section per query using this format:
+      - Query: <query>
+        - Best option: <short title>
+        - Why: <short reason>
+        - Price/Ratings: <if available>
+          
+
+
+
+

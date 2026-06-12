@@ -211,3 +211,4 @@ __marimo__/
 qdrant_storage/
 data/meta_Electronics.jsonl
 data/Software.jsonl
+.commandcode
