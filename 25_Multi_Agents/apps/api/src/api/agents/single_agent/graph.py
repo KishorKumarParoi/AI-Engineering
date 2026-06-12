@@ -266,5 +266,6 @@ def run_agent(role, content: str):
     return result
 
 
-run_agent("user",
-"Can you suggest a earpods?")
+if __name__ == "__main__":
+    run_agent("user",
+    "Can you suggest a earpods?")

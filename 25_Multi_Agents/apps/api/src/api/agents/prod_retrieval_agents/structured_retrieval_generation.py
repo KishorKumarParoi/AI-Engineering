@@ -109,6 +109,7 @@ def retrieve_data(query, qdrant_client=qdrant_client, k=5):
     results = qdrant_client.query_points(
         collection_name="Amazon_Electronics_Products",
         query=query_embedding,
+        using="text-embedding-3-small",
         limit=k,
         with_payload=True,
     )

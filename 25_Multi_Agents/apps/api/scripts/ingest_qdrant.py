@@ -23,11 +23,16 @@ if not data_file:
 repo_root = p
 sys.path.insert(0, str(repo_root.joinpath('apps', 'api', 'src')))
 
+from dotenv import load_dotenv
+load_dotenv(repo_root.joinpath('.env'))
+
 from api.api.populate_data import populate_qdrant
 from qdrant_client import QdrantClient
 
 # Simple Qdrant client using env vars
 qdrant_url = os.getenv('QDRANT_URL', 'http://localhost:6333')
+if qdrant_url and "qdrant:6333" in qdrant_url:
+    qdrant_url = qdrant_url.replace("qdrant:6333", "localhost:6333")
 qdrant_api_key = os.getenv('QDRANT_API_KEY')
 client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key, check_compatibility=False)
 

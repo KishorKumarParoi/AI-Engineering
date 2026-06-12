@@ -64,57 +64,61 @@ def _collection_count_value(collection_count):
     return getattr(collection_count, "count", None)
 
 # 1. RUN DATA POPULATION AT APP BOOT LIFECYCLE (PROVISIONED WITH WHITE-SPACE STRIPPER)
-try:
-    COLLECTION_NAME = os.environ.get("collection_name") or "Amazon_Electronics_Products"
-        
-    # Ensure collection exists (creates with retries if Qdrant isn't ready yet)
+def run_db_initialization():
+    global DATA_PATH
     try:
-        ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME, retries=12, delay=2)
-
-        # If collection exists but is empty, attempt to populate from local data file
+        COLLECTION_NAME = os.environ.get("collection_name") or "Amazon_Electronics_Products"
+            
+        # Ensure collection exists (creates with retries if Qdrant isn't ready yet)
         try:
-            collection_count = qdrant_client.count(collection_name=COLLECTION_NAME)
-        except Exception:
-            collection_count = None
-        collection_count_value = _collection_count_value(collection_count)
+            ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME, retries=12, delay=2)
 
-        if collection_count_value in (0, None):
-            logger.info(f"Collection '{COLLECTION_NAME}' is empty or unknown size ({collection_count_value}). Attempting population if data exists...")
+            # If collection exists but is empty, attempt to populate from local data file
             try:
-                if not os.path.exists(DATA_PATH):
-                    current_dir = os.path.dirname(os.path.abspath(__file__))
-                    print(f"Current directory for data path resolution: {current_dir}")
-                    DATA_PATH = os.path.abspath(os.path.join(current_dir, "../../../../../data/Data_With_Images.jsonl"))
+                collection_count = qdrant_client.count(collection_name=COLLECTION_NAME)
+            except Exception:
+                collection_count = None
+            collection_count_value = _collection_count_value(collection_count)
 
-                if os.path.exists(DATA_PATH) and os.path.getsize(DATA_PATH) > 0:
-                    with open(DATA_PATH, 'r', encoding='utf-8') as f:
-                        valid_lines = [line.strip() for line in f if line.strip()]
+            if collection_count_value in (0, None):
+                logger.info(f"Collection '{COLLECTION_NAME}' is empty or unknown size ({collection_count_value}). Attempting population if data exists...")
+                try:
+                    if not os.path.exists(DATA_PATH):
+                        current_dir = os.path.dirname(os.path.abspath(__file__))
+                        print(f"Current directory for data path resolution: {current_dir}")
+                        DATA_PATH = os.path.abspath(os.path.join(current_dir, "../../../../../data/Data_With_Images.jsonl"))
 
-                    if valid_lines:
-                        from io import StringIO
-                        clean_json_stream = StringIO("\n".join(valid_lines))
-                        df = pd.read_json(clean_json_stream, lines=True)
-                        logger.info(f"Successfully loaded dataset of shape: {df.shape}")
-                        populate_qdrant(df, qdrant_client, collection_name=COLLECTION_NAME)
+                    if os.path.exists(DATA_PATH) and os.path.getsize(DATA_PATH) > 0:
+                        with open(DATA_PATH, 'r', encoding='utf-8') as f:
+                            valid_lines = [line.strip() for line in f if line.strip()]
+
+                        if valid_lines:
+                            from io import StringIO
+                            clean_json_stream = StringIO("\n".join(valid_lines))
+                            df = pd.read_json(clean_json_stream, lines=True)
+                            logger.info(f"Successfully loaded dataset of shape: {df.shape}")
+                            populate_qdrant(df, qdrant_client, collection_name=COLLECTION_NAME)
+                        else:
+                            logger.warning("Data file exists but contains no valid lines; skipping population.")
                     else:
-                        logger.warning("Data file exists but contains no valid lines; skipping population.")
-                else:
-                    logger.info(f"No data file found at {DATA_PATH}; skipping auto-population.")
+                        logger.info(f"No data file found at {DATA_PATH}; skipping auto-population.")
 
-            except Exception as pop_err:
-                logger.error(f"Population routine failed: {pop_err}")
+                except Exception as pop_err:
+                    logger.error(f"Population routine failed: {pop_err}")
 
-        # 2. Testing with sample query to see if retrieval works now
-        try:
-            sample_answer = retrieve_data(qdrant_client, query="What kind of Laptop do you offer?", collection_name=COLLECTION_NAME, k=10)
-            print("Sample retrieval answer:", sample_answer)
-        except Exception as look_err:
-            logger.error(f"Error during sample retrieval after population: {look_err}")
+            # 2. Testing with sample query to see if retrieval works now
+            try:
+                sample_answer = retrieve_data(qdrant_client, query="What kind of Laptop do you offer?", collection_name=COLLECTION_NAME, k=10)
+                print("Sample retrieval answer:", sample_answer)
+            except Exception as look_err:
+                logger.error(f"Error during sample retrieval after population: {look_err}")
 
-    except Exception as e:
-        logger.exception(f"Failed to ensure collection exists: {e}")
-except Exception as init_err:
-    logger.exception(f"Initialization failed: {init_err}")
+        except Exception as e:
+            logger.exception(f"Failed to ensure collection exists: {e}")
+    except Exception as init_err:
+        logger.exception(f"Initialization failed: {init_err}")
+
+threading.Thread(target=run_db_initialization, daemon=True).start()
 
 
 rag_router = APIRouter()

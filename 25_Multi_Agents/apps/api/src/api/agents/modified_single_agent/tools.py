@@ -405,6 +405,7 @@ def retrieve_data(query, qdrant_client, top_k=5):
         search_result = client.query_points(
             collection_name=os.getenv("collection_name", "Amazon_Electronics_Products"),
             query=query_embedding,
+            using="text-embedding-3-small",
             limit=top_k,
             with_payload=True,
         )

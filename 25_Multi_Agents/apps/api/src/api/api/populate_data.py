@@ -1,5 +1,6 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
+from qdrant_client import models
+from qdrant_client.models import Distance, VectorParams, PointStruct, SparseVectorParams, Document
 from qdrant_client.http.exceptions import UnexpectedResponse
 
 import pandas as pd
@@ -58,6 +59,14 @@ def get_embedding(text):
         model = "text-embedding-3-small"
     )
     return response.data[0].embedding
+
+def get_embeddings_batch(text_list, model="text-embedding-3-small", batch_size=100):
+    all_embeddings = []
+    for i in range(0, len(text_list), batch_size):
+        batch = text_list[i:i+batch_size]
+        response = openai.embeddings.create(input=batch, model=model)
+        all_embeddings.extend([emb.embedding for emb in response.data])
+    return all_embeddings
     
 def populate_qdrant(df, qdrant_client, collection_name="Amazon_Electronics_Products"):
     # check the data before processing
@@ -68,18 +77,34 @@ def populate_qdrant(df, qdrant_client, collection_name="Amazon_Electronics_Produ
     try:
         qdrant_client.create_collection(
             collection_name=collection_name,
-            vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+            vectors_config={
+                "text-embedding-3-small": VectorParams(size=1536, distance=Distance.COSINE)
+            },
+            sparse_vectors_config={
+                "bm25": SparseVectorParams(modifier=models.Modifier.IDF)
+            }
         )
     except Exception:
         # If creation fails due to already-exists or transient issue, continue -- upsert will handle final state
         pass
 
+    # Batch embed the titles
+    titles = [review['title'] for review in data_to_embed]
+    embeddings = get_embeddings_batch(titles)
+
     pointstructs = []
     for idx, review in enumerate(data_to_embed):
-        embedding = get_embedding(review['title'])
+        embedding = embeddings[idx]
+        desc = review.get('processed_description') or review.get('title') or ""
         pointstructs.append(PointStruct(
             id=idx,
-            vector=embedding,
+            vector={
+                "text-embedding-3-small": embedding,
+                "bm25": Document(
+                    text=desc,
+                    model="qdrant/bm25"
+                )
+            },
             payload={
                 'product_id': review.get('product_id'),
                 'text': review.get('title'),
@@ -127,7 +152,12 @@ def ensure_collection_exists(qdrant_client, collection_name="Amazon_Electronics_
                 try:
                     qdrant_client.create_collection(
                         collection_name=collection_name,
-                        vectors_config=VectorParams(size=vectors_size, distance=Distance.COSINE),
+                        vectors_config={
+                            "text-embedding-3-small": VectorParams(size=vectors_size, distance=Distance.COSINE)
+                        },
+                        sparse_vectors_config={
+                            "bm25": SparseVectorParams(modifier=models.Modifier.IDF)
+                        }
                     )
                     return True
                 except Exception:
@@ -154,15 +184,21 @@ def retrieve_data(qdrant_client, query, collection_name="Amazon_Electronics_Prod
             # create an empty collection with the expected vector shape
             qdrant_client.create_collection(
                 collection_name=collection_name,
-                vectors_config=VectorParams(size=1536, distance=Distance.COSINE)
+                vectors_config={
+                    "text-embedding-3-small": VectorParams(size=1536, distance=Distance.COSINE)
+                },
+                sparse_vectors_config={
+                    "bm25": SparseVectorParams(modifier=models.Modifier.IDF)
+                }
             )
         else:
             raise
 
-    # Execute dense vector search against the collection's default unnamed vector.
+    # Execute dense vector search against the collection's named vector.
     results = qdrant_client.query_points(
         collection_name=collection_name,
         query=query_embedding,
+        using="text-embedding-3-small",
         limit=k,
     )
 

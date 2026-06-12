@@ -55,18 +55,21 @@ services:
         condition: service_healthy
     restart: 'no'
     command: [ "python", "/app/apps/api/scripts/ingest_qdrant.py" ]
-
-  postgres:
-    image: postgres:16-alpine
-    ports:
-      - 5433:5432
-    environment: POSTGRES_DB:langgraph_db POSTGRES_USER:langgraph_user POSTGRES_PASSWORD:langgraph_password PGDATA:/var/lib/postgresql/data/pqdata
-    restart: unless-stopped
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "langgraph_user", "-d", "langgraph_db" ]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-      start_period: 10s
+  # postgres:
+  #   image: postgres:16-alpine
+  #   ports:
+  #     - 5434:5432
+  #   environment:
+  #     POSTGRES_DB: langgraph_db
+  #     POSTGRES_USER: langgraph_user
+  #     POSTGRES_PASSWORD: langgraph_password
+  #     PGDATA: /var/lib/postgresql/data/pqdata
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: [ "CMD", "pg_isready", "-U", "langgraph_user", "-d", "langgraph_db" ]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 5
+  #     start_period: 10s

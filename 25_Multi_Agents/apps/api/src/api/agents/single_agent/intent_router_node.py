@@ -341,6 +341,7 @@ def retrieve_data(query, qdrant_client, top_k=5):
     search_result = qdrant_client.query_points(
         collection_name="Amazon_Electronics_Products",
         query=query_embedding,
+        using="text-embedding-3-small",
         limit=top_k,
         with_payload=True,
     )
@@ -770,11 +771,12 @@ graph = workflow.compile()
 
 # display(Image(graph.get_graph().draw_mermaid_png()))
 
-query = "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?"
-initial_state = {
-    "initial_query": query
-}
+if __name__ == "__main__":
+    query = "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?"
+    initial_state = {
+        "initial_query": query
+    }
 
-result = graph.invoke(initial_state)
+    result = graph.invoke(initial_state)
 
-print(result.get("answer", []))
+    print(result.get("answer", []))
