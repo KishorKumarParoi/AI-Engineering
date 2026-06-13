@@ -1,4 +1,4 @@
-
+from langgraph.checkpoint.postgres import PostgresSaver 
 from pydantic import BaseModel, Field
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import StateGraph, START, END
@@ -47,12 +47,7 @@ def old_run_graph(query = "Can I get a Tablet for my kid, a watch for me, a lapt
     print(result.get("answer", []))
     return result.get("answer", "")
 
-@traceable(
-    name="compile_agent_graph",
-    run_type="llm",
-    tags=["execution"]
-)
-def compile_agent_graph(qdrant_client=None):
+def compile_agent_graph(qdrant_client=None, checkpointer=None):
 
     workflow = StateGraph(State)
 
@@ -318,28 +313,40 @@ def _normalize_graph_result(result: dict, query_text: str) -> dict:
     run_type="llm",
     tags=["execution"]
 )
-def run_agent_graph(role,qdrant_client, query):
-    graph, tool_descriptions = compile_agent_graph(qdrant_client)
+def run_agent_graph(role, qdrant_client, query, thread_id: str) -> dict:
+    import os
+    from typing import Any
+    from langgraph.checkpoint.postgres import PostgresSaver
 
-    initial_state = {
-    "messages": [{
-        "role": role,
-        "content": query
-            # "role": "user",
-            # "content": "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?"
+    initial_state: dict[str, Any] = {
+        "messages": [{
+            "role": role,
+            "content": query
         }],
-        "available_tools": tool_descriptions
+        "iteration": 0
     }
 
-    invoke_state = dict(initial_state) if isinstance(initial_state, dict) else {}
+    invoke_state: dict[str, Any] = dict(initial_state) if isinstance(initial_state, dict) else {}
     if 'initial_query' not in invoke_state:
         invoke_state['initial_query'] = query
     if 'messages' not in invoke_state or not invoke_state.get('messages'):
         invoke_state['messages'] = [{'role': 'user', 'content': query}]
 
-    run_config = {"configurable": {"qdrant_client": qdrant_client}}
-    result = _normalize_graph_result(graph.invoke(invoke_state, config=run_config), query)
-    # print(result.get('answer', ''))
+    db_uri = os.getenv("DATABASE_URL") or "postgresql://langgraph_user:langgraph_password@localhost:5434/langgraph_db"
+    if os.path.exists('/.dockerenv') and "localhost:5434" in db_uri:
+        db_uri = db_uri.replace("localhost:5434", "postgres:5432")
+
+    with PostgresSaver.from_conn_string(db_uri) as checkpointer:
+        # Initialize the required checkpoint tables in the database
+        checkpointer.setup()
+        
+        # Compile graph with checkpointer
+        graph, tool_descriptions = compile_agent_graph(qdrant_client, checkpointer=checkpointer)
+        invoke_state["available_tools"] = tool_descriptions
+
+        run_config = {"configurable": {"qdrant_client": qdrant_client, "thread_id": thread_id}}
+        result = _normalize_graph_result(graph.invoke(invoke_state, config=run_config), query)
+        
     return result
 
 # result = run_agent_graph("user", None, "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?")
