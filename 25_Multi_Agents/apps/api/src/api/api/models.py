@@ -83,25 +83,17 @@ def build_prompt_with_jinja(preprocessed_context, question):
     metadata={"ls_provider": "yaml"}
 )
 def prompt_template_config(yaml_file, prompt_key):
-    # 1. Hardcoded explicit base directory for your exact machine setup
-    base_dir = "/Users/kishorkumarparoi/Desktop/Maven - The AI Engineering Bootcamp /Resources/AIE5-main/24_Langgraph/apps/api/src"
-    
-    # Extract just the filename if it's passed with a long prefix
-    # e.g., "api/agents/modified_single_agent/prompts/intent_router_agent.yaml" -> "intent_router_agent.yaml"
+    # Resolve relative to this package location dynamically
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.basename(yaml_file)
     
-    # 2. Directly construct the target path inside your source tree
-    abs_yaml_path = os.path.join(base_dir, "api", "agents", "modified_single_agent", "prompts", filename)
+    # Check directly inside the sibling 'prompts' folder
+    abs_yaml_path = os.path.join(current_dir, "prompts", filename)
     
-    # 3. Fallback: If your folder structure doesn't use the 'src' layout, try without it
+    # Fallback to search up towards the main api folder structure if prompts isn't inside current_dir
     if not os.path.exists(abs_yaml_path):
-        fallback_base = "/Users/kishorkumarparoi/Desktop/Maven - The AI Engineering Bootcamp /Resources/AIE5-main/24_Langgraph/apps/api"
+        fallback_base = os.path.abspath(os.path.join(current_dir, "../.."))
         abs_yaml_path = os.path.join(fallback_base, "api", "agents", "modified_single_agent", "prompts", filename)
-
-    # 4. Secondary Fallback: If things are completely weird, try matching relative to tools.py's own folder
-    if not os.path.exists(abs_yaml_path):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        abs_yaml_path = os.path.join(current_dir, "prompts", filename)
 
     print(f"--> [DEBUG] Opening prompt config at verified path: {abs_yaml_path}")
 
@@ -212,6 +204,7 @@ def get_qdrant_client():
 
 class RagRequest(BaseModel):
     query: str = Field(..., description="The user's query to be used in the RAG pipeline")
+    thread_id: str | None = Field(default=None, description="The thread ID")
 
 # class RAGUsedContext(BaseModel):
 #     id: str | int = Field(description="The ID of the retrieved review")

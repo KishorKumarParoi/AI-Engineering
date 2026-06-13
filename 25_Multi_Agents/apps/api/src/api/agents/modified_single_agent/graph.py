@@ -81,7 +81,7 @@ def compile_agent_graph(qdrant_client=None, checkpointer=None):
 
     workflow.add_edge("tool_node", "agent_node")
 
-    graph = workflow.compile()
+    graph = workflow.compile(checkpointer=checkpointer)
 
     return graph, tool_descriptions
 

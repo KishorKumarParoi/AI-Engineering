@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import html
 from typing import Any
-
+import uuid
 import requests
 import streamlit as st
 
@@ -16,6 +16,10 @@ st.set_page_config(
     page_icon="🛍️",
 )
 
+def get_session_id():
+    if 'session_id' not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
+    return st.session_state.session_id
 
 st.markdown(
     """
@@ -353,6 +357,9 @@ if "suggestions" not in st.session_state:
     st.session_state.suggestions = []
 if "used_context" not in st.session_state:
     st.session_state.used_context = []
+if "thread_id" not in st.session_state:
+    import uuid
+    st.session_state.thread_id = str(uuid.uuid4())
 
 
 st.markdown(
@@ -391,7 +398,7 @@ if prompt:
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        success, response_data = api_call("post", f"{config.API_URL}/rag", json={"query": prompt})
+        success, response_data = api_call("post", f"{config.API_URL}/rag", json={"query": prompt, "thread_id": st.session_state.thread_id})
 
         if success and isinstance(response_data, dict):
             answer = response_data.get("answer") or response_data.get("message") or "No answer returned."

@@ -182,7 +182,7 @@ def rag(
 
         # 3. Execute your core multi-agent LangGraph workflow
         thread_id = getattr(request.state, "request_id", None)
-        answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5, thread_id=thread_id)
+        answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5, thread_id=payload.thread_id)
         logger.info("Raw answer from RAG pipeline: %s", answer)
         
         if answer is None:
