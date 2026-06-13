@@ -54,7 +54,7 @@ qdrant_client = QdrantClient(
 _population_lock = threading.Lock()
 
 DATA_PATH = "data/Data_With_Images.jsonl" 
-
+COLLECTION_NAME = os.environ.get("collection_name") or "Amazon_Electronics_Products"
 
 def _collection_count_value(collection_count):
     if collection_count is None:
@@ -67,8 +67,6 @@ def _collection_count_value(collection_count):
 def run_db_initialization():
     global DATA_PATH
     try:
-        COLLECTION_NAME = os.environ.get("collection_name") or "Amazon_Electronics_Products"
-            
         # Ensure collection exists (creates with retries if Qdrant isn't ready yet)
         try:
             ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME, retries=12, delay=2)

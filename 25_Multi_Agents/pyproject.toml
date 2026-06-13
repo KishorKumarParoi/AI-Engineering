@@ -26,8 +26,19 @@ dev = [
     "cohere>=7.0.0",
     "fastembed>=0.8.0",
     "langgraph>=1.2.0",
-    "langsmith>=0.8.4",
+    "langgraph-checkpoint-postgres>=2.0.0",
     "matplotlib>=3.10.9",
+    "psycopg-binary>=3.3.4",
+    "psycopg[binary]>=3.3.4",
     "qdrant-client>=1.18.0",
     "ragas>=0.4.3",
 ]
+
+[tool.pyright]
+extraPaths = [
+    "notebooks/week_4",
+    "notebooks/week_3",
+    "apps/api/src",
+    "apps/chatbot_ui/src"
+]
+
