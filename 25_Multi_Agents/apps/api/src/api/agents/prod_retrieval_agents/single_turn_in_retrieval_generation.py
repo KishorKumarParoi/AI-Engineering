@@ -126,39 +126,150 @@ def gen_answer(prompt):
     return gen_response, gen_response.get("raw_response")
 
 
+def get_rich_contexts_from_tool_messages(tool_messages, qdrant_client):
+    import re
+    import os
+    from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+    product_ids = []
+    for msg in tool_messages:
+        content = getattr(msg, 'content', '') or ''
+        # Find Product ID patterns (e.g. B09QKNYJBL)
+        found_ids = re.findall(r'Product ID:\s*([A-Z0-9]+)', content)
+        product_ids.extend(found_ids)
+
+    # Deduplicate product IDs preserving order
+    product_ids = list(dict.fromkeys(product_ids))
+    rich_contexts = []
+    
+    if product_ids and qdrant_client:
+        collection_name = os.getenv("collection_name", "Amazon_Electronics_Products")
+        for pid in product_ids:
+            try:
+                scroll_result = qdrant_client.scroll(
+                    collection_name=collection_name,
+                    scroll_filter=Filter(
+                        should=[
+                            FieldCondition(key="parent_asin", match=MatchValue(value=pid)),
+                            FieldCondition(key="product_id", match=MatchValue(value=pid)),
+                        ]
+                    ),
+                    limit=1,
+                    with_payload=True
+                )
+                if scroll_result and scroll_result[0]:
+                    point = scroll_result[0][0]
+                    payload = point.payload or {}
+                    review = (
+                        payload.get('processed_description')
+                        or payload.get('description')
+                        or payload.get('text')
+                        or payload.get('title')
+                        or ""
+                    )
+                    images = payload.get('image_url') or payload.get('images') or []
+                    image_list = []
+                    if isinstance(images, list):
+                        for image in images:
+                            if isinstance(image, dict):
+                                image_list.append(image)
+                            elif isinstance(image, str) and image:
+                                image_list.append({"large": image, "thumb": image, "hi_res": image})
+                    elif isinstance(images, str) and images:
+                        image_list.append({"large": images, "thumb": images, "hi_res": images})
+                        
+                    rich_contexts.append({
+                        "id": payload.get('parent_asin') or payload.get('product_id') or pid,
+                        "review": review,
+                        "title": payload.get('title') or review[:80] or str(pid),
+                        "description": review,
+                        "images": image_list,
+                        "videos": [],
+                        "features": payload.get('features') or [],
+                        "categories": payload.get('categories') or [],
+                        "main_category": payload.get('main_category') or "",
+                        "store": payload.get('brand') or payload.get('store') or "",
+                        "price": payload.get('price'),
+                        "rating_number": payload.get('rating_number'),
+                        "score": 1.0,
+                        "average_rating": payload.get('average_rating'),
+                        "details": payload.get('details') or {},
+                    })
+            except Exception as e:
+                # Silently ignore scroll issues and rely on text parsing fallback below
+                pass
+
+    if len(rich_contexts) < len(product_ids):
+        # We missed some products, let's parse from text as fallback
+        existing_ids = {ctx["id"] for ctx in rich_contexts}
+        for msg in tool_messages:
+            content = getattr(msg, 'content', '') or ''
+            products = content.split("Product ID:")
+            for prod in products:
+                if not prod.strip():
+                    continue
+                lines = prod.strip().split("\n")
+                pid = lines[0].strip()
+                if pid in existing_ids:
+                    continue
+                desc = ""
+                rating = None
+                for line in lines[1:]:
+                    if line.startswith("Description:"):
+                        desc = line.replace("Description:", "").strip()
+                    elif line.startswith("Rating:"):
+                        try:
+                            rating = float(line.replace("Rating:", "").strip())
+                        except ValueError:
+                            rating = None
+                rich_contexts.append({
+                    "id": pid,
+                    "review": desc,
+                    "title": desc[:80] if desc else pid,
+                    "description": desc,
+                    "images": [],
+                    "videos": [],
+                    "features": [],
+                    "categories": [],
+                    "main_category": "",
+                    "store": "",
+                    "price": None,
+                    "rating_number": None,
+                    "score": 1.0,
+                    "average_rating": rating,
+                    "details": {},
+                })
+                existing_ids.add(pid)
+
+    return rich_contexts
+
 @traceable(
         name="rag_pipeline",
         tags=["pipeline", "retrieval_generation"],
 )
 def rag_pipeline(question, qdrant_client, top_k=5):
-    retrieve_context = retrieve_data(question, qdrant_client=qdrant_client, top_k=top_k)
-    preprocessed_context = process_context(retrieve_context)
-    prompt = build_prompt(preprocessed_context, question)
-    gen, raw_gen = gen_answer(prompt)
     result = run_agent_graph(role="user", query=question, qdrant_client=qdrant_client)
-
-    # Normalize final answer whether gen is dict-like or an object
-    if isinstance(gen, dict):
-        answer_text = gen.get("text") or gen.get("answer") or str(gen)
-        rag_generation_response = gen
-    else:
-        answer_text = getattr(gen, "answer", getattr(gen, "text", str(gen)))
-        # try to convert to dict if pydantic object provides model_dump
-        try:
-            rag_generation_response = gen.model_dump() if hasattr(gen, "model_dump") else gen.dict()
-        except Exception:
-            rag_generation_response = str(gen)
-
+    
+    # Extract final answer generated by the agent graph
+    answer_text = result.get("answer") or ""
+    
+    # Extract tool messages to build rich contexts
+    messages = result.get("messages", [])
+    tool_messages = [msg for msg in messages if getattr(msg, "type", None) == "tool"]
+    
+    # Fetch rich context structures
+    rich_contexts = get_rich_contexts_from_tool_messages(tool_messages, qdrant_client)
+    
     final_result = {
         "question": question,
         "original_output": answer_text,
-        "raw_gen": raw_gen,
-        "answer": answer_text.answer if isinstance(answer_text, RagGenerationResponse) else answer_text,
-        "references": answer_text.references if isinstance(answer_text, RagGenerationResponseReference) else [],
-        "retrieved_context_ids": retrieve_context['retrieved_context_ids'],
-        "retrieved_context": retrieve_context,
-        "similarity_scores": retrieve_context['similarity_scores'],
-        "rag_generation_response": rag_generation_response,
+        "raw_gen": None,
+        "answer": answer_text,
+        "references": result.get("references", []),
+        "retrieved_context_ids": [ctx["id"] for ctx in rich_contexts],
+        "retrieved_context": rich_contexts,
+        "similarity_scores": [ctx.get("score") for ctx in rich_contexts],
+        "rag_generation_response": {"answer": answer_text},
         "result": result,
     }
 
@@ -173,9 +284,14 @@ def rag_pipeline_wrapper(question, qdrant_client, top_k=5):
     pipeline_result = rag_pipeline(question, qdrant_client, top_k)
     used_context = []
 
-    retrieved_context = pipeline_result.get("retrieved_context", {})
+    retrieved_context = pipeline_result.get("retrieved_context", [])
 
-    if isinstance(retrieved_context, dict):
+    if isinstance(retrieved_context, list):
+        for ctx in retrieved_context:
+            if isinstance(ctx, dict):
+                used_context.append(ctx)
+    elif isinstance(retrieved_context, dict):
+        # Fallback to old format
         retrieved_context_ids = retrieved_context.get("retrieved_context_ids", [])
         retrieved_contexts = retrieved_context.get("retrieved_contexts", [])
         similarity_scores = retrieved_context.get("similarity_scores", [])

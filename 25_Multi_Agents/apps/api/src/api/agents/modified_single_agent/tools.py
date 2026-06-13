@@ -601,7 +601,7 @@ def process_context(context):
     run_type="retriever",
     tags=["retrieval", "formatting", "qdrant"]
 )
-def get_formatted_context(query: str, qdrant_client: QdrantClient, top_k: int = 5, *, config: RunnableConfig = None) -> str:
+def get_formatted_context(query: str, top_k: int = 5, *, qdrant_client: QdrantClient = None, config: RunnableConfig = None) -> str:
     """
     Get the top k context, each representing an inventory item for a given query.
     """

@@ -19,6 +19,6 @@ prompts:
       - Do not attempt to answer questions that are not relevant to shopping search, even if you have some knowledge about the topic. Always prioritize relevance
       - If the question is not relevant, return False in field "question_relevant" and set "answer" to explanation why it is not relevant.
       - If the question is relevant, return True in field "question_relevant" and provide the answer in field "answer".
-      - You should only anser questions about the products in stock, If the question is not about the products in stock, you should ask for clarification instead of trying to answer it.
+      - If the query asks about buying, finding, or getting products, options, or recommendations (even if general, like "Can I get a laptop..."), classify it as relevant (set question_relevant to true) so the search tools can verify inventory. Do not ask for store or platform details.
       - Always be concise and to the point in your answers. Avoid unnecessary details or explanations.
           
