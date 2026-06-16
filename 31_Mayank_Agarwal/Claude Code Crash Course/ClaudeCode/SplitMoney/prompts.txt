@@ -1,0 +1,274 @@
+Create .claude/settings.json with these hooks:
+
+Hook 1 — PostToolUse, matcher: "Write|Edit" on .py files:
+  command: python -m black "$FILE_PATH" --quiet
+  async: false
+
+Hook 2 — Stop event:
+  command: echo "[SplitEasy] ✓ Claude finished" 
+  async: true
+
+Also create the directory structure:
+.claude/skills/
+.claude/agents/
+backend/data/
+frontend/
+
+
+
+Create .mcp.json at the project root.
+Add the filesystem MCP server that gives read access to backend/data/.
+
+Use this format:
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "backend/data"]
+    }
+  }
+}
+
+
+
+
+Create CLAUDE.md for SplitEasy.
+
+The CLAUDE.md should:
+1. State the project name and one-line description
+2. Reference PRD.md as the source of truth: 
+   "Full requirements in PRD.md — read it before making any decisions"
+3. Define the tech stack:
+   - Backend: Python FastAPI, port 8000, JSON storage in backend/data/
+     * groups.json stores all groups and their members
+     * expenses.json stores all expenses across all groups  
+   - Frontend: React with Vite, Tailwind CSS, port 5173
+     * Fetches from http://localhost:8000
+     * No external state management — useState and useEffect only
+4. Code standards:
+   - Python: type hints on all functions, black formatting (auto via hooks)
+   - React: functional components, loading + error state on every fetch
+   - Currency: always display as ₹ with 2 decimal places
+5. Key commands:
+   - Start backend: cd backend && uvicorn main:app --reload
+   - Start frontend: cd frontend && npm run dev
+6. Data schemas (reference PRD.md for full details)
+
+
+
+
+
+Read PRD.md carefully. Then read CLAUDE.md.
+
+Build the complete FastAPI backend for SplitEasy exactly as specified.
+
+Technical requirements (CLAUDE.md):
+- backend/main.py — FastAPI app with CORS for http://localhost:5173
+- backend/data/groups.json — initialise as []
+- backend/data/expenses.json — initialise as []
+- backend/requirements.txt
+
+Data models (from PRD.md):
+
+Group:
+{
+  "id": "uuid string",
+  "name": "string",
+  "members": [{"id": "uuid", "name": "string"}],
+  "created_at": "ISO datetime"
+}
+
+Expense:
+{
+  "id": "uuid string",
+  "group_id": "string",
+  "description": "string",
+  "amount": "float (in ₹)",
+  "paid_by": "member id string",
+  "split_among": ["member id strings"],
+  "date": "ISO date string",
+  "created_at": "ISO datetime"
+}
+
+API endpoints to build:
+POST   /groups                              — create a group (name only)
+GET    /groups                              — list all groups  
+GET    /groups/{group_id}                   — get group + members
+POST   /groups/{group_id}/members           — add member (name only)
+POST   /groups/{group_id}/expenses          — add expense
+GET    /groups/{group_id}/expenses          — list all expenses for group
+DELETE /groups/{group_id}/expenses/{exp_id} — remove an expense
+GET    /groups/{group_id}/settlement        — calculate who owes whom
+
+Settlement calculation logic:
+1. For each expense: paid_by gets +amount, each member in split_among gets -(amount/len(split_among))
+2. Calculate net balance per member (positive = they are owed money, negative = they owe money)  
+3. Minimise transactions: pair highest positive balance with highest negative balance
+4. Return list of: { "from": member_name, "to": member_name, "amount": float }
+
+Return all amounts rounded to 2 decimal places.
+Return HTTP 404 with clear message for missing group or expense IDs.
+Add startup event to create backend/data/ directory if it doesn't exist.
+
+
+
+
+cd ../frontend
+npm create vite@latest . -- --template react
+npm install
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+
+
+Read PRD.md. Read CLAUDE.md. The frontend-design plugin is active.
+
+Build the complete React frontend for SplitEasy.
+
+The app has two views:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VIEW 1: GROUPS SCREEN (default)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Shows all groups. Entry point to the app.
+
+Layout:
+- App header: "SplitEasy" logo/wordmark + tagline "No more bill confusion"
+- "New Group" button — opens a simple modal with a name input
+- Grid of group cards, each showing:
+  * Group name (large)
+  * Member count ("4 people")
+  * Total expenses in ₹
+  * "Open" button → goes to View 2
+
+Empty state: friendly illustration + "Create your first group to get started"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VIEW 2: GROUP DETAIL SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Shows one group's full detail. Has two tabs: "Expenses" and "Settle Up"
+
+HEADER for this view:
+- Back arrow → returns to View 1
+- Group name as page title
+- Member chips (each member's name as a small tag)
+- "Add Member" small button
+
+EXPENSES TAB:
+- "Add Expense" button — opens a modal with:
+  * Description (text input)
+  * Amount in ₹ (number input)
+  * Paid by (dropdown of group members)
+  * Split among (checkboxes — all checked by default)
+  * Date (date picker, today by default)
+- List of all expenses, newest first, each showing:
+  * Description + date (small, grey)
+  * Amount in ₹ (large, bold)
+  * "Paid by [Name]" tag
+  * "Split among [N] people" text
+  * Delete button (× icon, subtle)
+- Running total at the bottom: "Total expenses: ₹12,450"
+
+SETTLE UP TAB:
+- Shows the settlement result from GET /groups/{id}/settlement
+- Each settlement as a clear card:
+  * "[Name] pays [Name]"  
+  * Amount in ₹ (large)
+  * A simple arrow → between names
+- If settled (no outstanding amounts): 
+  "✓ All settled up!" with a green checkmark
+- "Recalculate" button that refreshes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN DIRECTION (the frontend-design plugin is active):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Font: Plus Jakarta Sans (already loaded in index.html)
+- Colour: Deep green (#059669) as primary — money, trust, India
+- Background: Very light grey (#F0FDF4 — lightest green tint)
+- Cards: white, rounded-2xl, shadow-sm with hover shadow-md transition
+- The "Settle Up" tab should feel distinctly different — calmer, more resolved
+- Currency: always show ₹ symbol, 2 decimal places
+- Responsive: works on mobile (single column) and desktop (2-col grid for groups)
+- Loading states on every API call — subtle skeleton or spinner
+- Error states with friendly messages
+
+Component files to create:
+- src/App.jsx (router between views, group state)
+- src/components/GroupsScreen.jsx
+- src/components/GroupDetail.jsx
+- src/components/ExpensesTab.jsx
+- src/components/SettleUpTab.jsx
+- src/components/AddExpenseModal.jsx
+- src/components/AddGroupModal.jsx
+
+API base URL: http://localhost:8000
+Use fetch() only — no axios or other libraries.
+Handle loading and error states on every API call.
+
+
+
+
+Create a skill at .claude/skills/expense-summary/skill.md
+
+This skill reads backend/data/groups.json and backend/data/expenses.json
+directly and prints a human-readable summary:
+
+For each group:
+  - Group name and member count
+  - Total amount spent in ₹
+  - Per-member breakdown: who paid the most, who has paid the least
+  - Number of expenses recorded
+
+Format with clear spacing and ₹ symbols.
+Run completely offline — reads JSON files directly, no HTTP calls needed.
+
+Frontmatter:
+  name: expense-summary
+  description: Shows a summary of all SplitEasy groups and expenses. Use to get a quick overview of all active groups, total spending, and per-member contributions.
+  trigger: /expense-summary
+  effort: low
+
+
+
+
+Create a sub-agent at .claude/agents/settlement-calculator.md
+
+This agent reads the SplitEasy data files directly and produces
+a detailed expense analysis for any group.
+
+Frontmatter:
+  name: settlement-calculator
+  description: Deep analysis of expense patterns in a SplitEasy group. Use when you want more than just the settlement — who paid the most overall, fairness score, patterns across multiple expenses, suggestions for simpler splitting next time.
+  tools: Read, Glob
+  disallowedTools: Write, Edit, Bash
+  model: claude-haiku-4-5
+  color: green
+
+System prompt:
+You are a personal finance analyst specialising in shared expense fairness.
+You have read-only access to the SplitEasy data files.
+
+When given a group name or group ID, read:
+- backend/data/groups.json (find the group and its members)
+- backend/data/expenses.json (find all expenses for that group)
+
+Produce a detailed analysis:
+
+1. EXPENSE SUMMARY
+   - Total group spending
+   - Per-member: total paid, total owed, net position (+ means owed, - means owes)
+
+2. FAIRNESS SCORE
+   - Calculate coefficient of variation in contributions
+   - Simple label: "Fairly split" / "Somewhat uneven" / "Very uneven"
+
+3. TOP PAYER
+   - Who paid the most across all expenses
+   - What percentage of total they covered
+
+4. SUGGESTED SIMPLIFICATION
+   - If the group tends to split everything equally, suggest:
+     "This group splits everything equally — consider using the equal split by default"
+   - If one person always pays, suggest they collect cash at the start
+
+Return a concise, friendly analysis. Use ₹ symbol. Keep it under 200 words.

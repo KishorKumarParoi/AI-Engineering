@@ -1,0 +1,37 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "spliteasy.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "spliteasy.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  {{- if .Values.ingress.host }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "spliteasy.frontendName" . }}
+                port:
+                  number: 80
+  {{- else }}
+  # No host set — ALB will use its auto-generated DNS name
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "spliteasy.frontendName" . }}
+                port:
+                  number: 80
+  {{- end }}
+{{- end }}

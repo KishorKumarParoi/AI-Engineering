@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit*)",
+      "Bash(git add*)",
+      "Bash(npm install*)",
+      "Bash(python -m pytest*)",
+      "Write(.claude/*)"
+    ],
+    "deny": ["Bash(rm -rf*)", "Bash(rm)", "Bash(sudo*)", "Bash(curl* | bash*)"]
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "DEBUG": "true"
+  },
+  "enabledMcpjsonServers": ["tavily-remote-mcp"]
+}

@@ -1,0 +1,17 @@
+{{- if .Values.backend.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "spliteasy.backendName" . }}-data
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "spliteasy.labels" . | nindent 4 }}
+    {{- include "spliteasy.backendSelectorLabels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.backend.persistence.accessMode }}
+  storageClassName: {{ .Values.backend.persistence.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.backend.persistence.size }}
+{{- end }}

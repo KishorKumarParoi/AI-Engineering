@@ -1,0 +1,25 @@
+[
+  {
+    "id": "c9efd575-3233-47f2-9dbd-a3cf855298c4",
+    "name": "Goa Trip",
+    "members": [
+      {
+        "id": "576f3b10-846b-4c20-ba59-725b4527772f",
+        "name": "Mayank"
+      },
+      {
+        "id": "551eb564-ed8d-4c4b-88c2-0b5d5f59a6c2",
+        "name": "Mayank Better"
+      },
+      {
+        "id": "95f278b7-37bb-47a7-930a-3b12e74f830f",
+        "name": "Rahul"
+      },
+      {
+        "id": "a58994cf-59ff-4669-b27f-34b06fae7907",
+        "name": "Mehul"
+      }
+    ],
+    "created_at": "2026-05-03T16:10:03.201587Z"
+  }
+]

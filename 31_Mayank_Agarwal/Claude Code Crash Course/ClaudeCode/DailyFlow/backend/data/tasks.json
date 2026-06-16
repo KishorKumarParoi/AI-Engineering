@@ -1,0 +1,170 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "title": "Set up project repository",
+    "subtasks": [
+      "Create GitHub repo and push initial code",
+      "Add .gitignore and README",
+      "Set up branch protection rules",
+      "Invite team members as collaborators"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T08:30:00+00:00",
+    "created_at": "2026-05-02T08:00:00+00:00"
+  },
+  {
+    "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "title": "Write API documentation",
+    "subtasks": [
+      "Document all endpoint request and response shapes",
+      "Add example curl commands for each route",
+      "Describe authentication flow",
+      "Publish docs to README"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:41:55.956689+00:00",
+    "created_at": "2026-05-02T09:15:00+00:00"
+  },
+  {
+    "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "title": "Build the task list UI component",
+    "subtasks": [
+      "Create TaskList React component",
+      "Fetch tasks from GET /tasks on mount",
+      "Render each task with title and subtasks",
+      "Add complete and delete buttons",
+      "Show loading and error states"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:32:09.959134+00:00",
+    "created_at": "2026-05-02T10:00:00+00:00"
+  },
+  {
+    "id": "30daa6d3-fe86-4b4e-9dfd-4c971daf9585",
+    "title": "Create awesome Claude Code Project",
+    "subtasks": [
+      "Define \"awesome\" and project scope",
+      "Brainstorm Claude-specific functionalities and features",
+      "Develop a detailed project plan and architecture",
+      "Implement and refine the codebase",
+      "Test, document, and showcase the project"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:44:10.913943+00:00",
+    "created_at": "2026-05-01T23:50:15.559497+00:00"
+  },
+  {
+    "id": "f195fb20-66f2-4dbb-bf1d-f14a9c90da4c",
+    "title": "Create awesome Claude Code Project",
+    "subtasks": [
+      "Define the project's core purpose and desired outcome",
+      "Brainstorm and select a specific, achievable project idea",
+      "Outline the key technical components and architecture",
+      "Develop a detailed project plan with milestones and timelines",
+      "Secure necessary resources and tools"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:32:08.315030+00:00",
+    "created_at": "2026-05-01T23:50:16.798502+00:00"
+  },
+  {
+    "id": "64a6afc2-7ff9-4ac8-aafc-2df0cf1601ea",
+    "title": "Teach project on how it is actually made.",
+    "subtasks": [
+      "Identify the core components and processes of the project's actual making.",
+      "Document each step of the project's creation with clear explanations, examples, and potentially visuals.",
+      "Create a guided, hands-on, or interactive experience to demonstrate the practical application of each step.",
+      "Answer questions and provide clarification on any aspect of the project's making process."
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:32:09.192899+00:00",
+    "created_at": "2026-05-01T23:51:31.216206+00:00"
+  },
+  {
+    "id": "ea31ece8-80a3-45c9-8a89-e3c00b40ef5d",
+    "title": "Do an awesome claude code projects.",
+    "subtasks": [
+      "Brainstorm and select a compelling project idea that showcases Claude's capabilities.",
+      "Outline the project's scope, features, and required resources.",
+      "Develop a clear milestone plan and timeline for project execution.",
+      "Implement the project using best practices and effective Claude prompting.",
+      "Thoroughly test, refine, and document the completed project."
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:32:07.296077+00:00",
+    "created_at": "2026-05-02T14:23:56.302741+00:00"
+  },
+  {
+    "id": "94ff6d66-48d3-455d-b968-dadc95379a17",
+    "title": "Teach Claude Design",
+    "subtasks": [
+      "Break this task down manually"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T14:36:52.183382+00:00",
+    "created_at": "2026-05-02T14:36:45.016761+00:00"
+  },
+  {
+    "id": "95799864-f79c-4b6e-8da2-255fbed66ea2",
+    "title": "Please give mayank a shoutout for this awesome project.",
+    "subtasks": [
+      "Break this task down manually"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:35:42.743574+00:00",
+    "created_at": "2026-05-02T15:32:19.952238+00:00"
+  },
+  {
+    "id": "9664a271-f8ab-4c46-ab3f-cdc63b58e618",
+    "title": "Build a real-time notification system",
+    "subtasks": [
+      "Design and select core technologies (e.g., message broker, real-time framework)",
+      "Develop backend services for notification generation and delivery",
+      "Implement frontend integration for real-time display and user preferences",
+      "Set up infrastructure for scalability, monitoring, and error handling",
+      "Conduct thorough testing and optimize performance"
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:46:59.749534+00:00",
+    "created_at": "2026-05-02T15:35:25.619416+00:00"
+  },
+  {
+    "id": "75a4a09d-3b57-4388-bdbe-2711feef3402",
+    "title": "Please give mayank a shoutout for this awesome project",
+    "subtasks": [
+      "Identify the platform/audience for the shoutout.",
+      "Draft a concise and impactful shoutout message for Mayank's project.",
+      "Post the shoutout publicly on the chosen platform."
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:41:58.196825+00:00",
+    "created_at": "2026-05-02T15:35:53.089332+00:00"
+  },
+  {
+    "id": "24ed0ed9-4499-450e-b577-a1e5e5a08106",
+    "title": "Enjoy now.",
+    "subtasks": [
+      "Engage your senses with your immediate surroundings.",
+      "Focus on the present moment, acknowledging thoughts and feelings without judgment.",
+      "Identify something you appreciate about this very instant.",
+      "Take a deep, slow breath and release any tension.",
+      "Choose a simple, enjoyable action to perform now."
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:47:08.469900+00:00",
+    "created_at": "2026-05-02T15:40:20.102244+00:00"
+  },
+  {
+    "id": "436f3111-af1e-4340-9dbf-a93bb7058b4b",
+    "title": "where is confetti ?",
+    "subtasks": [
+      "Define the purpose/context of 'where is confetti?'",
+      "Brainstorm possible interpretations of 'confetti' in this context.",
+      "Considering each interpretation, list potential locations or sources.",
+      "Prioritize the most likely interpretations and their locations based on common usage."
+    ],
+    "completed": true,
+    "completed_at": "2026-05-02T15:44:23.752035+00:00",
+    "created_at": "2026-05-02T15:44:22.792035+00:00"
+  }
+]

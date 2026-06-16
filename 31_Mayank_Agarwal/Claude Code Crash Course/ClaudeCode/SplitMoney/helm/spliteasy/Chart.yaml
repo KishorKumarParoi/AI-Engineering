@@ -1,0 +1,12 @@
+apiVersion: v2
+name: spliteasy
+description: Group expense tracker — split costs, settle up with minimum transactions
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - expense-tracker
+  - splitwise
+maintainers:
+  - name: Mayank Aggarwal
+    email: tech.mayankagg@gmail.com

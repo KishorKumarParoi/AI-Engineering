@@ -1,0 +1,11 @@
+
+"How is a hook different from a skill?"
+"A skill is something you invoke — you type /skill-name and Claude follows the playbook. A hook fires automatically based on events — you never type anything. A skill uses the LLM and context tokens. A hook uses zero LLM and zero tokens. A skill is opt-in. A hook is always-on."
+"Can a hook cause an infinite loop?"
+"Yes — if you're not careful. A PostToolUse hook on Write that itself writes a file will trigger another PostToolUse. Claude Code has protection against obvious loops, but be specific with matchers. If your formatter writes a file, don't give it a Write matcher — use timeout as a safety net."
+"Should I put hooks in settings.json or settings.local.json?"
+"Settings.json for hooks that should apply to the whole team (committed to git). Settings.local.json for personal hooks that are specific to your machine — like a notification hook that uses your personal Slack webhook. Never commit secrets in hook commands."
+"What's the maximum number of hooks I can have?"
+"No hard limit. One experienced user runs 95 hooks across global and project settings with no noticeable performance impact — because each hook completes in under 200ms. The constraint is speed, not count. Fast hooks can stack. Slow hooks create friction."
+"Can hooks access Claude's conversation history?"
+"No. Hooks receive a JSON payload about the specific event — tool name, file path, command, session ID. They don't see the conversation. That's by design — hooks are deterministic scripts, not AI. They don't need context to do their job."

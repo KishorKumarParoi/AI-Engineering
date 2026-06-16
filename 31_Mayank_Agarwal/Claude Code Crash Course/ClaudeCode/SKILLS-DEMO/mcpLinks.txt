@@ -1,0 +1,11 @@
+https://www.humanlayer.dev/blog/writing-a-good-claude-md
+https://medium.com/@reliabledataengineering/claude-skills-2-0-the-self-improving-ai-capabilities-that-actually-work-dc3525eb391b
+https://markdownlivepreview.com/
+https://github.com/datasciencedojo/datasets/blob/master/titanic.csv
+https://modelcontextprotocol.io/docs/learn/server-concepts
+https://app.tavily.com/home
+https://docs.tavily.com/documentation/api-reference/endpoint/search
+https://docs.tavily.com/documentation/mcp#connect-to-claude-code
+https://github.com/tavily-ai/tavily-mcp/blob/main/src/index.ts
+https://github.com/modelcontextprotocol/servers/tree/main/src/time
+https://github.com/GongRzhe/Gmail-MCP-Server

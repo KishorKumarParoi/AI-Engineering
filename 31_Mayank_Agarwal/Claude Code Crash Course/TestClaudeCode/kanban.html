@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .column {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            background: #f3f4f6;
+            padding: 15px;
+            border-bottom: 2px solid #e5e7eb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .cards {
+            flex: 1;
+            padding: 15px;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: move;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+        }
+
+        .card-text {
+            flex: 1;
+            color: #374151;
+            word-wrap: break-word;
+        }
+
+        .card-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .card-delete:hover {
+            background: #dc2626;
+        }
+
+        .add-card-form {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 5px;
+        }
+
+        .add-card-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .add-card-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-card-btn:hover {
+            background: #2563eb;
+        }
+
+        .drag-over {
+            background: #f0f9ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Kanban Board</h1>
+        <div class="board" id="board"></div>
+    </div>
+
+    <script>
+        const columns = [
+            { id: 'todo', title: 'To Do' },
+            { id: 'inprogress', title: 'In Progress' },
+            { id: 'done', title: 'Done' }
+        ];
+
+        let cards = {
+            todo: [
+                { id: 1, text: 'Design homepage' },
+                { id: 2, text: 'Setup database' }
+            ],
+            inprogress: [
+                { id: 3, text: 'Build API' }
+            ],
+            done: [
+                { id: 4, text: 'Project setup' }
+            ]
+        };
+
+        let nextId = 5;
+        let draggedCard = null;
+
+        function render() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+
+            columns.forEach(column => {
+                const columnEl = document.createElement('div');
+                columnEl.className = 'column';
+
+                const header = document.createElement('div');
+                header.className = 'column-header';
+                header.textContent = `${column.title} (${cards[column.id].length})`;
+
+                const cardsContainer = document.createElement('div');
+                cardsContainer.className = 'cards';
+                cardsContainer.id = `column-${column.id}`;
+                cardsContainer.addEventListener('dragover', handleDragOver);
+                cardsContainer.addEventListener('drop', (e) => handleDrop(e, column.id));
+                cardsContainer.addEventListener('dragleave', handleDragLeave);
+
+                cards[column.id].forEach(card => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = 'card';
+                    cardEl.draggable = true;
+                    cardEl.dataset.cardId = card.id;
+                    cardEl.dataset.columnId = column.id;
+
+                    const text = document.createElement('span');
+                    text.className = 'card-text';
+                    text.textContent = card.text;
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'card-delete';
+                    deleteBtn.textContent = '✕';
+                    deleteBtn.onclick = () => deleteCard(card.id, column.id);
+
+                    cardEl.appendChild(text);
+                    cardEl.appendChild(deleteBtn);
+
+                    cardEl.addEventListener('dragstart', handleDragStart);
+                    cardEl.addEventListener('dragend', handleDragEnd);
+
+                    cardsContainer.appendChild(cardEl);
+                });
+
+                const form = document.createElement('div');
+                form.className = 'add-card-form';
+
+                const input = document.createElement('input');
+                input.className = 'add-card-input';
+                input.type = 'text';
+                input.placeholder = 'Add new card...';
+                input.onkeypress = (e) => {
+                    if (e.key === 'Enter' && input.value.trim()) {
+                        addCard(column.id, input.value);
+                        input.value = '';
+                    }
+                };
+
+                const btn = document.createElement('button');
+                btn.className = 'add-card-btn';
+                btn.textContent = '+';
+                btn.onclick = () => {
+                    if (input.value.trim()) {
+                        addCard(column.id, input.value);
+                        input.value = '';
+                    }
+                };
+
+                form.appendChild(input);
+                form.appendChild(btn);
+
+                columnEl.appendChild(header);
+                columnEl.appendChild(cardsContainer);
+                columnEl.appendChild(form);
+
+                board.appendChild(columnEl);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedCard = {
+                id: e.target.dataset.cardId,
+                columnId: e.target.dataset.columnId
+            };
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, columnId) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+
+            if (draggedCard) {
+                const card = cards[draggedCard.columnId].find(c => c.id == draggedCard.id);
+                if (card) {
+                    cards[draggedCard.columnId] = cards[draggedCard.columnId].filter(c => c.id != draggedCard.id);
+                    cards[columnId].push(card);
+                    render();
+                }
+            }
+        }
+
+        function addCard(columnId, text) {
+            cards[columnId].push({ id: nextId++, text });
+            render();
+        }
+
+        function deleteCard(cardId, columnId) {
+            cards[columnId] = cards[columnId].filter(c => c.id != cardId);
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>

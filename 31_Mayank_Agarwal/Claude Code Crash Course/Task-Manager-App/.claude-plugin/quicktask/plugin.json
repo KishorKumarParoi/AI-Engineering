@@ -1,0 +1,17 @@
+{
+  "name": "quicktask",
+  "version": "1.0.0",
+  "description": "QuickTask project configuration with custom agents, skills, and development hooks for the team",
+  "author": {
+    "name": "QuickTask Team"
+  },
+  "keywords": [
+    "quicktask",
+    "task-manager",
+    "python",
+    "project-config"
+  ],
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "hooks": "./hooks.json"
+}

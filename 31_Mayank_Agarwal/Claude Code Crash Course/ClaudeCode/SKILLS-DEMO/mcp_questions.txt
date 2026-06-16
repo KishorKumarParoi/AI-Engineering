@@ -1,0 +1,21 @@
+"How is MCP different from a regular API call?"
+"A regular API call is code you write — fetch this URL, parse this JSON, handle these errors. An MCP server is a pre-built integration that speaks a standard protocol Claude Code already understands. You don't write the code. You connect the server. Claude Code figures out which tool to use and when to use it."
+"Do I need to know how the MCP server code works to use it?"
+"No. You never look at the MCP server's source code as a user. You just tell Claude Code what you want to do, and it finds the right tool in the server. The whole point of MCP is that you don't need to understand the implementation."
+
+
+"Can I use multiple MCP servers at the same time?"
+"Yes — and with Tool Search enabled in 2026, the performance cost of doing so is minimal. Tools are loaded on demand. Connect the servers you need for your current session, disconnect ones you're not using."
+
+
+"Why did Anthropic build MCP as an open standard instead of just for Claude?"
+
+"Because a standard only works when everyone uses it. If MCP only worked with Claude Code, every other AI tool would build its own incompatible protocol. By making it open, Anthropic ensured that integrations built for Claude also work with any other AI tool that implements MCP. The ecosystem grows together."
+
+
+"What's the difference between .mcp.json and settings.json?"
+".mcp.json is specifically for MCP server configuration — which servers to connect and how. settings.json is for everything else — permissions, hooks, environment variables. They're separate files with separate purposes, but both live in .claude/."
+
+
+"Can Claude Code create its own MCP server?"
+"Technically yes — Claude Code can write the code for an MCP server. But that's an advanced use case that requires understanding the MCP specification. For most users: consume existing MCP servers, don't build new ones. The community already has 3,000+ servers covering most use cases."

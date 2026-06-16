@@ -1,0 +1,269 @@
+Create .claude/settings.json with two hooks:
+
+1. PostToolUse on Write|Edit matching .py files:
+   Run "python -m black {file_path} --quiet" to auto-format Python
+   Use async: false
+
+2. Stop hook:
+   Print "[DailyPulse] Claude finished — review output above" to stderr
+   Use async: true
+
+Save to .claude/settings.json
+
+
+-------------
+
+Building Backend
+
+
+Build the complete FastAPI backend for DailyPulse.
+
+Create these files:
+
+backend/main.py — FastAPI app with these endpoints:
+  GET  /briefing     → generates or returns today's briefing (JSON)
+  GET  /tasks        → returns all tasks from data/tasks.json
+  POST /tasks        → adds a new task (title only) — returns task with AI-generated subtasks
+  PUT  /tasks/{id}/complete  → marks a task complete, updates completed_at
+  DELETE /tasks/{id}  → removes a task
+  GET  /standup      → generates standup from today's completed tasks
+  GET  /insights     → generates insights from today's task patterns
+
+backend/data/tasks.json — empty array []
+backend/data/briefing.json — empty object {}
+backend/.env — ANTHROPIC_API_KEY=your_key_here
+
+Task schema:
+{
+  "id": "uuid4 string",
+  "title": "string",
+  "subtasks": ["string array — AI generated"],
+  "completed": false,
+  "completed_at": null,
+  "created_at": "ISO datetime string"
+}
+
+For POST /tasks:
+  Call Claude claude-haiku-4-6 to break the task title into 3-5 concrete subtasks
+  Return the full task object with subtasks populated
+
+For GET /briefing:
+  If today's briefing already exists in briefing.json, return it
+  Otherwise call Claude to generate: motivational quote, focus tip for the day,
+  encouraging message under 50 words. Save to briefing.json with today's date.
+
+For GET /standup:
+  Read today's completed tasks from tasks.json
+  Call Claude to generate a professional standup: what was done, what's next
+  Return as { "standup": "text" }
+
+For GET /insights:
+  Read all tasks from today
+  Call Claude to find patterns: peak productivity time, task completion rate,
+  suggestions for improvement
+  Return as { "insights": "text" }
+
+Add CORS middleware for http://localhost:5173
+Add a requirements.txt file
+
+
+
+--------
+
+
+Frontend Prompt
+
+Build the complete React frontend for DailyPulse.
+
+The app should have a single page dashboard with four sections:
+
+1. HEADER
+   - App name "DailyPulse" with a subtle gradient
+   - Today's date and day name
+   - A "Refresh Briefing" button
+
+2. MORNING BRIEFING CARD (top, full width)
+   - Fetches from GET /briefing on load
+   - Shows: motivational quote, focus tip, encouraging message
+   - Beautiful card design — gradient border, soft background
+   - Loading skeleton while fetching
+   - If briefing already exists for today, shows it immediately
+
+3. SMART TASK MANAGER (left column, 60% width)
+   - Input field + "Add Task" button at top
+   - On submit: POST /tasks → shows loading → renders task card with subtasks
+   - Each task card shows:
+     * Task title (bold)
+     * Subtasks as checklist items (checkbox for each)
+     * "Complete Task" button — calls PUT /tasks/{id}/complete
+     * Completed tasks show with strikethrough and green checkmark
+   - Tasks separated into "In Progress" and "Completed Today" sections
+   - Smooth transitions when tasks move between sections
+
+4. RIGHT PANEL (right column, 40% width) — two stacked cards:
+   A. STANDUP GENERATOR
+      - "Generate Standup" button
+      - On click: GET /standup → show a formatted standup in a styled box
+      - "Copy to Clipboard" button below the standup
+      - Show only when at least 1 task is completed
+   
+   B. DAILY INSIGHTS
+      - "Get Insights" button
+      - On click: GET /insights → shows AI insights in styled text
+      - Only show after 3+ tasks have been added
+
+Design requirements (the frontend-design plugin is active — use it):
+- Colour scheme: deep indigo (#4F46E5) primary, white cards, soft grey background (#F8FAFC)
+- Font: Inter (import from Google Fonts in index.html)
+- Cards: rounded-2xl, shadow-md, clean padding
+- Buttons: rounded-lg, smooth hover transitions
+- Overall feel: calm, professional, modern productivity tool
+- Mobile responsive: stack columns on small screens
+
+API base URL: http://localhost:8000
+Handle all loading states and error states gracefully.
+
+
+The frontend looks good but needs some refinements:
+1. The task cards need more visual separation — add a subtle left border in indigo
+2. The completed tasks section should be collapsed by default with a toggle
+3. The standup output needs a monospace font and a subtle code-block style
+4. Fix any layout issues on the right panel — the two cards should have equal visual weight
+
+Make these changes without touching the API calls or business logic.
+
+
+
+
+
+/compact Keep the full file structure, all API endpoints, the React component structure, and all TypeScript/Python patterns established. I need to continue adding skills and agents.
+
+
+
+Create a skill file at .claude/skills/morning-briefing/skill.md
+
+The skill should:
+- Call GET http://localhost:8000/briefing to get today's briefing
+- If the briefing hasn't been generated yet, trigger generation
+- Display the briefing in a formatted way in the terminal
+- Then call GET http://localhost:8000/tasks and show:
+  * How many tasks are pending
+  * How many were completed yesterday (if any)
+  * A suggested focus for the day based on pending tasks
+
+Frontmatter:
+- name: morning-briefing
+- description: Generates and displays the DailyPulse morning briefing. Use at the start of every work session.
+- trigger: /morning-briefing
+- effort: low
+
+This skill runs in under 30 seconds and requires the backend to be running.
+
+
+
+
+Create a skill file at .claude/skills/generate-standup/skill.md
+
+The skill should:
+- Call GET http://localhost:8000/standup
+- Format the response as a professional standup in three sections:
+  ✅ Yesterday / Today's completed work
+  🔨 What I'm working on next
+  🚧 Any blockers (ask user if they have blockers — wait for response)
+- Print the formatted standup
+- Ask: "Copy this to clipboard? (y/n)"
+- If y: use pbcopy (Mac) or xclip (Linux) or clip (Windows) to copy
+
+Frontmatter:
+- name: generate-standup
+- description: Generates a professional standup from today's DailyPulse tasks. Use before your daily standup meeting.
+- trigger: /generate-standup
+- effort: low
+
+
+
+
+Create a sub-agent file at .claude/agents/task-breakdown.md
+
+This agent is a specialist in breaking down vague tasks into concrete, actionable subtasks.
+
+Frontmatter:
+- name: task-breakdown
+- description: Breaks any vague task or goal into 3-5 concrete, actionable subtasks. Use when a user has a large or unclear task that needs to be structured. Best for: project planning, feature development, learning goals.
+- tools: Read, Bash
+- disallowedTools: Write, Edit
+- model: claude-haiku-4-5
+- color: green
+
+System prompt:
+You are a task decomposition specialist. Your only job is to take a vague task 
+or goal and break it into 3-5 concrete, actionable subtasks.
+
+Rules:
+- Each subtask must be completable in under 2 hours
+- Each subtask must start with an action verb (Write, Create, Test, Review, etc.)
+- No subtask should depend on another being fully complete first
+- Be specific — "Set up database schema" not "Do database stuff"
+- Return ONLY the subtask list, one per line, numbered
+- No commentary, no preamble
+
+
+
+Update the POST /tasks endpoint in backend/main.py to add a fallback:
+If the AI subtask generation fails for any reason, return the task
+with a single subtask: "Break this task down manually"
+
+Also add a POST /tasks/breakdown endpoint that accepts:
+{ "task_description": "string" }
+And returns a detailed breakdown from Claude — more detailed than the
+standard subtask generation, with time estimates for each subtask.
+
+
+
+
+
+Add Tavily MCP to this project so the morning briefing can include a real-time 
+motivational insight or productivity tip from the web.
+
+1. Create .mcp.json at the project root with Tavily HTTP server config
+   URL format: https://mcp.tavily.com/mcp/?apikey=TAVILY_KEY
+   Replace TAVILY_KEY with the actual key I'll provide
+
+2. Update the GET /briefing endpoint in main.py to include a field called 
+   "web_tip" — but only if TAVILY_ENABLED=true in the .env file
+   When enabled, the briefing generator should search for:
+   "productivity tip for developers {today's date}"
+   And include the first relevant result as a web_tip field
+
+3. Make this gracefully degrade — if Tavily is unavailable, the briefing 
+   still works without the web_tip field
+
+
+
+
+
+   /loop 0 9 * * 1-5 run /morning-briefing and display today's DailyPulse briefing in the terminal. After showing the briefing, check if there are any incomplete tasks from yesterday and list them.
+
+
+
+   ## Team
+
+
+# With Agent Teams:
+# Teammate 1 → builds FastAPI backend + tests
+# Teammate 2 → waits for API contract from T1, builds React frontend  
+# Teammate 3 → writes integration tests
+# All three → work simultaneously → merge → ship
+
+
+Review the complete DailyPulse React frontend and make these improvements:
+
+1. Add a subtle animation when tasks are added (fade in from below)
+2. Add a loading spinner to the "Generate Standup" button while fetching
+3. Make the "Copy to clipboard" interaction show a "Copied!" confirmation 
+   that fades out after 2 seconds
+4. Add an empty state for when there are no tasks: 
+   A friendly illustration/icon and "Add your first task to get started"
+5. Make sure the app looks good on mobile (test by shrinking the browser)
+
+Do NOT change any API calls or business logic — frontend polish only.

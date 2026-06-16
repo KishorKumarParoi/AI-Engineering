@@ -1,0 +1,359 @@
+{
+  "name": "My Google Calendar Agent Flow",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "text"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -460,
+        -20
+      ],
+      "id": "c66b7b96-5e6f-49c3-9cea-04885c2a9bd4",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=You are a calendar assistant who can easily create events in the google calendar.\n\nYou have to provide with the start date  and the end date.\n\nMake sure to understand the requirement and create event in calendar using Create even tool positively.\n\nThe current date and time is {{ $now }}.\n\nAdditionally you have to provide with summary and other details for the calendar which your tool might need.\n\n\nIn case you have to get the events, use get event tools and not the create event one, you can get multiple events as well.\n\n\n\nMake sure that you provide the response in a good summarize manner without any links etc."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        200,
+        -60
+      ],
+      "id": "91cc24a8-c11a-402b-aec2-c40ebcf7dae4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "aiwithmayank@gmail.com",
+          "mode": "list",
+          "cachedResultName": "aiwithmayank@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        200
+      ],
+      "id": "95fd5d86-a2b3-4a71-8668-6d0074a76284",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "0xqhSyKq9tDr7gwV",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        220
+      ],
+      "id": "7ea14dc3-0fdf-446c-9318-e7efea98bdce",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "73QIYD6XODElsKJa",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "aiwithmayank@gmail.com",
+          "mode": "list",
+          "cachedResultName": "aiwithmayank@gmail.com"
+        },
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', ``, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        540,
+        160
+      ],
+      "id": "682ab6a7-5d52-4c24-b964-d99a74c2fb77",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "0xqhSyKq9tDr7gwV",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api-for-calendar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -700,
+        400
+      ],
+      "id": "9b8992a2-fa2f-4599-b836-857326750615",
+      "name": "Webhook",
+      "webhookId": "3e1eb144-c0ab-4956-b040-71ce7cacff88"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1100,
+        -100
+      ],
+      "id": "415cef9a-cd1e-46da-a7bb-b9e89f1d542f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b13709a-e376-44fa-a6f1-e3d18f7d931e",
+              "name": "text",
+              "value": "={{ $json.body.message }}",
+              "type": "string"
+            },
+            {
+              "id": "b7a4d6f5-c4e1-4beb-be8d-effdd708a0ad",
+              "name": "webhook",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "b3b1db31-3432-45bc-85b4-0d81b3771fbb",
+              "name": "sessionId",
+              "value": "0000",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        400
+      ],
+      "id": "1a4fb635-3d95-4b5f-bc43-58cef50c0ff3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e35941b2-6602-4403-ac2a-30ebbe39d37f",
+              "leftValue": "={{ $('Edit Fields').item.json.webhook }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        -60
+      ],
+      "id": "d02357bb-4459-48ad-844c-f794d6a492f9",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        280,
+        160
+      ],
+      "id": "9e08d9a7-d36f-4768-9d7a-a142ae3f5518",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ebe0db36-6382-474c-8c24-539cc66cd012",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "470abe64dbe6aedf026d5e82b6678dbb6d54ed3d3fc1cd80d0b0b3449ccaf233"
+  },
+  "id": "XepWv6T4oy7ns6st",
+  "tags": [
+    {
+      "createdAt": "2025-07-15T23:34:45.189Z",
+      "updatedAt": "2025-07-15T23:34:45.189Z",
+      "id": "rwnoal32XL6P8UwT",
+      "name": "Google-Calendar"
+    }
+  ]
+}

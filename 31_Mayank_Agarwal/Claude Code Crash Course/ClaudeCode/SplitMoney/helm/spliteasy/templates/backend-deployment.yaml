@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spliteasy.backendName" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "spliteasy.labels" . | nindent 4 }}
+    {{- include "spliteasy.backendSelectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  # EBS volumes are ReadWriteOnce — more than 1 replica requires a shared volume (EFS)
+  {{- if and .Values.backend.persistence.enabled (gt (int .Values.backend.replicas) 1) }}
+  strategy:
+    type: Recreate
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "spliteasy.backendSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "spliteasy.labels" . | nindent 8 }}
+        {{- include "spliteasy.backendSelectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: backend
+          image: {{ include "spliteasy.image" (dict "registry" .Values.imageRegistry "repo" .Values.backend.image.repository "tag" .Values.backend.image.tag) }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.backend.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.backend.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          {{- if .Values.backend.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          {{- end }}
+      {{- if .Values.backend.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "spliteasy.backendName" . }}-data
+      {{- end }}

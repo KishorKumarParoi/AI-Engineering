@@ -1,0 +1,78 @@
+https://github.com/Maciek-roboblog/Claude-Code-Usage-Monitor
+
+
+
+
+Build a VisitorWall reaction app and save everything to ~/visitorwall/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 1: ~/visitorwall/app.py
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Python Flask server that:
+- Serves index.html at GET / on port 9999 bound to 0.0.0.0
+- POST /react → accepts {"emoji": "🚀"} → saves to reactions.json
+  Only accepts exactly these 6 emojis: 🚀 💡 🔥 🤔 👍 🙏
+  Any other value → return 400 with {"error": "invalid emoji"}
+- GET /reactions → returns current counts from reactions.json
+- On startup: create reactions.json if missing
+  Default: {"🚀": 0, "💡": 0, "🔥": 0, "🤔": 0, "👍": 0, "🙏": 0}
+- Use flask.send_from_directory to serve index.html
+- Add CORS headers so browser fetch works without issues
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 2: ~/visitorwall/index.html
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Single HTML file with all CSS and JS inside. No external dependencies
+except Google Fonts loaded via <link> tag.
+
+LAYOUT:
+- Full page, dark background #0f172a
+- Centred content, max-width 680px
+- Large heading: "How did this make you feel?"
+- Subtext: "Pick your reaction — no sign up needed"
+- 6 emoji cards in a 3×2 grid
+
+EACH EMOJI CARD:
+- White card, rounded-2xl, shadow-md
+- Large emoji (56px) centred
+- Label below: Inspired / Got It / Mind Blown / Curious / Helpful / Grateful
+- Reaction count below label in bold
+- On hover: card lifts slightly (transform: translateY(-4px))
+- On click: emoji does a quick bounce animation (CSS keyframe)
+  then sends POST /react and updates count without page reload
+
+FOOTER:
+- "Total reactions: X" updated live
+- Today's date in small grey text
+
+BEHAVIOUR:
+- On page load: fetch GET /reactions and populate all counts
+- Auto-refresh counts every 10 seconds silently
+- Show a small green toast "Reacted! 🎉" for 1.5 seconds after clicking
+- Prevent spam: disable the clicked button for 3 seconds after use
+  (local JS only — no server-side rate limiting needed)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 3: ~/visitorwall/start.sh
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#!/bin/bash
+cd ~/visitorwall
+pip install flask --quiet
+python3 app.py &
+echo "VisitorWall running at http://$(hostname -I | awk '{print $1}'):9999"
+
+Make it executable with chmod +x start.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AFTER CREATING ALL FILES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. pip install flask
+2. Run: nohup python3 ~/visitorwall/app.py > ~/visitorwall/app.log 2>&1 &
+3. Wait 2 seconds then test:
+   curl -s http://localhost:9999/reactions
+   (should return the JSON counts)
+4. Report back: "VisitorWall is live at http://VPS_IP:9999"
+
+If port 9999 is already in use, kill the existing process first:
+  fuser -k 9999/tcp
+Then restart.

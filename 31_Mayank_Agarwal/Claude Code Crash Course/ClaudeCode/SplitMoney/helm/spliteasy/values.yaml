@@ -1,0 +1,88 @@
+# ── Global ───────────────────────────────────────────────────────────────────
+namespace: spliteasy
+
+# Container registry prefix — e.g. "123456789.dkr.ecr.ap-south-1.amazonaws.com"
+# Leave empty to use images without a registry prefix.
+imageRegistry: ""
+
+# ── Backend (FastAPI) ─────────────────────────────────────────────────────────
+backend:
+  image:
+    repository: spliteasy-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  replicas: 1
+  port: 8000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+  # JSON file storage — backed by an EBS PersistentVolume on EKS
+  persistence:
+    enabled: true
+    # gp3 is recommended for new EKS clusters; change to gp2 if your cluster only has that
+    storageClass: gp3
+    accessMode: ReadWriteOnce
+    size: 1Gi
+
+  # Liveness / readiness probes
+  livenessProbe:
+    httpGet:
+      path: /docs
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 30
+
+  readinessProbe:
+    httpGet:
+      path: /docs
+      port: 8000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+# ── Frontend (React → nginx) ──────────────────────────────────────────────────
+frontend:
+  image:
+    repository: spliteasy-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  replicas: 1
+  port: 80
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+# ── Ingress (AWS ALB via Load Balancer Controller) ────────────────────────────
+ingress:
+  enabled: true
+  # host: spliteasy.example.com   # ← set your domain or leave blank for ALB DNS
+  host: ""
+
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    # Uncomment for HTTPS (replace with your ACM certificate ARN):
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT:certificate/CERT-ID
+    # alb.ingress.kubernetes.io/ssl-redirect: "443"
+
+# ── Horizontal Pod Autoscaler ─────────────────────────────────────────────────
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70

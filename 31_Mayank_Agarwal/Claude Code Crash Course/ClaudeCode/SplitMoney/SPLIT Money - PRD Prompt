@@ -1,0 +1,26 @@
+I want to build a web app called SplitEasy. 
+
+Here is the idea in plain English:
+
+When friends go on a trip or share a meal, someone always ends up paying for 
+everything. At the end it gets confusing — who paid what, who owes whom, 
+how much. SplitEasy solves this.
+
+The app lets you:
+1. Create a group (like "Goa Trip 2026" or "Office Lunch")
+2. Add the people in the group
+3. Record every expense — who paid, how much, what for, who it was split between
+4. See a clear settlement screen: exactly who needs to pay whom and how much
+
+Help me write a proper PRD (Product Requirements Document) for this app.
+The PRD should include:
+- What the app does (plain English)
+- The 4-5 core features
+- What each screen looks like
+- The data we need to store
+- What the API should do (non-technical descriptions)
+- What "done" looks like
+
+Write it as PRD.md in this folder. 
+Make it clear enough that a developer could build from it without asking questions.
+Use Indian Rupee (₹) as the default currency throughout.

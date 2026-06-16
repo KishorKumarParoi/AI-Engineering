@@ -1,0 +1,13 @@
+# Start a Claude Code session in your project
+claude
+
+# Set a deployment watcher
+/loop 2m check if the file deploy.log exists. If it does, read its last 20 lines and tell me whether the deployment succeeded, failed, or is still in progress. If it succeeded, stop watching. If it failed, explain the error.
+
+
+
+/loop 0 * * * * check for any new pull requests opened in the last hour 
+using the GitHub MCP. If any are found, give me:
+1. The PR title and author
+2. A one-paragraph description of what it changes
+3. Whether it touches any auth or payment files (those need immediate review)

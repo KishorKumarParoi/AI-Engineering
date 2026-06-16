@@ -1,0 +1,85 @@
+{
+  "name": "My First Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## For all the shortcuts\n**Double click** to edit me. \n \n[Shortcuts Link](https://docs.n8n.io/keyboard-shortcuts/#canvas)"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1080,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "33e753ea-8713-4286-8ef7-45db0277c042",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        -100
+      ],
+      "id": "cd7cb3f3-f37f-4eed-8044-c780158080c8",
+      "name": "My Manual Trigger"
+    },
+    {
+      "parameters": {
+        "sendTo": "aiwithmayank@gmail.com",
+        "subject": "Hi From My first Workflow",
+        "emailType": "text",
+        "message": "Hey hi from n8n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -960,
+        -100
+      ],
+      "id": "ab32fa13-8bfa-47ed-aca9-5cd327304d65",
+      "name": "Send a test email",
+      "webhookId": "9f2fce13-d25f-48b0-957f-e4bfecb8baef",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CfO0XDN7q9tQ2pSO",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "My Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a test email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fde99dfc-beba-432c-9a53-bd6c79a1830d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "470abe64dbe6aedf026d5e82b6678dbb6d54ed3d3fc1cd80d0b0b3449ccaf233"
+  },
+  "id": "PclJABXHwmSWwx0s",
+  "tags": [
+    {
+      "createdAt": "2025-07-09T20:55:51.748Z",
+      "updatedAt": "2025-07-09T20:55:51.748Z",
+      "id": "NXBjAupXoVBrzcJ2",
+      "name": "learnn8n"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spliteasy.frontendName" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "spliteasy.labels" . | nindent 4 }}
+    {{- include "spliteasy.frontendSelectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      {{- include "spliteasy.frontendSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "spliteasy.labels" . | nindent 8 }}
+        {{- include "spliteasy.frontendSelectorLabels" . | nindent 8 }}
+      annotations:
+        # Roll pods when the nginx configmap changes
+        checksum/config: {{ include (print $.Template.BasePath "/frontend-configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: frontend
+          image: {{ include "spliteasy.image" (dict "registry" .Values.imageRegistry "repo" .Values.frontend.image.repository "tag" .Values.frontend.image.tag) }}
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.frontend.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "spliteasy.frontendName" . }}-nginx

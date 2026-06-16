@@ -1,0 +1,48 @@
+[
+  {
+    "id": "163ba68d-fdc7-4bad-95b7-00dd790934a3",
+    "group_id": "c9efd575-3233-47f2-9dbd-a3cf855298c4",
+    "description": "Hotel Stay",
+    "amount": 500000,
+    "paid_by": "576f3b10-846b-4c20-ba59-725b4527772f",
+    "date": "2026-05-03",
+    "created_at": "2026-05-03T16:10:22.493638Z",
+    "splits": [
+      {
+        "member_id": "576f3b10-846b-4c20-ba59-725b4527772f",
+        "amount": 250000
+      },
+      {
+        "member_id": "551eb564-ed8d-4c4b-88c2-0b5d5f59a6c2",
+        "amount": 250000
+      }
+    ]
+  },
+  {
+    "id": "81decc0a-9729-4e52-af0d-28960d264ad5",
+    "group_id": "c9efd575-3233-47f2-9dbd-a3cf855298c4",
+    "description": "Activity",
+    "amount": 1000000,
+    "paid_by": "551eb564-ed8d-4c4b-88c2-0b5d5f59a6c2",
+    "date": "2026-05-03",
+    "created_at": "2026-05-03T16:10:50.289261Z",
+    "splits": [
+      {
+        "member_id": "576f3b10-846b-4c20-ba59-725b4527772f",
+        "amount": 250000
+      },
+      {
+        "member_id": "551eb564-ed8d-4c4b-88c2-0b5d5f59a6c2",
+        "amount": 250000
+      },
+      {
+        "member_id": "95f278b7-37bb-47a7-930a-3b12e74f830f",
+        "amount": 250000
+      },
+      {
+        "member_id": "a58994cf-59ff-4669-b27f-34b06fae7907",
+        "amount": 250000
+      }
+    ]
+  }
+]

@@ -1,0 +1,247 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "77dd5ce0-e8f2-4b17-9557-4a0cea5ba26a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1f8oD_wyv9Gj5aEYyBfVPv1dAYp2UtXmChHQ4FBIBWWI",
+          "mode": "list",
+          "cachedResultName": "Potential Clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8oD_wyv9Gj5aEYyBfVPv1dAYp2UtXmChHQ4FBIBWWI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8oD_wyv9Gj5aEYyBfVPv1dAYp2UtXmChHQ4FBIBWWI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "dc8d0a2c-7684-4b85-beaf-bfe551cc57b7",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tztZZfIErJSF79EP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.genderize.io?name={{ $json.Name }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "d57fb6c4-d00d-414c-9d6b-f31542d5205c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1f8oD_wyv9Gj5aEYyBfVPv1dAYp2UtXmChHQ4FBIBWWI",
+          "mode": "list",
+          "cachedResultName": "Potential Clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8oD_wyv9Gj5aEYyBfVPv1dAYp2UtXmChHQ4FBIBWWI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8oD_wyv9Gj5aEYyBfVPv1dAYp2UtXmChHQ4FBIBWWI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Gender": "={{ $json.gender }}",
+            "Name": "={{ $('Get row(s) in sheet').item.json.Name }}",
+            "Profession": "={{ $('Get row(s) in sheet').item.json.Profession }}",
+            "Age": "={{ $('Get row(s) in sheet').item.json.Age }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Profession",
+              "displayName": "Profession",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gender",
+              "displayName": "Gender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        660,
+        0
+      ],
+      "id": "1a76a1b8-dfc2-4fd8-8962-e5988e6b2ab8",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tztZZfIErJSF79EP",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "aiwithmayank@gmail.com",
+        "subject": "New Client",
+        "message": "=hi {{ $json.Gender }}\n\n{{ $json.Profession }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        0
+      ],
+      "id": "7d51cc07-47a7-4984-81e8-f3bfd3274d69",
+      "name": "Send a message",
+      "webhookId": "dd955a28-5d39-4966-a6bb-7c59f0e2cf65",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CfO0XDN7q9tQ2pSO",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Send a message": [
+      {
+        "json": {
+          "id": "197f6687c517e061",
+          "threadId": "197f6687c517e061",
+          "labelIds": [
+            "UNREAD",
+            "SENT",
+            "INBOX"
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ef81a3b1-8483-418c-a6da-97821adc5394",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "470abe64dbe6aedf026d5e82b6678dbb6d54ed3d3fc1cd80d0b0b3449ccaf233"
+  },
+  "id": "rInpfRaNR55zKWBF",
+  "tags": []
+}

@@ -1,0 +1,155 @@
+# Configuration Template for Kaggle Data Analysis Skill
+# Copy this file and modify according to your project needs
+
+# ============================================================================
+# DATA LOADING CONFIGURATION
+# ============================================================================
+
+data:
+  # Input file path (CSV format)
+  input_file: "titanic.csv"
+  
+  # Columns to use (leave empty to use all)
+  # columns_to_use: ["col1", "col2", "col3"]
+  
+  # Target column name (for supervised learning)
+  # target_column: "Survived"
+  
+  # Row limit for testing (leave empty to use all rows)
+  # sample_rows: 5000
+
+# ============================================================================
+# DATA PREPROCESSING CONFIGURATION
+# ============================================================================
+
+preprocessing:
+  # Missing value handling strategy
+  # Options: "drop", "mean", "median", "mode", "forward_fill"
+  missing_value_strategy: "mean"
+  
+  # Maximum percentage of missing values to tolerate
+  # Columns with more than this % will be considered for dropping
+  missing_threshold_percent: 30
+  
+  # Outlier detection method
+  # Options: "iqr", "zscore", "isolation_forest"
+  outlier_detection: "iqr"
+  
+  # How to handle outliers
+  # Options: "keep", "remove", "cap"
+  outlier_handling: "cap"
+  
+  # Outlier IQR multiplier (for IQR method)
+  iqr_multiplier: 1.5
+  
+  # Remove duplicate rows
+  remove_duplicates: true
+
+# ============================================================================
+# FEATURE ENGINEERING CONFIGURATION
+# ============================================================================
+
+feature_engineering:
+  # Create polynomial features
+  create_polynomial_features: true
+  polynomial_degree: 2
+  
+  # Create interaction features
+  create_interaction_features: true
+  max_interaction_features: 20
+  
+  # Categorical encoding strategy
+  # Options: "one_hot", "label", "target", "frequency"
+  categorical_encoding: "one_hot"
+  
+  # Scale numeric features
+  scale_features: true
+  scaling_method: "standard"  # Options: "standard", "minmax", "robust"
+  
+  # Create temporal features (if applicable)
+  create_temporal_features: true
+  temporal_columns: []  # List date columns here
+
+# ============================================================================
+# STATISTICAL ANALYSIS CONFIGURATION
+# ============================================================================
+
+statistical_analysis:
+  # Normality test for numeric columns
+  test_normality: true
+  
+  # Calculate skewness and kurtosis
+  calculate_distribution_shape: true
+  
+  # Correlation analysis
+  correlation_method: "pearson"  # Options: "pearson", "spearman"
+  correlation_threshold: 0.8  # Flag correlations above this
+  
+  # Perform group statistics
+  perform_group_analysis: true
+  
+  # Statistical significance level
+  alpha: 0.05
+
+# ============================================================================
+# VISUALIZATION CONFIGURATION
+# ============================================================================
+
+visualization:
+  # Figure size (width, height)
+  figure_size: [12, 6]
+  
+  # DPI for saving images
+  dpi: 100
+  
+  # Color scheme
+  color_palette: "husl"  # Options: "husl", "Set2", "pastel", etc.
+  
+  # Include interactive plots
+  include_interactive: true
+  
+  # Number of top categorical values to show
+  top_categories: 10
+
+# ============================================================================
+# OUTPUT CONFIGURATION
+# ============================================================================
+
+output:
+  # Directory for all reports
+  reports_directory: "reports"
+  
+  # Report format
+  # Options: "html", "pdf" (requires wkhtmltopdf)
+  report_format: "html"
+  
+  # Include detailed statistics
+  include_detailed_stats: true
+  
+  # Include visualizations
+  include_visualizations: true
+  
+  # Generate executive summary
+  generate_summary: true
+
+# ============================================================================
+# ADVANCED CONFIGURATION
+# ============================================================================
+
+advanced:
+  # Verbosity level
+  # Options: "quiet", "normal", "verbose"
+  verbosity: "normal"
+  
+  # Random seed for reproducibility
+  random_seed: 42
+  
+  # Number of parallel jobs (-1 for all cores)
+  n_jobs: -1
+  
+  # Use caching for large computations
+  use_cache: true
+  
+  # Maximum dataset size (in MB)
+  # Larger datasets will be sampled
+  max_dataset_size_mb: 1000

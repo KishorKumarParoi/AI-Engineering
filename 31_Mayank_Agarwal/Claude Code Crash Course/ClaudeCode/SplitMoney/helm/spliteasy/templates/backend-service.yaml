@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spliteasy.backendName" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "spliteasy.labels" . | nindent 4 }}
+    {{- include "spliteasy.backendSelectorLabels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: {{ .Values.backend.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "spliteasy.backendSelectorLabels" . | nindent 4 }}

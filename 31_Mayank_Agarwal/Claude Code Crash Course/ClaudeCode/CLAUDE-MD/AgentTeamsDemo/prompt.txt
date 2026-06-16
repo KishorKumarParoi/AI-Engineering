@@ -1,0 +1,30 @@
+Create an agent team to build a "User Preferences" feature.
+
+The feature allows users to save display preferences: theme (light/dark),
+language, and notification settings.
+
+Spawn a team of 3 specialists:
+
+Teammate 1 — Backend Engineer:
+- Create backend/api/preferences.py
+- REST endpoints: GET /preferences/{user_id}, POST /preferences/{user_id}
+- Input validation, error handling
+- Uses SQLite for storage
+
+Teammate 2 — Frontend Developer:
+- Create frontend/components/PreferencesPanel.jsx
+- React component with form for all three settings
+- Calls the backend API endpoints
+- Shows loading state and error messages
+
+Teammate 3 — QA Engineer:
+- Create tests/test_preferences.py
+- Test both API endpoints
+- Test the React component (mock API calls)
+- Cover: valid input, invalid input, missing user, server errors
+
+Before starting: Teammate 1 should message Teammates 2 and 3 with 
+the exact API contract (request/response schema) so they can work 
+from a consistent spec.
+
+When all three are done, merge branches and report.
