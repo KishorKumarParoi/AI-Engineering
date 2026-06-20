@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 530" width="940" height="530" font-family="'Segoe UI',Arial,sans-serif">
+  <rect width="940" height="530" fill="#F8FAFC"/>
+  <rect width="940" height="52" fill="#0F172A"/>
+  <text x="470" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="white">04 — Phase 1: RAG Pipeline</text>
+  <text x="470" y="44" text-anchor="middle" font-size="11" fill="#94A3B8">Run every golden through Retrieve + Generate · evals/runner.py</text>
+  <defs>
+    <marker id="arr"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#64748B"/></marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#065F46"/></marker>
+    <marker id="arr-b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#1D4ED8"/></marker>
+  </defs>
+
+  <!-- INPUT: Goldens -->
+  <rect x="20" y="72" width="150" height="140" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="95" y="93"  text-anchor="middle" font-size="11" font-weight="700" fill="#334155">🎯 goldens.json</text>
+  <text x="95" y="110" text-anchor="middle" font-size="9"  fill="#64748B">g001 · faithfulness</text>
+  <text x="95" y="124" text-anchor="middle" font-size="9"  fill="#64748B">g002 · answer_relevancy</text>
+  <text x="95" y="138" text-anchor="middle" font-size="9"  fill="#64748B">g003 · context_precision</text>
+  <text x="95" y="152" text-anchor="middle" font-size="9"  fill="#64748B">g004 · context_recall</text>
+  <text x="95" y="166" text-anchor="middle" font-size="9"  fill="#64748B">g005 · answer_correctness</text>
+  <text x="95" y="182" text-anchor="middle" font-size="9"  font-weight="700" fill="#475569">5 Q&amp;A pairs + reference</text>
+  <text x="95" y="198" text-anchor="middle" font-size="9"  fill="#94A3B8">each with metric_focus</text>
+
+  <!-- Arrow to loop -->
+  <line x1="170" y1="142" x2="198" y2="142" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- MAIN LOOP BOX  x=200 y=66 w=555 h=400 -->
+  <rect x="200" y="66" width="555" height="400" rx="10" fill="white" stroke="#10B981" stroke-width="2"/>
+  <rect x="200" y="66"  width="555" height="34" rx="10" fill="#065F46"/>
+  <rect x="200" y="88"  width="555" height="12" fill="#065F46"/>
+  <text x="477" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="white">for i, golden in enumerate(goldens):  [5 iterations]</text>
+
+  <!-- Step A -->
+  <rect x="220" y="114" width="515" height="50" rx="6" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="1"/>
+  <text x="477" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#4C1D95">Load golden.user_input</text>
+  <text x="477" y="152" text-anchor="middle" font-size="9"  fill="#64748B">"What is TechNest's return policy?"  (plus its reference answer)</text>
+  <line x1="477" y1="164" x2="477" y2="178" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step B -->
+  <rect x="220" y="180" width="515" height="65" rx="6" fill="#ECFDF5" stroke="#34D399" stroke-width="1.5"/>
+  <text x="477" y="201" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">retriever.retrieve(golden["user_input"], top_k=3)</text>
+  <text x="477" y="218" text-anchor="middle" font-size="10" fill="#047857">Embed query via Gemini → cosine similarity → return 3 chunks</text>
+  <text x="477" y="234" text-anchor="middle" font-size="9"  fill="#64748B">rag/retriever.py</text>
+  <line x1="477" y1="245" x2="477" y2="259" stroke="#065F46" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- Step C -->
+  <rect x="220" y="261" width="515" height="65" rx="6" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+  <text x="477" y="282" text-anchor="middle" font-size="12" font-weight="700" fill="#78350F">await generator.generate(golden["user_input"], contexts)</text>
+  <text x="477" y="299" text-anchor="middle" font-size="10" fill="#92400E">Build prompt → call Groq llama-3.3-70b → get response string</text>
+  <text x="477" y="315" text-anchor="middle" font-size="9"  fill="#64748B">rag/generator.py</text>
+  <line x1="477" y1="326" x2="477" y2="340" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step D -->
+  <rect x="220" y="342" width="515" height="52" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1.5"/>
+  <text x="477" y="363" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">enriched.append({...golden, retrieved_contexts, response})</text>
+  <text x="477" y="380" text-anchor="middle" font-size="10" fill="#0D9488">Merge original golden fields + contexts + LLM response</text>
+  <line x1="477" y1="394" x2="477" y2="408" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step E -->
+  <rect x="320" y="410" width="315" height="40" rx="5" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1"/>
+  <text x="477" y="428" text-anchor="middle" font-size="11" font-weight="700" fill="#991B1B">await asyncio.sleep(5) — if not last golden</text>
+  <text x="477" y="443" text-anchor="middle" font-size="9"  fill="#64748B">Prevents rate-limiting on the generator</text>
+
+  <!-- OUTPUT box -->
+  <rect x="780" y="92" width="140" height="135" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="2"/>
+  <text x="850" y="113" text-anchor="middle" font-size="11" font-weight="700" fill="#1D4ED8">enriched[]</text>
+  <text x="850" y="130" text-anchor="middle" font-size="9"  fill="#64748B">5 records each</text>
+  <text x="850" y="144" text-anchor="middle" font-size="9"  fill="#64748B">containing:</text>
+  <text x="850" y="158" text-anchor="middle" font-size="9"  fill="#64748B">• user_input</text>
+  <text x="850" y="172" text-anchor="middle" font-size="9"  fill="#64748B">• reference</text>
+  <text x="850" y="186" text-anchor="middle" font-size="9"  fill="#64748B">• retrieved_contexts</text>
+  <text x="850" y="200" text-anchor="middle" font-size="9"  fill="#64748B">• response</text>
+  <text x="850" y="218" text-anchor="middle" font-size="9"  font-weight="700" fill="#1D4ED8">→ goes to Phase 2</text>
+
+  <!-- Arrow loop → output -->
+  <line x1="755" y1="230" x2="778" y2="210" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- Timing note -->
+  <rect x="20" y="252" width="150" height="68" rx="6" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1"/>
+  <text x="95" y="271" text-anchor="middle" font-size="10" font-weight="700" fill="#78350F">⏱ Timing</text>
+  <text x="95" y="287" text-anchor="middle" font-size="9"  fill="#64748B">5 × ~2s Groq call</text>
+  <text x="95" y="301" text-anchor="middle" font-size="9"  fill="#64748B">+ 4 × 5s sleep</text>
+  <text x="95" y="315" text-anchor="middle" font-size="9"  fill="#64748B">≈ 30 s total</text>
+
+  <!-- Checkpoint note -->
+  <rect x="20" y="358" width="150" height="68" rx="6" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1"/>
+  <text x="95" y="378" text-anchor="middle" font-size="10" font-weight="700" fill="#991B1B">💾 After Phase 1</text>
+  <text x="95" y="394" text-anchor="middle" font-size="9"  fill="#64748B">save_checkpoint(</text>
+  <text x="95" y="408" text-anchor="middle" font-size="9"  fill="#64748B">enriched, {}, {},</text>
+  <text x="95" y="422" text-anchor="middle" font-size="9"  fill="#64748B">True, False)</text>
+
+  <rect y="502" width="940" height="28" fill="#1E293B"/>
+  <text x="470" y="521" text-anchor="middle" font-size="10" fill="#94A3B8">💡 Phase 1 runs inside _run() worker thread — no st.* calls · enriched list is returned to main thread when complete</text>
+</svg>

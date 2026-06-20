@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 490" width="880" height="490" font-family="'Segoe UI',Arial,sans-serif">
+  <rect width="880" height="490" fill="#F8FAFC"/>
+  <rect width="880" height="52" fill="#0F172A"/>
+  <text x="440" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="white">06 — Thread Safety Pattern</text>
+  <text x="440" y="44" text-anchor="middle" font-size="11" fill="#94A3B8">Why _run() exists and the strict rules around it · app.py</text>
+  <defs>
+    <marker id="arr"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#64748B"/></marker>
+    <marker id="arr-b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#1D4ED8"/></marker>
+    <marker id="arr-t" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#0F766E"/></marker>
+  </defs>
+
+  <!-- MAIN THREAD -->
+  <rect x="25" y="66" width="365" height="388" rx="10" fill="white" stroke="#3B82F6" stroke-width="2"/>
+  <rect x="25" y="66"  width="365" height="34" rx="10" fill="#1D4ED8"/>
+  <rect x="25" y="88"  width="365" height="12" fill="#1D4ED8"/>
+  <text x="207" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="white">MAIN THREAD — Streamlit</text>
+  <text x="207" y="102" text-anchor="middle" font-size="9"  fill="#93C5FD">Owns the session context · can call st.* freely</text>
+
+  <rect x="45" y="116" width="325" height="44" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+  <text x="207" y="137" text-anchor="middle" font-size="11" font-weight="700" fill="#1D4ED8">st.spinner("Running…")</text>
+  <text x="207" y="153" text-anchor="middle" font-size="9"  fill="#64748B">Show UI feedback before the blocking call</text>
+  <line x1="207" y1="160" x2="207" y2="175" stroke="#1D4ED8" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <rect x="45" y="177" width="325" height="58" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="2"/>
+  <text x="207" y="199" text-anchor="middle" font-size="12" font-weight="700" fill="#0F766E">_run(coro)</text>
+  <text x="207" y="215" text-anchor="middle" font-size="10" fill="#0D9488">ThreadPoolExecutor(max_workers=1)</text>
+  <text x="207" y="229" text-anchor="middle" font-size="9"  fill="#64748B">executor.submit(asyncio.run, coro)</text>
+
+  <rect x="45" y="248" width="325" height="34" rx="4" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="207" y="263" text-anchor="middle" font-size="10" font-style="italic" fill="#94A3B8">main thread blocks here · waiting for worker</text>
+  <text x="207" y="277" text-anchor="middle" font-size="9"  fill="#94A3B8">(timeout = 1800 s)</text>
+
+  <rect x="45" y="296" width="325" height="44" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1"/>
+  <text x="207" y="317" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">result = future.result()</text>
+  <text x="207" y="333" text-anchor="middle" font-size="9"  fill="#64748B">Worker finished · result is back in main thread</text>
+  <line x1="207" y1="340" x2="207" y2="355" stroke="#1D4ED8" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <rect x="45" y="357" width="325" height="62" rx="6" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1"/>
+  <text x="207" y="377" text-anchor="middle" font-size="11" font-weight="700" fill="#1D4ED8">st.success(f"{name}: {avg:.2f}")</text>
+  <text x="207" y="393" text-anchor="middle" font-size="10" fill="#3B82F6">st.progress()  ·  st.error()  ·  st.expander()</text>
+  <text x="207" y="409" text-anchor="middle" font-size="9"  fill="#064">Safe — we are back in the main thread</text>
+
+  <!-- WORKER THREAD -->
+  <rect x="490" y="66" width="365" height="388" rx="10" fill="white" stroke="#0F766E" stroke-width="2"/>
+  <rect x="490" y="66"  width="365" height="34" rx="10" fill="#0F766E"/>
+  <rect x="490" y="88"  width="365" height="12" fill="#0F766E"/>
+  <text x="672" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="white">WORKER THREAD — asyncio.run(coro)</text>
+  <text x="672" y="102" text-anchor="middle" font-size="9"  fill="#6EE7B7">Fresh event loop · no session context · NO st.*</text>
+
+  <rect x="510" y="116" width="325" height="44" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1"/>
+  <text x="672" y="137" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">asyncio.run(run_phase1(…))</text>
+  <text x="672" y="153" text-anchor="middle" font-size="9"  fill="#64748B">or  asyncio.run(score_experiment(…))</text>
+
+  <rect x="510" y="176" width="325" height="70" rx="6" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="2"/>
+  <text x="672" y="198" text-anchor="middle" font-size="13" font-weight="700" fill="#991B1B">⛔  NO st.* calls inside!</text>
+  <text x="672" y="215" text-anchor="middle" font-size="10" fill="#B91C1C">Streamlit's session context is thread-local.</text>
+  <text x="672" y="231" text-anchor="middle" font-size="9"  fill="#64748B">st.success() here → NoSessionContext crash</text>
+  <text x="672" y="244" text-anchor="middle" font-size="9"  fill="#64748B">This was a real production bug we fixed</text>
+
+  <rect x="510" y="262" width="325" height="86" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1"/>
+  <text x="672" y="283" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">What it CAN do:</text>
+  <text x="672" y="300" text-anchor="middle" font-size="10" fill="#0D9488">✅  await API calls  (Groq, Gemini)</text>
+  <text x="672" y="316" text-anchor="middle" font-size="10" fill="#0D9488">✅  await asyncio.sleep()</text>
+  <text x="672" y="332" text-anchor="middle" font-size="10" fill="#0D9488">✅  append to plain list  (error_collector)</text>
+  <text x="672" y="346" text-anchor="middle" font-size="9"  fill="#64748B">error_collector is passed in, updated in thread</text>
+
+  <rect x="510" y="364" width="325" height="50" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1"/>
+  <text x="672" y="384" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">return enriched  /  return scores</text>
+  <text x="672" y="400" text-anchor="middle" font-size="9"  fill="#64748B">Result travels back to main via future.result()</text>
+
+  <!-- Bridge arrows -->
+  <!-- _run spawns worker -->
+  <line x1="370" y1="199" x2="488" y2="148" stroke="#0F766E" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr-t)"/>
+  <text x="432" y="167" text-anchor="middle" font-size="9" fill="#0F766E">spawns worker</text>
+
+  <!-- worker returns to main -->
+  <line x1="488" y1="386" x2="370" y2="322" stroke="#1D4ED8" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr-b)"/>
+  <text x="432" y="375" text-anchor="middle" font-size="9" fill="#1D4ED8">returns result</text>
+
+  <rect y="462" width="880" height="28" fill="#1E293B"/>
+  <text x="440" y="481" text-anchor="middle" font-size="10" fill="#94A3B8">💡 nest_asyncio was removed — it patched asyncio globally and broke Streamlit's anyio loop on Python 3.12+, causing NoEventLoopError</text>
+</svg>

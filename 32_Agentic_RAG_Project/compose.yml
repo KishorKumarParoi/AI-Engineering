@@ -1,0 +1,132 @@
+name: agentic-rag-project
+
+services:
+  # FastAPI application
+  api:
+    build: .
+    container_name: rag-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')\"" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    env_file:
+      - .env
+    environment:
+      # Override OpenSearch host for container networking
+      - OPENSEARCH__HOST=http://opensearch:9200
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - rag-network
+
+  # OpenSearch — hybrid BM25 + vector search
+  opensearch:
+    image: opensearchproject/opensearch:2.19.5
+    container_name: rag-opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - DISABLE_SECURITY_PLUGIN=true
+      - bootstrap.memory_lock=true
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  # OpenSearch Dashboards — search UI
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2.19.5
+    container_name: rag-dashboards
+    ports:
+      - "5601:5601"
+    environment:
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    volumes:
+      - ./opensearch_dashboards/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
+    depends_on:
+      - opensearch
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - rag-network
+
+  # Airflow — daily arXiv ingestion DAG
+  airflow:
+    build:
+      context: .
+      dockerfile: airflow/Dockerfile
+    container_name: rag-airflow
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW_HOME=/opt/airflow
+      - PYTHONPATH=/opt/airflow/src
+      - OPENSEARCH__HOST=http://opensearch:9200
+      # Suppress FutureWarnings emitted by Airflow's own internal config
+      # migration code (core/sql_alchemy_conn → database/sql_alchemy_conn).
+      # Our env var AIRFLOW__DATABASE__SQL_ALCHEMY_CONN is already correct.
+      - PYTHONWARNINGS=ignore::FutureWarning:airflow,ignore::DeprecationWarning:airflow
+      # UPDATE_FAB_PERMS=False: skip the slow perm sync inside gunicorn workers.
+      # entrypoint.sh runs `airflow sync-perm` once before the webserver starts,
+      # so permissions are already in Neon when gunicorn boots — no sync needed.
+      - AIRFLOW__WEBSERVER__UPDATE_FAB_PERMS=False
+      # Enable Basic Auth for the REST API (default is session/cookie auth which
+      # only works in a browser). Without this, GET /api/v1/dags returns 401
+      # even with correct credentials.
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - airflow_logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./src:/opt/airflow/src
+    ports:
+      - "8080:8080"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    networks:
+      - rag-network
+
+volumes:
+  opensearch_data:
+  airflow_logs:
+
+networks:
+  rag-network:
+    driver: bridge

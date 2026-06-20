@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 490" width="880" height="490" font-family="'Segoe UI',Arial,sans-serif">
+  <rect width="880" height="490" fill="#F8FAFC"/>
+  <rect width="880" height="52" fill="#0F172A"/>
+  <text x="440" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="white">08 — Checkpoint &amp; Recovery</text>
+  <text x="440" y="44" text-anchor="middle" font-size="11" fill="#94A3B8">Save progress after every experiment · restore on reconnect · app.py</text>
+  <defs>
+    <marker id="arr"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#64748B"/></marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#065F46"/></marker>
+    <marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#DC2626"/></marker>
+  </defs>
+
+  <!-- PATH A -->
+  <rect x="20" y="66" width="405" height="394" rx="10" fill="white" stroke="#10B981" stroke-width="2"/>
+  <rect x="20" y="66"  width="405" height="34" rx="10" fill="#065F46"/>
+  <rect x="20" y="88"  width="405" height="12" fill="#065F46"/>
+  <text x="222" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="white">PATH A — Normal Run (saving progress)</text>
+
+  <rect x="40" y="116" width="365" height="50" rx="6" fill="#ECFDF5" stroke="#34D399" stroke-width="1"/>
+  <text x="222" y="136" text-anchor="middle" font-size="11" font-weight="700" fill="#065F46">Phase 1 complete</text>
+  <text x="222" y="153" text-anchor="middle" font-size="9"  fill="#64748B">save_checkpoint(enriched, {}, {}, phase1_done=True, phase2_done=False)</text>
+  <line x1="222" y1="166" x2="222" y2="180" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="40" y="182" width="365" height="44" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1"/>
+  <text x="222" y="200" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">Experiment 1 (Faithfulness) scored</text>
+  <text x="222" y="217" text-anchor="middle" font-size="9"  fill="#64748B">save_checkpoint(enriched, {"Faithfulness": [...]}, ...)</text>
+  <line x1="222" y1="226" x2="222" y2="238" stroke="#64748B" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <text x="222" y="252" text-anchor="middle" font-size="10" fill="#94A3B8" font-style="italic">… exp 2, 3, 4 scored and saved …</text>
+  <line x1="222" y1="260" x2="222" y2="272" stroke="#64748B" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <rect x="40" y="274" width="365" height="44" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1"/>
+  <text x="222" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">Experiment 5 (Ans. Correctness) scored</text>
+  <text x="222" y="309" text-anchor="middle" font-size="9"  fill="#64748B">save_checkpoint(..., phase2_done=True)</text>
+  <line x1="222" y1="318" x2="222" y2="332" stroke="#065F46" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <rect x="40" y="334" width="365" height="52" rx="6" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
+  <text x="222" y="355" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">save_results("results.json", results)</text>
+  <text x="222" y="372" text-anchor="middle" font-size="10" fill="#047857">Full results written · st.balloons() 🎈</text>
+
+  <rect x="40" y="400" width="365" height="46" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="222" y="419" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">checkpoint.json  structure</text>
+  <text x="222" y="435" text-anchor="middle" font-size="9"  fill="#64748B">{enriched, scores, errors, phase1_done, phase2_done}</text>
+
+  <!-- PATH B -->
+  <rect x="455" y="66" width="405" height="394" rx="10" fill="white" stroke="#DC2626" stroke-width="2"/>
+  <rect x="455" y="66"  width="405" height="34" rx="10" fill="#991B1B"/>
+  <rect x="455" y="88"  width="405" height="12" fill="#991B1B"/>
+  <text x="657" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="white">PATH B — Connection Drop → Recovery</text>
+
+  <rect x="475" y="116" width="365" height="46" rx="6" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+  <text x="657" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="#991B1B">⚡ Connection dropped mid-run</text>
+  <text x="657" y="153" text-anchor="middle" font-size="9"  fill="#64748B">e.g. after Exp 2 · checkpoint.json has 2/5 scores</text>
+  <line x1="657" y1="162" x2="657" y2="176" stroke="#DC2626" stroke-width="1.5" marker-end="url(#arr-r)"/>
+
+  <rect x="475" y="178" width="365" height="44" rx="6" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1"/>
+  <text x="657" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#78350F">User reopens the page</text>
+  <text x="657" y="213" text-anchor="middle" font-size="9"  fill="#64748B">Streamlit re-renders · session_state is blank again</text>
+  <line x1="657" y1="222" x2="657" y2="236" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="475" y="238" width="365" height="56" rx="6" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1.5"/>
+  <text x="657" y="258" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">load_checkpoint()</text>
+  <text x="657" y="274" text-anchor="middle" font-size="10" fill="#0D9488">Finds checkpoint.json → reads JSON</text>
+  <text x="657" y="290" text-anchor="middle" font-size="9"  fill="#64748B">Sidebar: "Exp done: 2/5 (Faithfulness, Ans. Relevancy)"</text>
+  <line x1="657" y1="294" x2="657" y2="308" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="475" y="310" width="365" height="56" rx="6" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+  <text x="657" y="330" text-anchor="middle" font-size="11" font-weight="700" fill="#1D4ED8">User clicks "Restore from checkpoint"</text>
+  <text x="657" y="347" text-anchor="middle" font-size="10" fill="#3B82F6">Copies enriched, scores, errors → session_state</text>
+  <text x="657" y="362" text-anchor="middle" font-size="9"  fill="#64748B">st.rerun() → page refreshes with full state</text>
+  <line x1="657" y1="366" x2="657" y2="380" stroke="#065F46" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <rect x="475" y="382" width="365" height="56" rx="6" fill="#ECFDF5" stroke="#34D399" stroke-width="1.5"/>
+  <text x="657" y="402" text-anchor="middle" font-size="11" font-weight="700" fill="#065F46">▶ Resume Phase 2</text>
+  <text x="657" y="419" text-anchor="middle" font-size="10" fill="#047857">Skips Exp 1 and 2 (already in scores dict)</text>
+  <text x="657" y="435" text-anchor="middle" font-size="9"  fill="#64748B">Continues from Exp 3 — Context Precision</text>
+  <text x="657" y="449" text-anchor="middle" font-size="9"  font-weight="700" fill="#065F46">✅ Zero work lost</text>
+
+  <rect y="462" width="880" height="28" fill="#1E293B"/>
+  <text x="440" y="481" text-anchor="middle" font-size="10" fill="#94A3B8">💡 checkpoint.json is in .gitignore — contains partial scores and session data; never commit it to version control</text>
+</svg>

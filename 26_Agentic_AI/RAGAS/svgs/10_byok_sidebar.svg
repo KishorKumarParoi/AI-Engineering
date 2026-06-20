@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 480" width="840" height="480" font-family="'Segoe UI',Arial,sans-serif">
+  <rect width="840" height="480" fill="#F8FAFC"/>
+  <rect width="840" height="52" fill="#0F172A"/>
+  <text x="420" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="white">10 — BYOK Sidebar (Bring Your Own Keys)</text>
+  <text x="420" y="44" text-anchor="middle" font-size="11" fill="#94A3B8">How API keys flow from the sidebar into every component · app.py</text>
+  <defs>
+    <marker id="arr"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#64748B"/></marker>
+    <marker id="arr-a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#F59E0B"/></marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10B981"/></marker>
+    <marker id="arr-v" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#8B5CF6"/></marker>
+  </defs>
+
+  <!-- SOURCE: Local .env -->
+  <rect x="20" y="68" width="175" height="68" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="107" y="89"  text-anchor="middle" font-size="11" font-weight="700" fill="#334155">💻 Local dev</text>
+  <text x="107" y="105" text-anchor="middle" font-size="10" fill="#64748B">.env file</text>
+  <text x="107" y="120" text-anchor="middle" font-size="9"  fill="#64748B">load_dotenv() pre-fills</text>
+
+  <!-- SOURCE: Streamlit Cloud -->
+  <rect x="20" y="168" width="175" height="68" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="107" y="189" text-anchor="middle" font-size="11" font-weight="700" fill="#1D4ED8">☁ Streamlit Cloud</text>
+  <text x="107" y="205" text-anchor="middle" font-size="10" fill="#3B82F6">no .env file</text>
+  <text x="107" y="220" text-anchor="middle" font-size="9"  fill="#64748B">user types keys in UI</text>
+
+  <!-- Arrows to sidebar -->
+  <line x1="195" y1="102" x2="228" y2="130" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="195" y1="202" x2="228" y2="190" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- BYOK SIDEBAR BOX -->
+  <rect x="230" y="66" width="270" height="310" rx="10" fill="white" stroke="#FCD34D" stroke-width="2"/>
+  <rect x="230" y="66"  width="270" height="34" rx="10" fill="#78350F"/>
+  <rect x="230" y="88"  width="270" height="12" fill="#78350F"/>
+  <text x="365" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="white">🔑 BYOK Sidebar</text>
+
+  <!-- Key 1 -->
+  <rect x="248" y="112" width="234" height="68" rx="6" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1"/>
+  <text x="365" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="#78350F">GROQ_API_KEY</text>
+  <text x="365" y="147" text-anchor="middle" font-size="9"  fill="#64748B">st.text_input(..., type="password")</text>
+  <text x="365" y="162" text-anchor="middle" font-size="9"  fill="#64748B">Stored in st.session_state.groq_key</text>
+
+  <!-- Key 2 -->
+  <rect x="248" y="192" width="234" height="76" rx="6" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1"/>
+  <text x="365" y="210" text-anchor="middle" font-size="11" font-weight="700" fill="#78350F">JUDGE_GROQ  (optional)</text>
+  <text x="365" y="227" text-anchor="middle" font-size="9"  fill="#64748B">Separate key for RAGAS judge calls</text>
+  <text x="365" y="242" text-anchor="middle" font-size="9"  fill="#64748B">Falls back to GROQ_API_KEY if blank</text>
+  <text x="365" y="258" text-anchor="middle" font-size="9"  fill="#64748B">Prevents eval from draining main key</text>
+
+  <!-- Key 3 -->
+  <rect x="248" y="280" width="234" height="68" rx="6" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1"/>
+  <text x="365" y="298" text-anchor="middle" font-size="11" font-weight="700" fill="#78350F">GEMINI_API_KEY</text>
+  <text x="365" y="315" text-anchor="middle" font-size="9"  fill="#64748B">Required for Gemini retrieval embeddings</text>
+  <text x="365" y="330" text-anchor="middle" font-size="9"  fill="#64748B">Stored in st.session_state.gemini_key</text>
+
+  <!-- Security note -->
+  <rect x="248" y="358" width="234" height="30" rx="5" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="365" y="374" text-anchor="middle" font-size="9" fill="#334155">Keys live in browser session only · never on disk</text>
+
+  <!-- CONSUMERS -->
+  <!-- Groq RAG Generator -->
+  <rect x="590" y="68" width="230" height="62" rx="8" fill="#FFFBEB" stroke="#F59E0B" stroke-width="2"/>
+  <text x="705" y="90"  text-anchor="middle" font-size="12" font-weight="700" fill="#78350F">Generator</text>
+  <text x="705" y="106" text-anchor="middle" font-size="10" fill="#92400E">GROQ_API_KEY</text>
+  <text x="705" y="120" text-anchor="middle" font-size="9"  fill="#64748B">llama-3.3-70b-versatile · RAG</text>
+
+  <!-- Gemini Retriever -->
+  <rect x="590" y="158" width="230" height="62" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="2"/>
+  <text x="705" y="180" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">Retriever</text>
+  <text x="705" y="196" text-anchor="middle" font-size="10" fill="#047857">GEMINI_API_KEY</text>
+  <text x="705" y="210" text-anchor="middle" font-size="9"  fill="#64748B">gemini-embedding-2-preview</text>
+
+  <!-- RAGAS Judge -->
+  <rect x="590" y="248" width="230" height="62" rx="8" fill="#F5F3FF" stroke="#8B5CF6" stroke-width="2"/>
+  <text x="705" y="270" text-anchor="middle" font-size="12" font-weight="700" fill="#4C1D95">RAGAS Judge</text>
+  <text x="705" y="286" text-anchor="middle" font-size="10" fill="#6D28D9">JUDGE_GROQ  (or fallback)</text>
+  <text x="705" y="300" text-anchor="middle" font-size="9"  fill="#64748B">llama-3.1-8b-instant · scoring</text>
+
+  <!-- st.cache_resource -->
+  <rect x="590" y="338" width="230" height="50" rx="8" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1.5"/>
+  <text x="705" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">@st.cache_resource</text>
+  <text x="705" y="374" text-anchor="middle" font-size="9"  fill="#0D9488">Retriever cached per gemini_key value</text>
+  <text x="705" y="387" text-anchor="middle" font-size="9"  fill="#64748B">Re-embeds if key changes</text>
+
+  <!-- Arrows sidebar → consumers -->
+  <line x1="500" y1="146" x2="588" y2="99"  stroke="#F59E0B" stroke-width="1.5" marker-end="url(#arr-a)"/>
+  <line x1="500" y1="310" x2="588" y2="314" stroke="#8B5CF6" stroke-width="1.5" marker-end="url(#arr-v)"/>
+  <line x1="500" y1="314" x2="588" y2="189" stroke="#10B981" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- Arrow labels -->
+  <text x="538" y="116" text-anchor="middle" font-size="9" fill="#92400E">groq_key</text>
+  <text x="538" y="260" text-anchor="middle" font-size="9" fill="#047857">gemini_key</text>
+  <text x="544" y="310" text-anchor="middle" font-size="9" fill="#6D28D9">judge_key</text>
+
+  <rect y="452" width="840" height="28" fill="#1E293B"/>
+  <text x="420" y="471" text-anchor="middle" font-size="10" fill="#94A3B8">💡 Keys pre-filled from .env locally · blank on Streamlit Cloud where users enter their own · judge_key falls back to groq_key if blank</text>
+</svg>

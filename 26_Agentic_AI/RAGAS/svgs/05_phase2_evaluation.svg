@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" font-family="'Segoe UI',Arial,sans-serif">
+  <rect width="960" height="620" fill="#F8FAFC"/>
+  <rect width="960" height="52" fill="#0F172A"/>
+  <text x="480" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="white">05 — Phase 2: RAGAS Evaluation</text>
+  <text x="480" y="44" text-anchor="middle" font-size="11" fill="#94A3B8">Score 5 metrics with rate-limit cooldowns · evals/metrics.py</text>
+  <defs>
+    <marker id="arr"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#64748B"/></marker>
+    <marker id="arr-v" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6D28D9"/></marker>
+  </defs>
+
+  <!-- INPUTS -->
+  <rect x="20"  y="68" width="205" height="52" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="122" y="89"  text-anchor="middle" font-size="11" font-weight="700" fill="#1D4ED8">enriched[] from Phase 1</text>
+  <text x="122" y="107" text-anchor="middle" font-size="9"  fill="#64748B">5 records: response + contexts</text>
+
+  <rect x="270" y="68" width="175" height="52" rx="8" fill="#F5F3FF" stroke="#A78BFA" stroke-width="1.5"/>
+  <text x="357" y="89"  text-anchor="middle" font-size="11" font-weight="700" fill="#4C1D95">judge LLM</text>
+  <text x="357" y="107" text-anchor="middle" font-size="9"  fill="#6D28D9">llama-3.1-8b-instant</text>
+
+  <rect x="495" y="68" width="205" height="52" rx="8" fill="#FDF2F8" stroke="#EC4899" stroke-width="1.5"/>
+  <text x="597" y="89"  text-anchor="middle" font-size="11" font-weight="700" fill="#831843">ragas_embeddings</text>
+  <text x="597" y="107" text-anchor="middle" font-size="9"  fill="#9D174D">HuggingFace MiniLM-L6-v2</text>
+
+  <line x1="122" y1="120" x2="200" y2="148" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="357" y1="120" x2="380" y2="148" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="597" y1="120" x2="560" y2="148" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- OUTER LOOP -->
+  <rect x="20" y="150" width="730" height="408" rx="10" fill="white" stroke="#8B5CF6" stroke-width="2"/>
+  <rect x="20" y="150"  width="730" height="34" rx="10" fill="#4C1D95"/>
+  <rect x="20" y="172"  width="730" height="12" fill="#4C1D95"/>
+  <text x="385" y="172" text-anchor="middle" font-size="12" font-weight="700" fill="white">for exp_idx, (name, factory, keys) in enumerate(EXPERIMENTS):  [5 experiments]</text>
+
+  <!-- Skip check -->
+  <rect x="40" y="196" width="690" height="40" rx="5" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1"/>
+  <text x="385" y="213" text-anchor="middle" font-size="11" font-weight="700" fill="#78350F">if name in st.session_state.scores: continue</text>
+  <text x="385" y="229" text-anchor="middle" font-size="9"  fill="#64748B">Skip experiments already completed — checkpoint recovery works here</text>
+  <line x1="385" y1="236" x2="385" y2="250" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- prepare_inputs -->
+  <rect x="40" y="252" width="690" height="44" rx="5" fill="#F0FDFA" stroke="#2DD4BF" stroke-width="1"/>
+  <text x="385" y="272" text-anchor="middle" font-size="11" font-weight="700" fill="#0F766E">prepare_inputs(enriched, keys)</text>
+  <text x="385" y="288" text-anchor="middle" font-size="9"  fill="#64748B">Truncate contexts to 400 chars · limit to 2 chunks · keep only fields this metric needs</text>
+  <line x1="385" y1="296" x2="385" y2="310" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- INNER LOOP -->
+  <rect x="40" y="312" width="690" height="170" rx="8" fill="#FAF5FF" stroke="#C4B5FD" stroke-width="1.5"/>
+  <rect x="40" y="312"  width="690" height="28" rx="8" fill="#6D28D9"/>
+  <rect x="40" y="328"  width="690" height="12" fill="#6D28D9"/>
+  <text x="385" y="330" text-anchor="middle" font-size="11" font-weight="700" fill="white">score_experiment:  for i, inp in enumerate(inputs):  [5 samples]</text>
+
+  <!-- Score one -->
+  <rect x="60" y="352" width="305" height="52" rx="5" fill="#F5F3FF" stroke="#A78BFA" stroke-width="1"/>
+  <text x="212" y="371" text-anchor="middle" font-size="11" font-weight="700" fill="#4C1D95">metric.abatch_score([inp])</text>
+  <text x="212" y="387" text-anchor="middle" font-size="10" fill="#6D28D9">returns float score  (0.0 – 1.0)</text>
+  <text x="212" y="400" text-anchor="middle" font-size="9"  fill="#64748B">one sample at a time</text>
+
+  <!-- 429 path -->
+  <rect x="390" y="352" width="320" height="52" rx="5" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1"/>
+  <text x="550" y="371" text-anchor="middle" font-size="11" font-weight="700" fill="#991B1B">429 Rate Limit?</text>
+  <text x="550" y="387" text-anchor="middle" font-size="10" fill="#B91C1C">wait 65 s → retry once</text>
+  <text x="550" y="400" text-anchor="middle" font-size="9"  fill="#64748B">return None if retry also fails</text>
+
+  <!-- 25s sleep -->
+  <rect x="200" y="420" width="370" height="42" rx="5" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1"/>
+  <text x="385" y="438" text-anchor="middle" font-size="11" font-weight="700" fill="#7C2D12">await asyncio.sleep(25)  between samples</text>
+  <text x="385" y="453" text-anchor="middle" font-size="9"  fill="#92400E">Keeps token usage under 6,000 TPM on Groq free tier</text>
+
+  <line x1="212" y1="404" x2="280" y2="420" stroke="#64748B" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="550" y1="404" x2="480" y2="420" stroke="#64748B" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- After inner loop -->
+  <rect x="40"  y="496" width="335" height="46" rx="5" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1"/>
+  <text x="207" y="516" text-anchor="middle" font-size="11" font-weight="700" fill="#991B1B">💾 save_checkpoint(...)</text>
+  <text x="207" y="534" text-anchor="middle" font-size="9"  fill="#64748B">Scores so far written to disk · safe on drop</text>
+
+  <rect x="395" y="496" width="335" height="46" rx="5" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1"/>
+  <text x="562" y="516" text-anchor="middle" font-size="11" font-weight="700" fill="#7C2D12">time.sleep(35)  between experiments</text>
+  <text x="562" y="534" text-anchor="middle" font-size="9"  fill="#92400E">Full 60 s TPM window resets before next metric</text>
+
+  <!-- RIGHT: Experiment list -->
+  <rect x="768" y="150" width="172" height="248" rx="8" fill="white" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="854" y="173" text-anchor="middle" font-size="11" font-weight="700" fill="#4C1D95">5 Experiments</text>
+  <text x="854" y="194" text-anchor="middle" font-size="10" fill="#065F46">1  Faithfulness</text>
+  <text x="854" y="212" text-anchor="middle" font-size="10" fill="#7C2D12">2  Answer Relevancy</text>
+  <text x="854" y="230" text-anchor="middle" font-size="10" fill="#1D4ED8">3  Context Precision</text>
+  <text x="854" y="248" text-anchor="middle" font-size="10" fill="#831843">4  Context Recall</text>
+  <text x="854" y="266" text-anchor="middle" font-size="10" fill="#78350F">5  Answer Correctness</text>
+  <line x1="778" y1="278" x2="930" y2="278" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="854" y="295" text-anchor="middle" font-size="9"  fill="#64748B">Each is skipped if</text>
+  <text x="854" y="310" text-anchor="middle" font-size="9"  fill="#64748B">already in scores</text>
+  <text x="854" y="325" text-anchor="middle" font-size="9"  font-weight="700" fill="#991B1B">(checkpoint skip)</text>
+  <text x="854" y="342" text-anchor="middle" font-size="9"  fill="#64748B">→ safe to resume</text>
+  <text x="854" y="358" text-anchor="middle" font-size="9"  fill="#64748B">mid-run</text>
+  <text x="854" y="376" text-anchor="middle" font-size="9"  fill="#64748B">→ Phase 2 can</text>
+  <text x="854" y="390" text-anchor="middle" font-size="9"  fill="#64748B">restart from exp 3</text>
+
+  <!-- OUTPUT -->
+  <rect x="768" y="418" width="172" height="100" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="2"/>
+  <text x="854" y="440" text-anchor="middle" font-size="11" font-weight="700" fill="#065F46">results.json</text>
+  <text x="854" y="458" text-anchor="middle" font-size="9"  fill="#64748B">per_golden scores</text>
+  <text x="854" y="473" text-anchor="middle" font-size="9"  fill="#64748B">averages per metric</text>
+  <text x="854" y="494" text-anchor="middle" font-size="10" font-weight="700" fill="#065F46">→ Results Tab</text>
+
+  <line x1="750" y1="395" x2="806" y2="418" stroke="#10B981" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect y="592" width="960" height="28" fill="#1E293B"/>
+  <text x="480" y="611" text-anchor="middle" font-size="10" fill="#94A3B8">💡 Each experiment runs in _run() worker thread · all st.* UI updates happen in the main thread before and after _run()</text>
+</svg>

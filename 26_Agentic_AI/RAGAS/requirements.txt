@@ -1,0 +1,31 @@
+# --- UI ---
+streamlit
+python-dotenv==1.2.2
+requests==2.33.1
+nest-asyncio  # used by evals.ipynb notebook only — NOT imported in app.py
+pandas
+
+# --- LANGCHAIN (required by RAGAS internals) ---
+langchain==1.2.18
+langchain-groq==1.1.2
+langchain-community==0.4.1
+langchain-openai==1.2.1
+pydantic==2.13.4
+
+# --- EVALS ---
+ragas
+openai
+# sentence-transformers  # notebook + RAGAS eval embeddings only (not used for retrieval in app.py)
+
+# --- OBSERVABILITY ---
+langsmith==0.8.3
+logfire[requests]==4.32.1
+loguru==0.7.3
+
+
+# notebook
+
+ipykernel
+
+# embeddings
+langchain-google-genai
