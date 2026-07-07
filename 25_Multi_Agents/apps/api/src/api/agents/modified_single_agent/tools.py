@@ -493,7 +493,7 @@ def retrieve_data(query, qdrant_client, top_k=5):
         tags=["retrieval", "qdrant"],
         run_type="retriever"
 )
-def retrieve_reviews_data(query, item_list, qdrant_client, top_k=5):
+def retrieve_reviews_data(query, item_list, qdrant_client=None, top_k=5):
     client = qdrant_client or (globals().get("qdrant_client")  or get_qdrant_client())
     query_embedding = get_embedding(query)
 
@@ -505,7 +505,7 @@ def retrieve_reviews_data(query, item_list, qdrant_client, top_k=5):
         #     limit=top_k,
         #     with_payload=True,
         # )
-        search_result = qdrant_client.query_points(
+        search_result = client.query_points(
         collection_name="Amazon-items-collection-reviews",
         prefetch=[
             Prefetch(
@@ -625,13 +625,25 @@ def retrieve_reviews_data(query, item_list, qdrant_client, top_k=5):
 )
 def process_reviews_context(context):
     formatted_context = ""
-    for id, chunk in zip(context["retrieved_context_ids"], context["retrieved_context"]):
+    for id, chunk in zip(context["retrieved_context_ids"], context["retrieved_contexts"]):
         formatted_context += f"- IDL {id}, review: {chunk}\n"
     
     return formatted_context
 
-def get_formatted_reviews_context(query:str, item_list: list, top_k: int = 10) -> str:
-    context = retrieve_reviews_data(query, item_list, top_k)
+def get_formatted_reviews_context(query: str, item_list: list, top_k: int = 10, *, qdrant_client: QdrantClient = None, config: RunnableConfig = None) -> str:
+    """
+    Retrieve and format customer reviews context for a given query and target item list.
+    """
+    client = qdrant_client or globals().get("qdrant_client")
+    
+    # Extract client from LangGraph background config if available
+    if client is None and config is not None:
+        client = config.get("configurable", {}).get("qdrant_client", None)
+        
+    if client is None:
+        client = get_qdrant_client()
+
+    context = retrieve_reviews_data(query, item_list, qdrant_client=client, top_k=top_k)
     formatted_context = process_reviews_context(context)
 
     return formatted_context
