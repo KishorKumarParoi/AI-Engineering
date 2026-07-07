@@ -5,7 +5,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send
 from langsmith import traceable, get_current_run_tree, Client
 
-from api.agents.modified_single_agent.tools import AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context
+from api.agents.modified_single_agent.tools import AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context, get_formatted_reviews_context
 from api.agents.modified_single_agent.utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
 from api.agents.modified_single_agent.agent import agent_node, intent_router_node, intent_router_conditional_edges, tool_router, intent_router_route
 
@@ -51,7 +51,7 @@ def compile_agent_graph(qdrant_client=None, checkpointer=None):
 
     workflow = StateGraph(State)
 
-    tools = [get_formatted_context]
+    tools = [get_formatted_context, get_formatted_reviews_context]
     tool_node = ToolNode(tools)
     tool_descriptions = get_tool_descriptions(tools)
 
