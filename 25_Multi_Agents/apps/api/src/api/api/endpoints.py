@@ -1,3 +1,7 @@
+from api.api.models import FeedbackRequest
+from api.api.models import FeedbackResponse
+from api.api.processors.submit_feedback import submit_feedback
+from sys import prefix
 import os
 import logging
 import pandas as pd
@@ -128,7 +132,7 @@ def rag(
 ) -> RagResponse:
     logger.info(f"Received request: {payload}")
 
-    try:  # <-- FIXED: Restored missing parent try-block here
+    try:  
         # Ensure collection exists and populate on-demand if empty
         try:
             ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME)
@@ -204,18 +208,49 @@ def rag(
             used_context = []
             suggestions = ["Refine your query for better matches."]
         
-        return RagResponse(request_id=request.state.request_id, answer=answer_text, used_context=used_context, suggestions=suggestions)
+        trace_id = ""
+        if isinstance(answer, dict):
+            raw_trace_id = answer.get("trace_id")
+            if isinstance(raw_trace_id, str):
+                trace_id = raw_trace_id
+
+        if not trace_id:
+            request_id = getattr(request.state, "request_id", "")
+            trace_id = str(request_id) if request_id is not None else ""
+
+        return RagResponse(
+            request_id=request.state.request_id,
+            answer=answer_text,
+            used_context=used_context,
+            suggestions=suggestions,
+            trace_id=trace_id
+        )
         
     except Exception as e:
         logger.exception("RAG pipeline failed")
-        return JSONResponse(
-            status_code=500,
-            content={
-                "request_id": request.state.request_id,
-                "answer": "",
-                "message": f"Failed to generate response: {str(e)}",
-            },
+        return RagResponse(
+            request_id=request.state.request_id,
+            answer="",
+            used_context=[],
+            suggestions=[],
+            trace_id=trace_id
         )
+
+feedback_router = APIRouter()
+
+@feedback_router.post("/")
+def send_feedback(
+    request: Request,
+    payload: FeedbackRequest
+) -> FeedbackResponse:
+    
+    submit_feedback(payload.thread_id, payload.feedback_score, payload.feedback_text, payload.feedback_source_type)
+    
+    return FeedbackResponse(
+        request_id = request.state.request_id,
+        status= "success",
+    )
 
 api_router = APIRouter()
 api_router.include_router(rag_router, prefix="/rag", tags=["RAG"])
+feedback_router.include_router(feedback_router, prefix="/submit_feedback", tags=["Feedback"])

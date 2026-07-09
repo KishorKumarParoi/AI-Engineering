@@ -1,4 +1,5 @@
 from langsmith import traceable, get_current_run_tree, Client
+from langgraph.graph import END, START
 from jinja2 import Template
 from langchain_core.messages import convert_to_openai_messages, convert_to_messages
 import instructor
@@ -7,7 +8,6 @@ from openai import OpenAI
 
 import instructor
 import json
-
 
 from api.agents.modified_single_agent.tools import AgentResponse, IntentRouterResponse, RAGUsedContext, prompt_template_config, prompt_template_registry, QueryExpandResponse, AggregatorResponse, State, RagGenerationResponseReference, ToolCall, query_expand_conditional_edges, query_expand_node, retriever_node_parallel, aggregator_node, get_formatted_context
 from api.agents.modified_single_agent.utils import format_ai_message, parse_function_definition, get_type_from_annotation, parse_docstring_params, get_tool_descriptions
@@ -148,6 +148,15 @@ def agent_node(state: State) -> dict:
 
     messages_field = [ai_message]
 
+    current_run = get_current_run_tree()
+
+    if current_run:
+        current_run.metadata["usage_metadata"] = {
+            "input_tokens" : response.usage.prompt_tokens,
+            "output_tokens" : response.usage.completion_tokens,
+            "total_tokens" : response.usage.total_tokens
+        }
+
     return {
         'messages': messages_field,
         'tool_calls': tool_calls_field,
@@ -225,9 +234,21 @@ def intent_router_node(state: State) -> dict:
     if isinstance(response, (tuple, list)):
         response = response[0]
 
+    current_run = get_current_run_tree()
+    if current_run:
+        current_run.metadata["usage_metadata"] = {
+            "input_tokens" : response.usage.prompt_tokens,
+            "output_tokens" : response.usage.completion_tokens,
+            "total_tokens" : response.usage.total_tokens
+        }
+        trace_id = str(getattr(current_run, "trace_id", current_run.id))
+    else:
+        trace_id = None
+
     return {
         "question_relevant": response.question_relevant,
-        "answer": response.answer
+        "answer": response.answer,
+        "trace_id": trace_id
     }
 
 def intent_router_conditional_edges(state):

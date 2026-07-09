@@ -171,6 +171,7 @@ class State(BaseModel):
     iteration: int = 0
     tool_calls: List[ToolCall] = Field(default_factory=list)
     references: Annotated[List[RAGUsedContext], add] = Field(default_factory=list)
+    trace_id: str = ""
 
 
 @traceable(

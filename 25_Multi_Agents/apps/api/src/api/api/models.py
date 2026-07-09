@@ -226,6 +226,7 @@ class RagResponse(BaseModel):
     answer: str = Field(..., description="The answer to the query")
     used_context: list[RAGUsedContext] = Field([], description="The context that was used to generate the answer")
     suggestions: list[str] = Field([], description="Concise follow-up suggestions or actions to show in the UI")
+    trace_id: str= Field(description="The trace ID")
 
 client = instructor.from_openai(openai.OpenAI())
 
@@ -235,3 +236,15 @@ client = instructor.from_openai(openai.OpenAI())
 #     reasoning: str = Field(description="The reasoning behind the answer")
 #     used_context: list[RAGUsedContext] = Field(description="The list of retrieved reviews used to generate the answer")
 #     references: list[RAGUsedContext] = Field(description="The list of references used to generate the answer")
+
+class FeedbackRequest(BaseModel):
+    feedback_score: Union[int, None] = Field(..., description="True if the feedback is positive, False if the feedback is negative")
+    feedback_text: str = Field(..., description="The Feedback text")
+    trace_id: str= Field(..., description="The trace ID")
+    thread_id: str = Field(..., description="The Thread ID")
+    feedback_source_type: str=Field(..., description="The Feedback Source Type")
+
+class FeedbackResponse(BaseModel):
+    request_id: str = Field(..., description="The request ID")
+    status: str=Field(..., description="The status of the feedback submission")
+

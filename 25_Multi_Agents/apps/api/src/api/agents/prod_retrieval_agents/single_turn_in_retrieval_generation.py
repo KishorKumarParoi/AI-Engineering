@@ -335,11 +335,15 @@ def rag_pipeline_wrapper(question, qdrant_client, top_k=5, thread_id: str = None
                 "details": {},
             })
 
+    current_run = get_current_run_tree()
+    trace_id = str(getattr(current_run, "trace_id", current_run.id)) if current_run else ""
+
     return {
         "answer": pipeline_result.get("answer"),
         "used_context": used_context,
         "retrieved_context_ids": pipeline_result.get("retrieved_context_ids"),
         "similarity_scores": pipeline_result.get("similarity_scores"),
+        "trace_id": trace_id,
     }
        
 

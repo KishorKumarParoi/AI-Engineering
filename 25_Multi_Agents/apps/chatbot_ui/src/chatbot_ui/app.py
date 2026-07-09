@@ -302,6 +302,28 @@ def _normalize_suggestions(response_data: dict) -> list[dict]:
     return suggestions
 
 
+
+def submit_feedback(feedback_type=None, feedback_text=""):
+    """Submit feedback to the APi Endpoint"""
+    def _feedback_score(feedback_type):
+        if feedback_type == "positive":
+            return 1
+        elif feedback_type == "negative":
+            return 0
+        else:
+            return None 
+    
+    feedback_data = {
+        "feedback_score": _feedback_score(feedback_type),
+        "feedback_text": feedback_text,
+        "trace_id": st.session_state.trace_id,
+        "thread_id": get_session_id(),
+        "feedback_score_type": "api"
+    }
+
+    status, response = api_call("post", f"{config.API_URL}/submit_feedback", json=feedback_data)
+    return status, response
+
 def _normalize_products(response_data: dict) -> list[dict]:
     return _normalize_suggestions(response_data)
 
@@ -361,7 +383,41 @@ if "thread_id" not in st.session_state:
     import uuid
     st.session_state.thread_id = str(uuid.uuid4())
 
+# initialize feedback states (simplified)
+if "latest_feedback" not in st.session_state:
+    st.session_state.latest_feedback = None
 
+if "show_feedback_box" not in st.session_state:
+    st.session_state.show_feedback_box = False
+
+if "feedback_submission_status" not in st.session_state:
+    st.session_state.feedback_submiss ion_status = None
+
+if "trace_id" not in st.session_state:
+    st.session_state.trace_id = None
+
+
+for idx, message in enumerate(st.session_state.messages):
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+        
+        # Add feedback buttons only for the latest assistant message
+        is_latest_assistant = {
+            message["role"] == "assistant" and idx == len(st.session_state.messages) - 1 and idx > 0
+        }
+
+        if is_latest_assistant:
+            # Use Streamlit's builtin feedback component
+            feedback_key = f"feedback_{len(st.session_state.messages)}"
+            feedback_result = st.feedback("thumbs", key="feedback_key")
+
+        # Handle Feedback selection
+        if feedback_result is not None:
+            feedback_type = "positive" if feedback_result == "thumbs-up" else "negative"
+            
+
+
+        
 st.markdown(
     """
     <div class="hero">
