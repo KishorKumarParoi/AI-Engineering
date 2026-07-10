@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import html
+import logging
 from typing import Any
 import uuid
 import requests
 import streamlit as st
 
 from chatbot_ui.core.config import config
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 st.set_page_config(
@@ -511,6 +515,9 @@ with st.sidebar:
 
 prompt = st.chat_input("Ask about a laptop, price, size, brand, or similar products...")
 if prompt:
+    st.session_state.latest_feedback = None
+    st.session_state.show_feedback_box = False
+    st.session_state.feedback_submission_status = None
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)

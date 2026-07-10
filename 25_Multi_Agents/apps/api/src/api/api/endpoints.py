@@ -245,7 +245,7 @@ def send_feedback(
     payload: FeedbackRequest
 ) -> FeedbackResponse:
     
-    submit_feedback(payload.thread_id, payload.feedback_score, payload.feedback_text, payload.feedback_source_type)
+    submit_feedback(payload.trace_id, payload.feedback_score, payload.feedback_text, payload.feedback_source_type)
     
     return FeedbackResponse(
         request_id = request.state.request_id,
