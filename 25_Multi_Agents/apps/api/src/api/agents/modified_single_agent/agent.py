@@ -28,15 +28,19 @@ def agent_node(state: State) -> dict:
         conversation.append(convert_to_openai_messages(message))
 
     client = instructor.from_openai(OpenAI())
-    response = client.chat.completions.create_with_completion(
+    result = client.chat.completions.create_with_completion(
         model="gpt-4.1-mini",
         response_model=AgentResponse,
         messages=[{"role": "system", "content": prompt}, *conversation],
         temperature=0.5,
         timeout=20,
     )
-    if isinstance(response, (tuple, list)):
-        response = response[0]
+    if isinstance(result, (tuple, list)):
+        response = result[0]
+        raw_completion = result[1]
+    else:
+        response = result
+        raw_completion = None
 
     tool_calls_raw = getattr(response, 'tool_calls', []) or []
     normalized_tool_calls = [
@@ -149,12 +153,11 @@ def agent_node(state: State) -> dict:
     messages_field = [ai_message]
 
     current_run = get_current_run_tree()
-
-    if current_run:
+    if current_run and raw_completion and hasattr(raw_completion, "usage") and raw_completion.usage:
         current_run.metadata["usage_metadata"] = {
-            "input_tokens" : response.usage.prompt_tokens,
-            "output_tokens" : response.usage.completion_tokens,
-            "total_tokens" : response.usage.total_tokens
+            "input_tokens" : raw_completion.usage.prompt_tokens,
+            "output_tokens" : raw_completion.usage.completion_tokens,
+            "total_tokens" : raw_completion.usage.total_tokens
         }
 
     return {
@@ -224,26 +227,30 @@ def intent_router_node(state: State) -> dict:
 
     client = instructor.from_openai(OpenAI())
 
-    response = client.chat.completions.create_with_completion(
+    result = client.chat.completions.create_with_completion(
         model="gpt-4.1-mini",
         response_model=IntentRouterResponse,
         messages=[{"role": "system", "content": prompt}, *conversation],
         temperature=0.5,
     )
 
-    if isinstance(response, (tuple, list)):
-        response = response[0]
+    if isinstance(result, (tuple, list)):
+        response = result[0]
+        raw_completion = result[1]
+    else:
+        response = result
+        raw_completion = None
 
     current_run = get_current_run_tree()
-    if current_run:
+    if current_run and raw_completion and hasattr(raw_completion, "usage") and raw_completion.usage:
         current_run.metadata["usage_metadata"] = {
-            "input_tokens" : response.usage.prompt_tokens,
-            "output_tokens" : response.usage.completion_tokens,
-            "total_tokens" : response.usage.total_tokens
+            "input_tokens" : raw_completion.usage.prompt_tokens,
+            "output_tokens" : raw_completion.usage.completion_tokens,
+            "total_tokens" : raw_completion.usage.total_tokens
         }
         trace_id = str(getattr(current_run, "trace_id", current_run.id))
     else:
-        trace_id = None
+        trace_id = str(getattr(current_run, "trace_id", current_run.id)) if current_run else None
 
     return {
         "question_relevant": response.question_relevant,
