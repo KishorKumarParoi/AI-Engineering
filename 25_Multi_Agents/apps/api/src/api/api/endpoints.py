@@ -131,8 +131,9 @@ def rag(
     payload: RagRequest
 ) -> RagResponse:
     logger.info(f"Received request: {payload}")
+    trace_id = ""
 
-    try:  
+    try:
         # Ensure collection exists and populate on-demand if empty
         try:
             ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME)

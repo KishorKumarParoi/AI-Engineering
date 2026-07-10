@@ -318,7 +318,7 @@ def submit_feedback(feedback_type=None, feedback_text=""):
         "feedback_text": feedback_text,
         "trace_id": st.session_state.trace_id,
         "thread_id": get_session_id(),
-        "feedback_score_type": "api"
+        "feedback_source_type": "api"
     }
 
     logger.info("Feedback Data: {feedback_data}")
@@ -403,19 +403,20 @@ for idx, message in enumerate(st.session_state.messages):
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         
+        feedback_result = None
         # Add feedback buttons only for the latest assistant message
-        is_latest_assistant = {
+        is_latest_assistant = (
             message["role"] == "assistant" and idx == len(st.session_state.messages) - 1 and idx > 0
-        }
+        )
 
         if is_latest_assistant:
             # Use Streamlit's builtin feedback component
             feedback_key = f"feedback_{len(st.session_state.messages)}"
-            feedback_result = st.feedback("thumbs", key="feedback_key")
+            feedback_result = st.feedback("thumbs", key=feedback_key)
 
         # Handle Feedback selection
         if feedback_result is not None:
-            feedback_type = "positive" if feedback_result == "thumbs-up" else "negative"
+            feedback_type = "positive" if feedback_result == 1 else "negative"
 
             # only submit if this is a new/different feedback
             if st.session_state.latest_feedback != feedback_type:
@@ -449,7 +450,7 @@ for idx, message in enumerate(st.session_state.messages):
 
             # Text area for detailed feedbck
             feedback_text = st.text_area(
-                """Additional feedback (optional)"""
+                """Additional feedback (optional)""",
                 key=f"feedback_text_{len(st.session_state.messages)}",
                 placeholder="Please describe what was wrong with this response...",
                 height=100
@@ -461,7 +462,7 @@ for idx, message in enumerate(st.session_state.messages):
             with col_send:
                 if st.button("Send Additional Details", key=f"send_additional_{len(st.session_state.messages)}"):
                     if feedback_text.strip():
-                        with st.spinner("Submitting additional feedback...")
+                        with st.spinner("Submitting additional feedback..."):
                             status, response = submit_feedback(feedback_text=feedback_text)
                             if status:
                                 st.success("Thank you! Your additional feedback has been recorded.")
@@ -521,6 +522,7 @@ if prompt:
             answer = response_data.get("answer") or response_data.get("message") or "No answer returned."
             st.session_state.used_context = response_data.get("used_context", []) or []
             st.session_state.suggestions = _normalize_suggestions(response_data)
+            st.session_state.trace_id = response_data.get("trace_id")
         else:
             answer = response_data.get("message", "Sorry, I could not generate a response right now.")
             st.session_state.used_context = []
