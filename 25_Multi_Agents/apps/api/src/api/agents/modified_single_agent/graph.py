@@ -38,12 +38,13 @@ def old_compile_graph():
     return graph
 
 def old_run_graph(query = "Can I get a Tablet for my kid, a watch for me, a laptop for my wife and a waterproof speaker for our party next week?", initial_state=None):
-    initial_state = {
+    from typing import Any
+    initial_state_data: Any = {
         "initial_query": query
     }
 
     graph = old_compile_graph()
-    result = graph.invoke(initial_state)
+    result = graph.invoke(initial_state_data)
     print(result.get("answer", []))
     return result.get("answer", "")
 
@@ -308,6 +309,32 @@ def _normalize_graph_result(result: dict, query_text: str) -> dict:
         normalized['final_answer'] = bool(normalized.get('final_answer')) or last_assistant_finished
         return normalized
 
+import threading
+from psycopg_pool import ConnectionPool
+
+from typing import Any
+
+_pool_lock = threading.Lock()
+_pool_instance: Any = None
+_graph_cache = {}
+
+def get_compiled_graph(db_uri: str, qdrant_client):
+    global _pool_instance, _graph_cache
+    if db_uri not in _graph_cache:
+        with _pool_lock:
+            if db_uri not in _graph_cache:
+                if _pool_instance is None:
+                    _pool_instance = ConnectionPool(
+                        conninfo=db_uri,
+                        max_size=20,
+                        kwargs={"autocommit": True}
+                    )
+                checkpointer = PostgresSaver(_pool_instance)
+                checkpointer.setup()
+                graph, tool_descriptions = compile_agent_graph(qdrant_client, checkpointer=checkpointer)
+                _graph_cache[db_uri] = (graph, tool_descriptions)
+    return _graph_cache[db_uri]
+
 @traceable(
     name="run_agent_graph",
     run_type="llm",
@@ -316,7 +343,6 @@ def _normalize_graph_result(result: dict, query_text: str) -> dict:
 def run_agent_graph(role, qdrant_client, query, thread_id: str) -> dict:
     import os
     from typing import Any
-    from langgraph.checkpoint.postgres import PostgresSaver
 
     initial_state: dict[str, Any] = {
         "messages": [{
@@ -336,16 +362,11 @@ def run_agent_graph(role, qdrant_client, query, thread_id: str) -> dict:
     if os.path.exists('/.dockerenv') and "localhost:5434" in db_uri:
         db_uri = db_uri.replace("localhost:5434", "postgres:5432")
 
-    with PostgresSaver.from_conn_string(db_uri) as checkpointer:
-        # Initialize the required checkpoint tables in the database
-        checkpointer.setup()
-        
-        # Compile graph with checkpointer
-        graph, tool_descriptions = compile_agent_graph(qdrant_client, checkpointer=checkpointer)
-        invoke_state["available_tools"] = tool_descriptions
+    graph, tool_descriptions = get_compiled_graph(db_uri, qdrant_client)
+    invoke_state["available_tools"] = tool_descriptions
 
-        run_config = {"configurable": {"qdrant_client": qdrant_client, "thread_id": thread_id}}
-        result = _normalize_graph_result(graph.invoke(invoke_state, config=run_config), query)
+    run_config = {"configurable": {"qdrant_client": qdrant_client, "thread_id": thread_id}}
+    result = _normalize_graph_result(graph.invoke(invoke_state, config=run_config), query)
         
     return result
 

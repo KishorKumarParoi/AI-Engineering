@@ -320,8 +320,8 @@ def submit_feedback(feedback_type=None, feedback_text=""):
     feedback_data = {
         "feedback_score": _feedback_score(feedback_type),
         "feedback_text": feedback_text,
-        "trace_id": st.session_state.trace_id,
-        "thread_id": get_session_id(),
+        "trace_id": st.session_state.trace_id, 
+        "thread_id": st.session_state.session_id,
         "feedback_source_type": "api"
     }
 
@@ -385,9 +385,11 @@ if "suggestions" not in st.session_state:
     st.session_state.suggestions = []
 if "used_context" not in st.session_state:
     st.session_state.used_context = []
-if "thread_id" not in st.session_state:
+if "session_id" not in st.session_state:
     import uuid
-    st.session_state.thread_id = str(uuid.uuid4())
+    st.session_state.session_id = str(uuid.uuid4())
+if "thread_id" not in st.session_state:
+    st.session_state.thread_id = st.session_state.session_id
 
 # initialize feedback states (simplified)
 if "latest_feedback" not in st.session_state:
@@ -418,71 +420,76 @@ for idx, message in enumerate(st.session_state.messages):
             feedback_key = f"feedback_{len(st.session_state.messages)}"
             feedback_result = st.feedback("thumbs", key=feedback_key)
 
-        # Handle Feedback selection
-        if feedback_result is not None:
-            feedback_type = "positive" if feedback_result == 1 else "negative"
+            # Handle Feedback selection
+            if feedback_result is not None:
+                feedback_type = "positive" if feedback_result == 1 else "negative"
 
-            # only submit if this is a new/different feedback
-            if st.session_state.latest_feedback != feedback_type:
-                with st.spinner("Submitting Feedback..."):
-                    st.session_state.feedback_submission_status = None
-                    status, response = submit_feedback(feedback_type)
-                    
-                    if status:
-                        st.session_state.latest_feedback = feedback_type
-                        st.session_state.feedback_submission_status = "success"
-                        st.session_state.show_feedback_box = (feedback_type == "negative")
-                    else:
-                        st.session_state.feedback_submission_status = "error"   
-                        st.error("Failed to submit feedback. Please try again.")
-                    
-                st.rerun()
-        
-        # show feedback status message
-        if st.session_state.latest_feedback and st.session_state.feedback_submission_status == "success":
-            if st.session_state.latest_feedback == "positive":
-                st.success("Thank you for positive feedback!")
-            elif st.session_state.latest_feedback == "negative" and not st.session_state.show_feedback_box:
-                st.success("Thank you for your feedback!")
-        elif st.session_state.feedback_submission_status == "error":
-            st.error("Failed to submit feedback. Please try again.")
-        
-        # show feedback text box if thumbs down was pressed
-        if st.session_state.show_feedback_box:
-            st.markdown("**Wnt to tell us more? (Optional)**")
-            st.caption("Your negative fedback has already been recorded. You can optionally provide additional details below.")
-
-            # Text area for detailed feedbck
-            feedback_text = st.text_area(
-                """Additional feedback (optional)""",
-                key=f"feedback_text_{len(st.session_state.messages)}",
-                placeholder="Please describe what was wrong with this response...",
-                height=100
-            )
-
-            # send additional feedback button
-            col_send, col_spacer, col_close = st.columns([3, 5, 2])
-
-            with col_send:
-                if st.button("Send Additional Details", key=f"send_additional_{len(st.session_state.messages)}"):
-                    if feedback_text.strip():
-                        with st.spinner("Submitting additional feedback..."):
-                            status, response = submit_feedback(feedback_text=feedback_text)
-                            if status:
-                                st.success("Thank you! Your additional feedback has been recorded.")
-                                st.session_state.show_feedback_box = False
-                            else:
-                                st.error("Failed to record additional feedback. Please try again.")   
-                    else:
-                        st.warning("Please enter some feedback text before submitting!")         
+                # only submit if this is a new/different feedback
+                if st.session_state.latest_feedback != feedback_type:
+                    with st.spinner("Submitting Feedback..."):
+                        st.session_state.feedback_submission_status = None
+                        status, response = submit_feedback(feedback_type)
+                        
+                        if status:
+                            st.session_state.latest_feedback = feedback_type
+                            st.session_state.feedback_submission_status = "success"
+                            st.session_state.show_feedback_box = True
+                        else:
+                            st.session_state.feedback_submission_status = "error"   
+                            st.error("Failed to submit feedback. Please try again.")
+                        
                     st.rerun()
+            
+            # show feedback status message
+            if st.session_state.latest_feedback and st.session_state.feedback_submission_status == "success":
+                if st.session_state.latest_feedback == "positive":
+                    st.success("Thank you for positive feedback!")
+                elif st.session_state.latest_feedback == "negative" and not st.session_state.show_feedback_box:
+                    st.success("Thank you for your feedback!")
+            elif st.session_state.feedback_submission_status == "error":
+                st.error("Failed to submit feedback. Please try again.")
+            
+            # show feedback text box if thumbs down/up was pressed
+            if st.session_state.show_feedback_box:
+                st.markdown("**Want to tell us more? (Optional)**")
+                if st.session_state.latest_feedback == "positive":
+                    st.caption("Your positive feedback has already been recorded. You can optionally provide additional details or comments below.")
+                    placeholder_text = "Please describe what you liked or any comments..."
+                else:
+                    st.caption("Your negative feedback has already been recorded. You can optionally provide additional details below.")
+                    placeholder_text = "Please describe what was wrong with this response..."
 
-            with col_close:
-                if st.button("Cancel", key=f"cancel_feedback_{len(st.session_state.messages)}"):
-                    st.session_state.show_feedback_box = False
-                    st.session_state.latest_feedback = None
-                    st.session_state.feedback_submission_status = None
-                    st.rerun()
+                # Text area for detailed feedback
+                feedback_text = st.text_area(
+                    "Additional feedback (optional)",
+                    key=f"feedback_text_{len(st.session_state.messages)}",
+                    placeholder=placeholder_text,
+                    height=100
+                )
+
+                # send additional feedback button
+                col_send, col_spacer, col_close = st.columns([3, 5, 2])
+
+                with col_send:
+                    if st.button("Send Additional Details", key=f"send_additional_{len(st.session_state.messages)}"):
+                        if feedback_text.strip():
+                            with st.spinner("Submitting additional feedback..."):
+                                status, response = submit_feedback(feedback_text=feedback_text)
+                                if status:
+                                    st.success("Thank you! Your additional feedback has been recorded.")
+                                    st.session_state.show_feedback_box = False
+                                else:
+                                    st.error("Failed to record additional feedback. Please try again.")   
+                        else:
+                            st.warning("Please enter some feedback text before submitting!")         
+                        st.rerun()
+
+                with col_close:
+                    if st.button("Close", key=f"cancel_feedback_{len(st.session_state.messages)}"):
+                        st.session_state.show_feedback_box = False
+                        st.session_state.latest_feedback = None
+                        st.session_state.feedback_submission_status = None
+                        st.rerun()
 
 st.markdown(
     """
@@ -493,12 +500,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
 
 with st.sidebar:
     st.markdown("### Suggestions")

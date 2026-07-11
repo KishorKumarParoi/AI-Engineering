@@ -144,7 +144,9 @@ def get_rich_contexts_from_tool_messages(tool_messages, qdrant_client):
     
     if product_ids and qdrant_client:
         collection_name = os.getenv("collection_name", "Amazon_Electronics_Products")
-        for pid in product_ids:
+        from concurrent.futures import ThreadPoolExecutor
+
+        def fetch_single_rich_context(pid):
             try:
                 scroll_result = qdrant_client.scroll(
                     collection_name=collection_name,
@@ -178,7 +180,7 @@ def get_rich_contexts_from_tool_messages(tool_messages, qdrant_client):
                     elif isinstance(images, str) and images:
                         image_list.append({"large": images, "thumb": images, "hi_res": images})
                         
-                    rich_contexts.append({
+                    return {
                         "id": payload.get('parent_asin') or payload.get('product_id') or pid,
                         "review": review,
                         "title": payload.get('title') or review[:80] or str(pid),
@@ -194,10 +196,17 @@ def get_rich_contexts_from_tool_messages(tool_messages, qdrant_client):
                         "score": 1.0,
                         "average_rating": payload.get('average_rating'),
                         "details": payload.get('details') or {},
-                    })
-            except Exception as e:
-                # Silently ignore scroll issues and rely on text parsing fallback below
+                    }
+            except Exception:
                 pass
+            return None
+
+        with ThreadPoolExecutor(max_workers=min(8, len(product_ids))) as executor:
+            futures = [executor.submit(fetch_single_rich_context, pid) for pid in product_ids]
+            for fut in futures:
+                res = fut.result()
+                if res:
+                    rich_contexts.append(res)
 
     if len(rich_contexts) < len(product_ids):
         # We missed some products, let's parse from text as fallback
@@ -247,7 +256,7 @@ def get_rich_contexts_from_tool_messages(tool_messages, qdrant_client):
         name="rag_pipeline",
         tags=["pipeline", "retrieval_generation"],
 )
-def rag_pipeline(question, qdrant_client, top_k=5, thread_id: str = None):
+def rag_pipeline(question, qdrant_client, top_k=5, thread_id: str | None = None):
     import uuid
     if not thread_id:
         thread_id = str(uuid.uuid4())
@@ -283,7 +292,7 @@ def rag_pipeline(question, qdrant_client, top_k=5, thread_id: str = None):
     run_type="llm",
     tags=["execution"]
 )
-def rag_pipeline_wrapper(question, qdrant_client, top_k=5, thread_id: str = None):
+def rag_pipeline_wrapper(question, qdrant_client, top_k=5, thread_id: str | None = None):
     pipeline_result = rag_pipeline(question, qdrant_client, top_k, thread_id=thread_id)
     used_context = []
 

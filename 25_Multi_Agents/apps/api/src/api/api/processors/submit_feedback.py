@@ -24,7 +24,7 @@ def submit_feedback(trace_id: str, feedback_score: int | None = None, feedback_t
             client.create_feedback(
                 run_id=trace_id,
                 key="comment",
-                feedback_text=feedback_text,
+                comment=feedback_text,
                 feedback_source_type=feedback_source_type
             )
     except Exception as e:
