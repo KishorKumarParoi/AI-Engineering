@@ -19,7 +19,11 @@ dependencies = [
 ]
 
 [tool.uv.workspace]
-members = ["apps/api", "apps/chatbot_ui"]
+members = [
+    "apps/api",
+    "apps/chatbot_ui",
+    "apps/mcp_server",
+]
 
 [dependency-groups]
 dev = [
@@ -39,6 +43,7 @@ extraPaths = [
     "notebooks/week_4",
     "notebooks/week_3",
     "apps/api/src",
-    "apps/chatbot_ui/src"
+    "apps/chatbot_ui/src",
+    "apps/mcp_server/src"
 ]
 
