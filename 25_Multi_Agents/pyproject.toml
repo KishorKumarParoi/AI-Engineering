@@ -23,6 +23,7 @@ members = [
     "apps/api",
     "apps/chatbot_ui",
     "apps/mcp_server",
+    "apps/mcp_server_reviews",
 ]
 
 [dependency-groups]
@@ -44,6 +45,7 @@ extraPaths = [
     "notebooks/week_3",
     "apps/api/src",
     "apps/chatbot_ui/src",
-    "apps/mcp_server/src"
+    "apps/mcp_server/src",
+    "apps/mcp_server_reviews/src"
 ]
 
