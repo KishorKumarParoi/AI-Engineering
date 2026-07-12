@@ -5,14 +5,21 @@ WORKDIR /app
 # Copy workspace root files for dependency resolution
 COPY pyproject.toml uv.lock ./
 
+# Copy all workspace member pyproject.toml files to allow uv resolution
+COPY apps/api/pyproject.toml ./apps/api/
+COPY apps/chatbot_ui/pyproject.toml ./apps/chatbot_ui/
+COPY apps/mcp_server/pyproject.toml ./apps/mcp_server/
+COPY apps/mcp_server_reviews/pyproject.toml ./apps/mcp_server_reviews/
+
 # Copy package files and source
 COPY apps/mcp_server_reviews ./apps/mcp_server_reviews
+COPY apps/api ./apps/api
 
 ENV UV_COMPILE_BYTECODE=1
 
 # Install dependencies including workspace packages
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --package mcp_server_reviews
+    uv sync --frozen --no-dev --package mcp-server-reviews
 
 # Enable bytecode compilation and Python optimization
 ENV PYTHONOPTIMIZE=1
@@ -37,4 +44,4 @@ EXPOSE 8000
 WORKDIR /app/apps/mcp_server_reviews/src
 
 # Command to run the application
-CMD ["uvicorn", "mcp_server_reviews.main:mcp", "--host", "[IP_ADDRESS]", "--port", "8000", "--transport", "http"]
+CMD ["python", "/app/apps/mcp_server_reviews/main.py"]

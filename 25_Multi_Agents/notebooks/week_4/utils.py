@@ -65,7 +65,7 @@ def parse_function_definition(function_def: str) -> Dict[str, Any]:
 
         params_descs = parse_docstring_params(docstring)
 
-        if 'Returns' in docstring:
+        if 'Returns:' in docstring:
             result["returns"]["description"] = docstring.split("Returns:")[1].strip().split("\n")[0]
         
     args = func.args
@@ -122,6 +122,8 @@ def get_type_from_annotation(annotation) -> str:
 def parse_docstring_params(docstring: str) -> Dict[str, str]:
     """Extract parameter description from docstring (handles both Args: and parameters: formats)"""
     params = {}
+    if not docstring:
+        return params
     lines = docstring.split("\n")
     in_params = False
     current_param = None
@@ -148,8 +150,26 @@ def get_tool_descriptions(function_list):
     descriptions = []
 
     for function in function_list:
-        function_string = inspect.getsource(function)
-        result = parse_function_definition(function_string)
+        if not inspect.isfunction(function) and hasattr(function, "description") and hasattr(function, "name"):
+            # Handle MCP Tool objects
+            desc = function.description.split("\n\n")[0] if function.description else ""
+            input_schema = getattr(function, "inputSchema", getattr(function, "input_schema", {}))
+            result = {
+                "name": function.name,
+                "description": desc,
+                "parameters": {
+                    "type": "object",
+                    "properties": input_schema.get("properties", {})
+                },
+                "required": input_schema.get("required", []),
+                "returns": {"type": "string", "description": ""}
+            }
+        else:
+            try:
+                function_string = inspect.getsource(function)
+                result = parse_function_definition(function_string)
+            except Exception:
+                continue
 
         if result:
             descriptions.append(result)

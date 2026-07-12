@@ -5,6 +5,12 @@ WORKDIR /app
 # Copy workspace root files for dependency resolution
 COPY pyproject.toml uv.lock ./
 
+# Copy all workspace member pyproject.toml files to allow uv resolution
+COPY apps/api/pyproject.toml ./apps/api/
+COPY apps/chatbot_ui/pyproject.toml ./apps/chatbot_ui/
+COPY apps/mcp_server/pyproject.toml ./apps/mcp_server/
+COPY apps/mcp_server_reviews/pyproject.toml ./apps/mcp_server_reviews/
+
 # Copy package files and source
 COPY apps/api ./apps/api
 
