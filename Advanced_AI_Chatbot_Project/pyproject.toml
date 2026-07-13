@@ -1,7 +1,10 @@
 [project]
 name = "Rag_Pipeline"
 version = "0.1.0"
-description = "Add your description here"
+description = "Advanced AI Chat Bot"
+authors = [
+    { name = "kishor kumar paroi", email = "kishor.ruet.cse@gmail.com" }
+]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

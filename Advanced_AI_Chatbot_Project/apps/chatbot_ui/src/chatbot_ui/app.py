@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import json
 import html
 import logging
 from typing import Any
@@ -305,7 +305,21 @@ def _normalize_suggestions(response_data: dict) -> list[dict]:
 
     return suggestions
 
-
+def api_call_stream(method: str, url: str, **kwargs):
+    """
+    Make a streaming HTTP request and yield raw line bytes from the response.
+    Handles connection errors gracefully by yielding a JSON-encoded error event.
+    """
+    try:
+        with getattr(requests, method)(url, timeout=120, **kwargs) as response:
+            response.raise_for_status()
+            for line in response.iter_lines():
+                if line:  # skip keep-alive empty lines
+                    yield line
+    except requests.exceptions.RequestException as exc:
+        import json as _json
+        error_event = _json.dumps({"type": "error", "data": {"message": str(exc)}})
+        yield f"data: {error_event}".encode("utf-8")
 
 def submit_feedback(feedback_type=None, feedback_text=""):
     """Submit feedback to the APi Endpoint"""
@@ -524,54 +538,60 @@ if prompt:
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        success, response_data = api_call("post", f"{config.API_URL}/rag", json={"query": prompt, "thread_id": st.session_state.thread_id})
+        status_placeholder = st.empty()
+        status_placeholder.markdown("**AI is thinking...**")
+        message_placeholder = st.empty()
 
-        if success and isinstance(response_data, dict):
-            answer = response_data.get("answer") or response_data.get("message") or "No answer returned."
-            st.session_state.used_context = response_data.get("used_context", []) or []
-            st.session_state.suggestions = _normalize_suggestions(response_data)
-            st.session_state.trace_id = response_data.get("trace_id")
-        else:
-            answer = response_data.get("message", "Sorry, I could not generate a response right now.")
-            st.session_state.used_context = []
-            st.session_state.suggestions = []
+        for line in api_call_stream(
+            "post",
+            f"{config.API_URL}/rag",
+            json={"query": prompt, "thread_id": get_session_id()},
+            stream=True,
+            headers={
+                "Accept": "text/event-stream",
+            }
+        ):
+            # Decode the raw bytes coming from the SSE stream
+            if isinstance(line, bytes):
+                line_text = line.decode("utf-8", errors="ignore")
+            else:
+                line_text = str(line)
 
-        st.markdown('<div class="answer-card">', unsafe_allow_html=True)
-        st.markdown('<div class="answer-heading">Best answer</div>', unsafe_allow_html=True)
-        st.write(answer)
+            if line_text.startswith("data: "):
+                data = line_text[6:].strip()
+                try:
+                    output = json.loads(data)
 
-        if st.session_state.suggestions:
-            st.markdown('<div class="answer-heading">Suggestions</div>', unsafe_allow_html=True)
-            st.markdown(
-                '<div class="pill-row">' + ''.join(
-                    f'<span class="pill">{_escape(item.get("title", ""))}</span>'
-                    for item in st.session_state.suggestions[:4]
-                ) + '</div>',
-                unsafe_allow_html=True,
-            )
+                    # Intermediate status messages (e.g. "Analysing...", "Planning...")
+                    if output.get("type") == "status":
+                        status_placeholder.markdown(f"*{output.get('data', '')}*")
+                        continue
 
-        if st.session_state.used_context:
-            st.markdown('<div class="answer-heading">Products used</div>', unsafe_allow_html=True)
-            cols = st.columns(min(3, len(st.session_state.used_context)))
-            for index, item in enumerate(st.session_state.used_context[:3]):
-                item = _ensure_dict(item)
-                with cols[index]:
-                    image_url = _image_url(item)
-                    if image_url:
-                        st.image(image_url, use_container_width=True)
-                    st.markdown(f"**{item.get('title', 'Product')}**")
-                    meta = _meta_text(item)
-                    if meta:
-                        st.caption(meta)
-                    description = item.get("description") or item.get("review") or ""
-                    if isinstance(description, list):
-                        description = " ".join(str(x) for x in description if x)
-                    if description:
-                        st.caption(str(description)[:220])
+                    # Final answer event — type sent by rag_agent_stream_wrapper
+                    if output.get("type") == "final_answer":
+                        answer = output["data"]["answer"]
+                        used_context = output["data"].get("used_context", [])
+                        trace_id = output["data"].get("trace_id", "")
 
-        st.markdown('</div>', unsafe_allow_html=True)
+                        st.session_state.used_context = used_context
+                        st.session_state.messages.append({"role": "assistant", "content": answer})
+                        st.session_state.trace_id = trace_id
 
-        st.caption("Open the sidebar for richer product cards, images, and follow-up suggestions.")
+                        st.session_state.latest_feedback = None
+                        st.session_state.show_feedback_box = False
+                        st.session_state.feedback_submission_status = None
 
-    st.session_state.messages.append({"role": "assistant", "content": answer})
-    st.rerun()
+                        status_placeholder.empty()
+                        message_placeholder.markdown(answer)
+                        break
+
+                    # Error event from api_call_stream
+                    if output.get("type") == "error":
+                        status_placeholder.empty()
+                        message_placeholder.error(output.get("data", {}).get("message", "Unknown error"))
+                        break
+
+                except json.JSONDecodeError:
+                    # Non-JSON line — treat as a plain status update
+                    if data:
+                        status_placeholder.markdown(f"*{data}*")

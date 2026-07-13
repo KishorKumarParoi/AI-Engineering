@@ -1,10 +1,10 @@
 [project]
 name = "chatbot-ui"
 version = "0.1.0"
-description = "Add your description here"
+description = "Advanced AI Chat Bot"
 readme = "README.md"
 authors = [
-    { name = "aurimasgriciunas", email = "griciunas.aurimas@gmail.com" }
+    { name = "kishor kumar paroi", email = "kishor.ruet.cse@gmail.com" }
 ]
 requires-python = ">=3.12"
 dependencies = [

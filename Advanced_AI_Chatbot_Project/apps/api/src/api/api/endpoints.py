@@ -1,17 +1,17 @@
+from api.agents.modified_single_agent.graph import rag_agent_stream_wrapper
 from api.api.models import FeedbackRequest
 from api.api.models import FeedbackResponse
 from api.api.processors.submit_feedback import submit_feedback
-from sys import prefix
 import os
 import logging
 import pandas as pd
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
-from qdrant_client.http.exceptions import UnexpectedResponse  # Moved up here to avoid NameError
+from qdrant_client.http.exceptions import UnexpectedResponse
 import threading
 
 from fastapi import Request, APIRouter
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from api.api.models import RagRequest, RagResponse, RAGUsedContext
 from api.agents.prod_retrieval_agents.single_turn_in_retrieval_generation import rag_pipeline_wrapper
@@ -35,7 +35,7 @@ langsmith_api_key = os.getenv('LANGSMITH_API_KEY')
 if qdrant_url and "qdrant:6333" in qdrant_url:
     # Docker service host is not resolvable from a local notebook kernel
     qdrant_url = qdrant_url.replace("qdrant:6333", "localhost:6333")
-    
+
 # Verify keys are loaded
 print(f"OpenAI API Key present: {bool(openai_api_key)}")
 print(f"Google API Key present: {bool(google_api_key)}")
@@ -57,7 +57,7 @@ qdrant_client = QdrantClient(
 # Simple lock to avoid concurrent population from multiple requests
 _population_lock = threading.Lock()
 
-DATA_PATH = "data/Data_With_Images.jsonl" 
+DATA_PATH = "data/Data_With_Images.jsonl"
 COLLECTION_NAME = os.environ.get("collection_name") or "Amazon_Electronics_Products"
 
 def _collection_count_value(collection_count):
@@ -125,117 +125,14 @@ threading.Thread(target=run_db_initialization, daemon=True).start()
 
 rag_router = APIRouter()
 
+
 @rag_router.post("/")
-def rag(
-    request: Request,
-    payload: RagRequest
-) -> RagResponse:
-    logger.info(f"Received request: {payload}")
-    trace_id = ""
+def rag(request: Request, payload: RagRequest) -> StreamingResponse:
+    return StreamingResponse(
+        rag_agent_stream_wrapper(payload.query, payload.thread_id),
+        media_type="text/event-stream",
+    )
 
-    try:
-        # Ensure collection exists and populate on-demand if empty
-        try:
-            ensure_collection_exists(qdrant_client, collection_name=COLLECTION_NAME)
-        except Exception as e:
-            logger.warning(f"Could not ensure collection exists before request: {e}")
-
-        try:
-            collection_count = qdrant_client.count(collection_name=COLLECTION_NAME)
-        except Exception:
-            collection_count = None
-        collection_count_value = _collection_count_value(collection_count)
-
-        if collection_count_value in (0, None):
-            # Acquire lock so only one request populates at a time
-            if _population_lock.acquire(blocking=False):
-                try:
-                    # Re-check inside lock
-                    try:
-                        collection_count = qdrant_client.count(collection_name=COLLECTION_NAME)
-                    except Exception:
-                        collection_count = None
-                    collection_count_value = _collection_count_value(collection_count)
-
-                    if collection_count_value in (0, None):
-                        logger.info("On-demand population: collection empty, attempting to upsert data before answering request")
-                        try:
-                            # Resolve DATA_PATH similar to startup logic
-                            if not os.path.exists(DATA_PATH):
-                                current_dir = os.path.dirname(os.path.abspath(__file__))
-                                DATA_FILE = os.path.abspath(os.path.join(current_dir, "../../../../../data/Data_With_Images.jsonl"))
-                            else:
-                                DATA_FILE = DATA_PATH
-
-                            if os.path.exists(DATA_FILE) and os.path.getsize(DATA_FILE) > 0:
-                                with open(DATA_FILE, 'r', encoding='utf-8') as f:
-                                    valid_lines = [line.strip() for line in f if line.strip()]
-
-                                if valid_lines:
-                                    from io import StringIO
-                                    clean_json_stream = StringIO("\n".join(valid_lines))
-                                    df = pd.read_json(clean_json_stream, lines=True)
-                                    populate_qdrant(df, qdrant_client, collection_name=COLLECTION_NAME)
-                                else:
-                                    logger.warning("On-demand population skipped: data file contains no valid lines")
-                            else:
-                                logger.warning(f"On-demand population skipped: data file not found at {DATA_FILE}")
-                        except Exception as pop_err:
-                            logger.exception(f"On-demand population failed: {pop_err}")
-                finally:
-                    _population_lock.release()
-
-        # 3. Execute your core multi-agent LangGraph workflow
-        thread_id = getattr(request.state, "request_id", None)
-        answer = rag_pipeline_wrapper(payload.query, qdrant_client=qdrant_client, top_k=5, thread_id=payload.thread_id)
-        logger.info("Raw answer from RAG pipeline: %s", answer)
-        
-        if answer is None:
-            answer_text = "Please try again later."
-            used_context = []
-            suggestions = [
-                "Try again later or refine your query.",
-            ]
-        elif isinstance(answer, dict):
-            answer_text = str(answer.get("answer", ""))
-            used_context = [RAGUsedContext(**ctx) for ctx in answer.get("used_context", [])]
-            suggestions = [
-                "Refine your query (e.g., ask about price or features)",
-                "Request similar products",
-                "Ask for product images or details",
-            ]
-        else:
-            answer_text = str(answer) if answer else ""
-            used_context = []
-            suggestions = ["Refine your query for better matches."]
-        
-        trace_id = ""
-        if isinstance(answer, dict):
-            raw_trace_id = answer.get("trace_id")
-            if isinstance(raw_trace_id, str):
-                trace_id = raw_trace_id
-
-        if not trace_id:
-            request_id = getattr(request.state, "request_id", "")
-            trace_id = str(request_id) if request_id is not None else ""
-
-        return RagResponse(
-            request_id=request.state.request_id,
-            answer=answer_text,
-            used_context=used_context,
-            suggestions=suggestions,
-            trace_id=trace_id
-        )
-        
-    except Exception as e:
-        logger.exception("RAG pipeline failed")
-        return RagResponse(
-            request_id=request.state.request_id,
-            answer="",
-            used_context=[],
-            suggestions=[],
-            trace_id=trace_id
-        )
 
 feedback_router = APIRouter()
 
@@ -244,12 +141,12 @@ def send_feedback(
     request: Request,
     payload: FeedbackRequest
 ) -> FeedbackResponse:
-    
+
     submit_feedback(payload.trace_id, payload.feedback_score, payload.feedback_text, payload.feedback_source_type)
-    
+
     return FeedbackResponse(
-        request_id = request.state.request_id,
-        status= "success",
+        request_id=request.state.request_id,
+        status="success",
     )
 
 api_router = APIRouter()

@@ -1,7 +1,9 @@
 [project]
 name = "ai-engineering-bootcamp-prerequisites"
 version = "0.1.0"
-description = "Add your description here"
+description = "Advanced AI Chat Bot Template App"
+author = "Kishor Kumar Paroi"
+mail = "kishor.ruet.cse@gmail.com"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
