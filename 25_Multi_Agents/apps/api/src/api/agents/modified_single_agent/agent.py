@@ -131,7 +131,8 @@ def agent_node(state: State) -> dict:
         }]
 
     tool_calls_field = normalized_tool_calls or []
-    if not tool_calls_field:
+    is_first_turn = (getattr(state, 'iteration', 0) or 0) == 0
+    if not tool_calls_field and is_first_turn and not getattr(response, 'final_answer', False):
         query_seed = getattr(state, 'expanded_query', []) or [getattr(state, 'initial_query', '') or '']
         query_seed = [item for item in query_seed if item]
         tool_calls_field = [
