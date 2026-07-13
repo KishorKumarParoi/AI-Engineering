@@ -621,6 +621,172 @@ def retrieve_reviews_data(query, item_list, qdrant_client=None, top_k=5):
     }
 
 @traceable(
+        name="retrieve_items_data",
+        tags=["retrieval", "qdrant"],
+        run_type="retriever"
+)
+def retrieve_items_data(query, item_list, qdrant_client=None, top_k=5):
+    client = qdrant_client or (globals().get("qdrant_client")  or get_qdrant_client())
+    query_embedding = get_embedding(query)
+
+    try:
+        # search_result = client.query_points(
+        #     collection_name=os.getenv("collection_name", "Amazon_Electronics_Products"),
+        #     query=query_embedding,
+        #     using="text-embedding-3-small",
+        #     limit=top_k,
+        #     with_payload=True,
+        # )
+        search_result = client.query_points(
+        collection_name="Amazon-items-collection-reviews",
+        prefetch=[
+            Prefetch(
+                query=query_embedding,
+                filter=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="parent_asin",
+                            match=models.MatchAny(
+                                any=item_list
+                            )
+                        )
+                    ]
+                ),
+                limit=20
+            )
+        ],
+            query=FusionQuery(fusion="rrf"),
+            limit=top_k
+        )
+    except UnexpectedResponse as e:
+        status_code = getattr(e, 'status_code', None)
+        if status_code == 404:
+            # Create collection with expected vector params to avoid future 404s
+            collection_name = os.getenv("collection_name", "Amazon_Electronics_Products")
+            try:
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config={
+                        "text-embedding-3-small": VectorParams(size=1536, distance=Distance.COSINE)
+                    },
+                    sparse_vectors_config={
+                        "bm25": SparseVectorParams(modifier=models.Modifier.IDF)
+                    }
+                )
+            except Exception:
+                # If create fails, re-raise original UnexpectedResponse
+                raise
+
+            # Return empty structured result so caller can continue gracefully
+            return {
+                "retrieved_context_ids": [],
+                "retrieved_contexts": [],
+                "similarity_scores": [],
+                "retrieved_context_ratings": [],
+                "retrieved_context_prices": [],
+                "retrieved_context_images": [],
+                "retrieved_context_rating_numbers": [],
+            }
+        else:
+            raise
+
+    retrieved_context_ids = []
+    retrieved_contexts = []
+    similarity_scores = []
+    retrieved_context_ratings = []
+    retrieved_context_prices = []
+    retrieved_context_images = []
+    retrieved_context_rating_numbers = []
+    retrieved_context_titles = []
+    retrieved_context_details = []
+    retrieved_context_features = []
+    retrieved_context_brands = []
+    retrieved_context_sizes = []
+    retrieved_context_colors = []
+    retrieved_context_main_categories = []
+
+    for result in search_result.points:
+        payload = result.payload or {}
+        retrieved_context_ids.append(payload.get('parent_asin') or payload.get('product_id') or result.id)
+        retrieved_contexts.append(
+            payload.get('processed_description')
+            or payload.get('description')
+            or payload.get('text')
+            or payload.get('title')
+            or ""
+        )
+        similarity_scores.append(result.score)
+        retrieved_context_ratings.append(payload.get('average_rating'))
+        retrieved_context_prices.append(payload.get('price'))
+        retrieved_context_images.append(payload.get('image_url') or payload.get('images') or [])
+        retrieved_context_rating_numbers.append(payload.get('rating_number'))
+        retrieved_context_titles.append(payload.get('title') or payload.get('text') or "")
+        retrieved_context_details.append(payload.get('details') or {})
+        retrieved_context_features.append(payload.get('features') or [])
+        retrieved_context_brands.append(payload.get('brand') or payload.get('store') or "")
+        details = payload.get('details') or {}
+        if isinstance(details, dict):
+            retrieved_context_sizes.append(details.get('size') or "")
+            retrieved_context_colors.append(details.get('color') or "")
+            retrieved_context_main_categories.append(payload.get('main_category') or details.get('main_category') or "")
+        else:
+            retrieved_context_sizes.append("")
+            retrieved_context_colors.append("")
+            retrieved_context_main_categories.append(payload.get('main_category') or "")
+
+    return {
+        "retrieved_context_ids": retrieved_context_ids,
+        "retrieved_contexts": retrieved_contexts,
+        "similarity_scores": similarity_scores,
+        "retrieved_context_ratings": retrieved_context_ratings,
+        "retrieved_context_prices": retrieved_context_prices,
+        "retrieved_context_images": retrieved_context_images,
+        "retrieved_context_rating_numbers": retrieved_context_rating_numbers
+        ,"retrieved_context_titles": retrieved_context_titles,
+        "retrieved_context_details": retrieved_context_details,
+        "retrieved_context_features": retrieved_context_features,
+        "retrieved_context_brands": retrieved_context_brands,
+        "retrieved_context_sizes": retrieved_context_sizes,
+        "retrieved_context_colors": retrieved_context_colors,
+        "retrieved_context_main_categories": retrieved_context_main_categories,
+    }
+
+
+@traceable(
+    name="process_items_context",
+    run_type="prompt"
+)
+def process_items_context(context):
+    formatted_context = ""
+    for id, chunk, rating in zip(context["retrieved_context_ids"], context["retrieved_contexts"], context["retrieved_context_ratings"]):
+        formatted_context += f"- ID: {id}, rating: {rating}, description: {chunk}\n"
+    
+    return formatted_context
+
+@traceable(
+    name="get_formatted_items_context",
+    run_type="prompt"
+)
+def get_formatted_items_context(query: str, item_list: list, top_k: int = 10, *, qdrant_client: QdrantClient = None, config: RunnableConfig = None) -> str:
+    """
+    Retrieve and format items context for a given query and target item list.
+    """
+    client = qdrant_client or globals().get("qdrant_client")
+    
+    # Extract client from LangGraph background config if available
+    if client is None and config is not None:
+        client = config.get("configurable", {}).get("qdrant_client", None)
+        
+    if client is None:
+        client = get_qdrant_client()
+
+    context = retrieve_items_data(query, item_list, qdrant_client=client, top_k=top_k)
+    formatted_context = process_items_context(context)
+
+    return formatted_context
+
+
+@traceable(
     name="format_retrieved_reviews_context",
     run_type="prompt"
 )
@@ -631,6 +797,10 @@ def process_reviews_context(context):
     
     return formatted_context
 
+@traceable(
+    name="get_formatted_reviews_context",
+    run_type="prompt"
+)
 def get_formatted_reviews_context(query: str, item_list: list, top_k: int = 10, *, qdrant_client: QdrantClient = None, config: RunnableConfig = None) -> str:
     """
     Retrieve and format customer reviews context for a given query and target item list.
