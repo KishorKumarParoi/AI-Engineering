@@ -138,6 +138,17 @@ def agent_node(state: State) -> dict:
             for query_item in query_seed
         ] or [{'tool_name': 'get_formatted_context', 'arguments': {'query': getattr(state, 'initial_query', '') or '', 'top_k': 5}}]
 
+    # Ensure the assistant message has the corresponding tool calls to prevent OpenAI 400 error
+    if tool_calls_field:
+        ai_message.tool_calls = [
+            {
+                "id": f"call_{i}",
+                "name": tc.get('name') or tc.get('tool_name') or 'get_formatted_context',
+                "args": tc.get('arguments') or tc.get('args') or {},
+            }
+            for i, tc in enumerate(tool_calls_field)
+        ]
+
     available_tools_field = getattr(state, 'available_tools', None) or []
     if not available_tools_field:
         available_tools_field = [{
@@ -210,8 +221,16 @@ def intent_router_node(state: State) -> dict:
 
     messages = state.messages
     conversation = []
+    from langchain_core.messages import ToolMessage
     for message in messages:
-        conversation.append(convert_to_openai_messages(message))
+        if isinstance(message, ToolMessage) or getattr(message, 'type', None) == 'tool':
+            continue
+        openai_msg = convert_to_openai_messages(message)
+        if openai_msg.get('role') == 'assistant':
+            openai_msg.pop('tool_calls', None)
+            if not openai_msg.get('content'):
+                continue
+        conversation.append(openai_msg)
 
     client = instructor.from_openai(OpenAI())
 

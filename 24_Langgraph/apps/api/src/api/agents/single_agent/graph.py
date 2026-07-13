@@ -73,8 +73,16 @@ def intent_router_node(state: State) -> dict:
 
     messages = state.messages
     conversation = []
+    from langchain_core.messages import ToolMessage
     for message in messages:
-        conversation.append(convert_to_openai_messages(message))
+        if isinstance(message, ToolMessage) or getattr(message, "type", None) == "tool":
+            continue
+        openai_msg = convert_to_openai_messages(message)
+        if openai_msg.get("role") == "assistant":
+            openai_msg.pop("tool_calls", None)
+            if not openai_msg.get("content"):
+                continue
+        conversation.append(openai_msg)
 
     client = instructor.from_openai(OpenAI())
 

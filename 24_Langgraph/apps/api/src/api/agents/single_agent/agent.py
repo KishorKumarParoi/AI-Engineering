@@ -180,6 +180,17 @@ def agent_node(state: State) -> dict:
         ] or [{"tool_name": "get_formatted_context", "arguments": {"query": getattr(state, "initial_query", "") or "", "top_k": 5}}]
     tool_calls_field = _normalize_items(list(tool_calls_field))
 
+    # Ensure the assistant message has the corresponding tool calls to prevent OpenAI 400 error
+    if tool_calls_field:
+        ai_message.tool_calls = [
+            {
+                "id": f"call_{i}",
+                "name": tc.get("name") or tc.get("tool_name") or "get_formatted_context",
+                "args": tc.get("arguments") or tc.get("args") or {},
+            }
+            for i, tc in enumerate(tool_calls_field)
+        ]
+
     available_tools_field = getattr(state, "available_tools", None) or []
     if not available_tools_field:
         available_tools_field = [{
