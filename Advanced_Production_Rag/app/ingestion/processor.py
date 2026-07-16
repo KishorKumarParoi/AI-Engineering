@@ -181,3 +181,4 @@ if __name__ == "__main__":
 
     run_universal_ingestion(target_dir, explicit_source_type=explicit_type, wipe=wipe_requested)
     logfire.info("Ingestion job completed.")
+    qdrant_client.close()

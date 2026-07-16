@@ -9,7 +9,7 @@ python -m app.ingestion.processor DATA/true_data true
 
 **2. Ingest noisy data after clean data**
 ```bash
-python -m app.ingestion.processor DATA/noisy_sample_10 noisy
+python -m app.ingestion.processor DATA/noisy_data/sample_5 noisy
 ```
 
 **3. Ingest only 15 noisy files**
