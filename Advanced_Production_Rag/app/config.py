@@ -22,6 +22,7 @@ class Settings:
     PORTKEY_API_KEY = os.getenv("PORTKEY_API_KEY")
     GROQ_SLUG =  "groq2"     # primary: @rag/llama-3.3-70b-versatile
     GROQ_SLUG_2 = "groq1"  # fallback: @brag/llama-3.1-8b-instant
+    PORTKEY_CONFIG_ID = os.getenv("PORTKEY_CONFIG_ID")
 
     
     # --- OBSERVABILITY ---

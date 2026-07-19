@@ -2,6 +2,7 @@ import os
 import sys
 import uuid
 import json
+import time
 import logfire
 
 from qdrant_client import QdrantClient
@@ -94,18 +95,32 @@ def process_file(file_path: str, filename: str, source_type: str):
                     points=points,
                 )
                 logfire.info(f"Indexed {len(points)} points to Qdrant from {filename}.")
+                return True
 
         except Exception as e:
             logfire.error(f"Failed to process {filename}: {e}")
+            return False
 
 
 def process_directory(dir_path: str, source_type: str):
-    """Process every file in a directory."""
+    """Process every file in a directory with transient timeout retries."""
     with logfire.span("Scanning Directory", path=dir_path, source=source_type):
         files = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
         logfire.info(f"Found {len(files)} files in {dir_path}.")
         for filename in files:
-            process_file(os.path.join(dir_path, filename), filename, source_type)
+            file_abs_path = os.path.join(dir_path, filename)
+            for attempt in range(3):
+                success = process_file(file_abs_path, filename, source_type)
+                if success:
+                    break
+                else:
+                    if attempt < 2:
+                        wait = 2 ** attempt
+                        logfire.warning(
+                            f"Retrying file process for {filename} in {wait}s "
+                            f"(attempt {attempt + 1}/3)..."
+                        )
+                        time.sleep(wait)
 
 
 def run_universal_ingestion(base_dir: str, explicit_source_type: str = None, wipe: bool = False):

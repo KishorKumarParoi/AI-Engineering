@@ -3,7 +3,7 @@ import logfire
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from app.config import settings
 
-BATCH_SIZE = 50
+BATCH_SIZE = 10
 _GEMINI_DIM = 3072
 _FALLBACK_DIM = 768  # all-mpnet-base-v2
 
@@ -66,19 +66,24 @@ def _embed_batch(batch: list[str]) -> list[list[float]]:
             try:
                 return _active_model.embed_documents(batch)
             except Exception as e:
-                err = str(e).lower()
-                is_rate_limit = any(x in err for x in ("429", "rate", "quota", "resource_exhausted"))
-                if is_rate_limit and attempt < 3:
+                err_msg = str(e)
+                err = err_msg.lower()
+                should_retry = any(x in err for x in (
+                    "429", "rate", "quota", "resource_exhausted",
+                    "timeout", "timed out", "time out", "connection",
+                    "socket", "temp", "transient"
+                ))
+                if should_retry and attempt < 3:
                     wait = 2 ** attempt
                     logfire.warning(
-                        f"Gemini rate limit hit — retrying in {wait}s "
-                        f"(attempt {attempt + 1}/4)."
+                        f"Gemini embedding error/timeout hit — retrying in {wait}s "
+                        f"(attempt {attempt + 1}/4): {err_msg}"
                     )
                     time.sleep(wait)
                 else:
-                    logfire.error(f"Gemini embedding failed: {e}")
+                    logfire.error(f"Gemini embedding failed: {err_msg}")
                     raise
-        raise RuntimeError("Gemini rate limit persisted after 4 attempts.")
+        raise RuntimeError("Gemini embedding error persisted after 4 attempts.")
     else:
         return _active_model.encode(batch, show_progress_bar=False).tolist()
 

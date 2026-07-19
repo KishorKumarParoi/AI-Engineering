@@ -1,4 +1,5 @@
 import logfire
+from app.config import settings
 from app.agents.state import AgentState
 from app.gateway import portkey_client, extract_cache_status
 
@@ -59,6 +60,7 @@ def generate_node(state: AgentState):
     with logfire.span("✍️ LLM Synthesis"):
         try:
             response = portkey_client.chat.completions.create(
+                model=f"@{settings.GROQ_SLUG}/llama-3.3-70b-versatile",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.1
             )

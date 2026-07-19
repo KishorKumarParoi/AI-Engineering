@@ -6,21 +6,9 @@ from app.config import settings
 
 
 # Production gateway config:
-#   - Fallback: primary @groq1/llama-3.3-70b-versatile → @groq2/llama-3.1-8b-instant on failure
-#   - Cache: semantic mode (requires Portkey Enterprise — silently falls back to simple on free/starter)
-#   - Retry: 2 attempts on rate limit / server error before triggering the fallback target
-GATEWAY_CONFIG = {
-    "strategy": {"mode": "fallback"},
-    "cache": {"mode": "simple"},
-    "retry": {
-        "attempts": 2,
-        "on_status_codes": [429, 503]
-    },
-    "targets": [
-        {"override_params": {"model": f"@{settings.GROQ_SLUG}/llama-3.3-70b-versatile"}},
-        {"override_params": {"model": f"@{settings.GROQ_SLUG_2}/llama-3.1-8b-instant"}},
-    ]
-}
+#   - Use PORTKEY_CONFIG_ID if specified in environment variables (highly recommended if inline configs are blocked).
+#   - Fallback to None (direct routing) to prevent 400 Bad Request error if inline configs are disabled.
+GATEWAY_CONFIG = settings.PORTKEY_CONFIG_ID
 
 portkey_client = Portkey(
     api_key=settings.PORTKEY_API_KEY,
