@@ -41,4 +41,5 @@ dependencies = [
     "streamlit>=1.59.2",
     "unstructured>=0.24.1",
     "uvicorn[standard]>=0.51.0",
+    "watchdog>=6.0.0",
 ]
