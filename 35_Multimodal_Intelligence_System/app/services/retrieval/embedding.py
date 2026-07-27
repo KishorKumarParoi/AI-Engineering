@@ -4,7 +4,7 @@ from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponenti
 
 from app.config import settings
 
-BATCH_SIZE = 64
+BATCH_SIZE = 16
 _EMBEDDING_DIM = 1024
 _JINA_EMBEDDING_URL = "https://api.jina.ai/v1/embeddings"
 _JINA_MODEL = "jina-embeddings-v3"
