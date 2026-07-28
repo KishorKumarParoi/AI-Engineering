@@ -1,7 +1,8 @@
-# ============================================================
-# CRITICAL: logfire MUST be configured before ALL other imports
-# so that spans from all modules are captured from the start.
-# ============================================================
+import warnings
+
+warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+warnings.filterwarnings("ignore", message=".*allowed_objects.*")
+
 import logfire
 
 from app.config import settings

@@ -32,7 +32,12 @@ index.faiss
 metadata.pkl
 
 # Data
-
+.github
+.pytest_cache
+.benchmarks
+.aws
+.deepeval
+.streamlit
 
 # IDEs
 .vscode/
