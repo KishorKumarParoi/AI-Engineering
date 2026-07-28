@@ -213,7 +213,7 @@ def get_graph_image(_api_key: str = Depends(verify_api_key)):
 
 @app.post("/query")
 @rate_limit()
-def query(
+async def query(
     request: Request,
     body: QueryRequest,
     _api_key: str = Depends(verify_api_key),
@@ -229,8 +229,9 @@ def query(
 
     start = time.perf_counter()
     with logfire.span("🔍 /query", request_id=request_id, thread_id=thread_id):
-        # Gate: run guardrails synchronously so blocked requests never run the graph.
-        rail_fired, rail_response = guard(q)
+        # Gate: run guardrails asynchronously so blocked requests never run the graph.
+        rail_fired, rail_response = await guard(q)
+
         if rail_fired:
             GUARDRAILS_BLOCKS_TOTAL.labels(blocked="true").inc()
             RAG_REQUESTS_TOTAL.labels(status="blocked").inc()
