@@ -28,7 +28,6 @@ import random
 
 from locust import HttpUser, between, task
 
-
 RAG_API_KEY = os.environ.get(
     "RAG_API_KEY",
     # Replace with your real production key if you do not want to set env var.

@@ -88,6 +88,7 @@ exclude = [
     "node_modules",
     "__pycache__",
     ".git",
+    "notebooks",
 ]
 
 [tool.ruff.lint]

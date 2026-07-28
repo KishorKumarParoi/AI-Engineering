@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Render ECS task definitions using values from .env and AWS state files."""
 
-import json
-import os
 import re
 from pathlib import Path
 
@@ -35,7 +33,7 @@ def load_state():
             for line in f:
                 # Handle both 'export KEY=value' and 'KEY=value' formats.
                 line = line.strip().removeprefix("export ")
-                m = re.match(r'([A-Z_0-9]+)=(.+)', line)
+                m = re.match(r"([A-Z_0-9]+)=(.+)", line)
                 if m:
                     state[m.group(1)] = m.group(2)
     return state
