@@ -1,8 +1,10 @@
 import pytest
 from app.services.cache_service import (
     clear_query_cache,
+    cosine_similarity,
     get_cache_key,
     get_cached_response,
+    get_semantic_cache,
     normalize_query,
     set_cached_response,
 )
@@ -21,31 +23,41 @@ def test_get_cache_key_consistency():
     assert key1 == key2 == key3
 
 
+def test_cosine_similarity():
+    v1 = [1.0, 0.0, 0.0]
+    v2 = [1.0, 0.0, 0.0]
+    v3 = [0.0, 1.0, 0.0]
+    assert cosine_similarity(v1, v2) == pytest.approx(1.0)
+    assert cosine_similarity(v1, v3) == pytest.approx(0.0)
+
+
 def test_cache_set_and_get():
-    query = "test query for caching"
+    query = "What is a Kubernetes Pod?"
     data = {
         "question": query,
-        "answer": "A test answer.",
+        "answer": "A Pod is the smallest deployable unit in Kubernetes.",
         "thought_process": ["Step 1", "Step 2"],
         "status": "Response generated.",
         "sources": [],
     }
 
-    # Clear before testing
     clear_query_cache()
 
-    # Set cache
-    success = set_cached_response(query, data, ttl_seconds=60)
-    if success:
-        cached = get_cached_response(query)
-        assert cached is not None
-        assert cached["answer"] == "A test answer."
-        assert cached["question"] == query
+    set_cached_response(query, data, ttl_seconds=60)
 
-        # Test case-insensitive normalization retrieval
-        cached_case = get_cached_response("  TEST QUERY FOR CACHING??? ")
-        assert cached_case is not None
-        assert cached_case["answer"] == "A test answer."
+    # 1. Test exact match
+    exact = get_cached_response(query)
+    assert exact is not None
+    assert exact["answer"] == data["answer"]
+    assert exact["cache_type"] == "exact"
 
-        # Clean up
-        clear_query_cache()
+    # 2. Test semantic match for a similar phrasing of the same question!
+    similar_query = "Can you explain what a Pod in Kubernetes is?"
+    semantic = get_cached_response(similar_query, threshold=0.70)
+    assert semantic is not None
+    assert semantic["answer"] == data["answer"]
+    assert semantic["cached"] is True
+    assert semantic["cache_type"] in ["exact", "semantic"]
+    assert "similarity_score" in semantic
+
+    clear_query_cache()
