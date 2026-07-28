@@ -38,6 +38,7 @@ from app.agents.graph import build_graph
 from app.guardrails import guard, initialize_rails
 from app.health import router as health_router
 from app.logging import set_request_id
+from app.services.cache_service import get_cached_response, set_cached_response
 from app.services.health.connection_checker import check_all_connections, log_connection_summary
 
 # Custom Prometheus metrics
@@ -245,6 +246,15 @@ def query(
 
         GUARDRAILS_BLOCKS_TOTAL.labels(blocked="false").inc()
 
+        # Cache Lookup: Instant response (<5ms) for identical/similar questions
+        cached_res = get_cached_response(q)
+        if cached_res:
+            RAG_REQUESTS_TOTAL.labels(status="cached").inc()
+            RAG_REQUEST_DURATION.observe(time.perf_counter() - start)
+            logfire.info("⚡ Served response from Redis query cache", request_id=request_id, query=q)
+            cached_res["cached"] = True
+            return cached_res
+
         try:
             rag_agent = app.state.rag_agent
             initial_state = {
@@ -264,13 +274,18 @@ def query(
                 request_id=request_id,
                 thread_id=thread_id,
             )
-            return {
+            response_payload = {
                 "question": q,
                 "answer": final_output.get("final_answer"),
                 "thought_process": final_output.get("plan"),
                 "status": final_output.get("status"),
                 "sources": final_output.get("documents", []),
+                "cached": False,
             }
+            if response_payload.get("answer"):
+                set_cached_response(q, response_payload, ttl_seconds=3600)
+
+            return response_payload
         except Exception as e:
             RAG_REQUESTS_TOTAL.labels(status="error").inc()
             RAG_REQUEST_DURATION.observe(time.perf_counter() - start)
