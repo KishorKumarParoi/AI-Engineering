@@ -66,6 +66,7 @@ dependencies = [
 dev = [
     "pytest>=8.4.0",
     "pytest-asyncio>=0.25.0",
+    "pytest-cov>=5.0.0",
     "ruff>=0.11.0",
     "ragas",
     "deepeval",
@@ -79,6 +80,13 @@ include = ["app*", "ui*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    "ignore::UserWarning",
+    "ignore:.*allowed_objects.*:Warning",
+    "ignore::langchain_core._api.deprecation.LangChainPendingDeprecationWarning",
+]
 
 [tool.ruff]
 target-version = "py311"

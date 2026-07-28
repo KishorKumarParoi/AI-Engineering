@@ -59,11 +59,11 @@ start: start-api start-ui ## Start both FastAPI backend and Streamlit UI in back
 
 start-api: ## Start FastAPI backend server on port 8000
 	@echo "$(BLUE)Starting FastAPI backend server on http://localhost:8000...$(RESET)"
-	@$(UVICORN) app.main:app --reload --port 8000 &
+	@nohup $(UVICORN) app.main:app --reload --port 8000 > /dev/null 2>&1 &
 
 start-ui: ## Start Streamlit UI on port 8501
 	@echo "$(BLUE)Starting Streamlit UI on http://localhost:8501...$(RESET)"
-	@$(STREAMLIT) run ui/app.py --server.port 8501 &
+	@nohup $(STREAMLIT) run ui/app.py --server.port 8501 > /dev/null 2>&1 &
 
 stop: ## Stop local FastAPI (port 8000) and Streamlit (port 8501) processes
 	@echo "$(RED)Stopping processes on ports 8000 and 8501...$(RESET)"
@@ -88,7 +88,12 @@ health: ## Run external connection health checks (Postgres, Redis, Qdrant, LLM G
 	@$(PYTHON) -m app.services.health.connection_checker
 
 check-ready: ## Test API readiness endpoint
-	@curl -s http://localhost:8000/ready | $(PYTHON) -m json.tool
+	@if curl -sf http://localhost:8000/ready > /dev/null 2>&1; then \
+		curl -s http://localhost:8000/ready | $(PYTHON) -m json.tool; \
+	else \
+		echo "$(RED)API server is not running on http://localhost:8000. Start it with 'make start' or 'make start-api'.$(RESET)"; \
+		exit 1; \
+	fi
 
 ## -----------------------------------------------------------------------------
 ## Testing & Code Quality

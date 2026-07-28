@@ -25,6 +25,8 @@ import time
 import uuid
 from typing import Optional
 
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -156,16 +158,8 @@ def rate_limit(times: int = None, seconds: int = None):
     return app_limiter.limit(_resolve_rule)
 
 
-# Initialize FastAPI
-app = FastAPI(title="Enterprise Agentic RAG API")
-app.include_router(health_router)
-
-# Expose Prometheus metrics at /metrics with default request instrumentation.
-Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
-
-
-@app.on_event("startup")
-def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     initialize_rails()
 
     # Build the agent graph with the production checkpointer (Postgres by default).
@@ -182,6 +176,16 @@ def startup_event():
 
     if not settings.API_KEY:
         logfire.warning("🔓 RAG_API_KEY is not set — /query is open to anyone. Set it in production.")
+
+    yield
+
+
+# Initialize FastAPI
+app = FastAPI(title="Enterprise Agentic RAG API", lifespan=lifespan)
+app.include_router(health_router)
+
+# Expose Prometheus metrics at /metrics with default request instrumentation.
+Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 
 class QueryRequest(BaseModel):
