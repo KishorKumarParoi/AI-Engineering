@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# Env / secrets
+.env
+*.env.local
+
+# IDE
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Data & results (large files)
+data/raw/
+data/processed/
+results/*.json
+results/*.md
+results/images/
+results/image_captions/
+results/chunks/
+results/reports/
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# uv lock kept, but not pip artifacts
+pip-wheel-metadata/
+Unlimited OCR Streamlit app.md

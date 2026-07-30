@@ -1,0 +1,4 @@
+pymupdf
+requests
+python-dotenv
+tqdm
