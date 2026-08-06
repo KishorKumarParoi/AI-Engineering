@@ -6,4 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "logfire[system-metrics]>=4.39.0",
+    "matplotlib>=3.11.1",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.5",
 ]

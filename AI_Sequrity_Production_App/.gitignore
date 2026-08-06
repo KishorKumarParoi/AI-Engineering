@@ -1,2 +1,6 @@
 .env
 test.md
+.venv
+.logfire
+Cour*.xlsx
+update*.py
