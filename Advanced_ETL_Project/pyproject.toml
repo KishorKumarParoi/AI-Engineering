@@ -1,0 +1,12 @@
+[project]
+name = "advanced-etl-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.2",
+    "pandas>=3.0.5",
+    "pymongo>=4.17.0",
+    "python-dotenv>=1.2.2",
+]
