@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: advanced-etl-project
+Version: 0.1.0
+Summary: Advanced ETL Project
+Author: Kishor Kumar Paroi
+Author-email: Kishor Kumar Paroi <Kishor.ruet.cse@gmail.com>
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=2.5.2
+Requires-Dist: pandas>=3.0.5
+Requires-Dist: pymongo>=4.17.0
+Requires-Dist: python-dotenv>=1.2.2
+Requires-Dist: setuptools
+Dynamic: author
