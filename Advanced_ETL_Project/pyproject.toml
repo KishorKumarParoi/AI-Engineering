@@ -9,8 +9,15 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "certifi>=2026.7.22",
+    "dagshub>=0.7.1",
+    "fastapi>=0.141.1",
+    "mlflow>=1.27.0",
     "numpy>=2.5.2",
     "pandas>=3.0.5",
+    "pyaml>=26.7.0",
     "pymongo[srv]>=4.17.0",
     "python-dotenv>=1.2.2",
+    "python-multipart>=0.0.32",
+    "scikit-learn>=1.9.0",
+    "uvicorn>=0.52.3",
 ]
