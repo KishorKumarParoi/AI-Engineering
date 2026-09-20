@@ -1,0 +1,110 @@
+Database Schema: public
+==================================================
+
+Table: payments
+------------------------------
+Columns:
+  - payment_id: integer
+  - ride_id: integer
+  - user_id: integer
+  - payment_method: character varying
+  - amount: numeric
+  - payment_status: character varying
+  - transaction_id: character varying
+  - payment_time: timestamp without time zone
+  - created_at: timestamp without time zone
+
+Sample Data (First 5 rows):
+  (1, 1, 3214, 'google_pay', Decimal('48.17'), 'completed', 'TXN-000001-4627', datetime.datetime(2024, 5, 3, 5, 49), datetime.datetime(2024, 5, 3, 5, 49))
+  (2, 2, 8471, 'debit_card', Decimal('5.00'), 'completed', 'TXN-000002-5561', datetime.datetime(2024, 10, 22, 15, 11), datetime.datetime(2024, 10, 22, 15, 11))
+  (3, 3, 5389, 'cash', Decimal('40.70'), 'completed', 'TXN-000003-1424', datetime.datetime(2024, 9, 24, 5, 17), datetime.datetime(2024, 9, 24, 5, 17))
+  (4, 4, 8146, 'apple_pay', Decimal('41.93'), 'completed', 'TXN-000004-4441', datetime.datetime(2024, 10, 31, 1, 1), datetime.datetime(2024, 10, 31, 1, 1))
+  (5, 5, 2883, 'apple_pay', Decimal('44.86'), 'completed', 'TXN-000005-9985', datetime.datetime(2024, 9, 7, 17, 35), datetime.datetime(2024, 9, 7, 17, 35))
+
+Table: ratings
+------------------------------
+Columns:
+  - rating_id: integer
+  - ride_id: integer
+  - rider_id: integer
+  - driver_id: integer
+  - rating: integer
+  - comment: text
+  - rated_at: timestamp without time zone
+  - created_at: timestamp without time zone
+
+Sample Data (First 5 rows):
+  (1, 1, 3214, 29, 5, 'Great driver and smooth ride!', datetime.datetime(2024, 5, 3, 5, 56), datetime.datetime(2024, 5, 3, 5, 56))
+  (2, 2, 8471, 128, 2, 'Ride was cancelled.', datetime.datetime(2024, 10, 22, 15, 36), datetime.datetime(2024, 10, 22, 15, 36))
+  (3, 3, 5389, 476, 5, 'Great driver and smooth ride!', datetime.datetime(2024, 9, 24, 5, 59), datetime.datetime(2024, 9, 24, 5, 59))
+  (4, 4, 8146, 1454, 5, 'Very polite and clean vehicle.', datetime.datetime(2024, 10, 31, 1, 3), datetime.datetime(2024, 10, 31, 1, 3))
+  (5, 5, 2883, 1142, 4, 'Pleasant trip.', datetime.datetime(2024, 9, 7, 18, 16), datetime.datetime(2024, 9, 7, 18, 16))
+
+Table: rides
+------------------------------
+Columns:
+  - ride_id: integer
+  - rider_id: integer
+  - driver_id: integer
+  - requested_at: timestamp without time zone
+  - pickup_time: timestamp without time zone
+  - dropoff_time: timestamp without time zone
+  - pickup_latitude: numeric
+  - pickup_longitude: numeric
+  - dropoff_latitude: numeric
+  - dropoff_longitude: numeric
+  - distance_km: numeric
+  - fare: numeric
+  - surge_multiplier: numeric
+  - status: character varying
+  - cancellation_reason: character varying
+
+Sample Data (First 5 rows):
+  (1, 3214, 29, datetime.datetime(2024, 5, 3, 4, 35), datetime.datetime(2024, 5, 3, 4, 42), datetime.datetime(2024, 5, 3, 5, 49), Decimal('49.217408'), Decimal('-123.128539'), Decimal('49.261267'), Decimal('-123.092910'), Decimal('28.78'), Decimal('48.17'), Decimal('1.10'), 'completed', None)
+  (2, 8471, 128, datetime.datetime(2024, 10, 22, 15, 11), None, None, Decimal('50.965665'), Decimal('-113.993756'), Decimal('51.018059'), Decimal('-114.076140'), Decimal('19.11'), Decimal('5.00'), Decimal('1.75'), 'cancelled', 'rider_cancelled')
+  (3, 5389, 476, datetime.datetime(2024, 9, 24, 4, 31), datetime.datetime(2024, 9, 24, 4, 34), datetime.datetime(2024, 9, 24, 5, 17), Decimal('51.121537'), Decimal('-114.004609'), Decimal('50.985086'), Decimal('-114.048572'), Decimal('16.88'), Decimal('40.70'), Decimal('1.50'), 'completed', None)
+  (4, 8146, 1454, datetime.datetime(2024, 10, 31, 0, 6), datetime.datetime(2024, 10, 31, 0, 16), datetime.datetime(2024, 10, 31, 1, 1), Decimal('45.437307'), Decimal('-75.660250'), Decimal('45.386459'), Decimal('-75.706429'), Decimal('21.46'), Decimal('41.93'), Decimal('1.25'), 'completed', None)
+  (5, 2883, 1142, datetime.datetime(2024, 9, 7, 16, 42), datetime.datetime(2024, 9, 7, 16, 53), datetime.datetime(2024, 9, 7, 17, 35), Decimal('49.253233'), Decimal('-123.172487'), Decimal('49.290251'), Decimal('-123.165272'), Decimal('15.81'), Decimal('44.86'), Decimal('1.75'), 'completed', None)
+
+Table: users
+------------------------------
+Columns:
+  - user_id: integer
+  - first_name: character varying
+  - last_name: character varying
+  - email: character varying
+  - phone: character varying
+  - city: character varying
+  - province: character varying
+  - user_type: character varying
+  - signup_date: date
+  - is_active: boolean
+  - created_at: timestamp without time zone
+
+Sample Data (First 5 rows):
+  (1, 'Katherine', 'Anderson', 'katherine.anderson1@rideshare.ca', '+1-428-242-2679', 'Toronto', 'ON', 'driver', datetime.date(2022, 10, 9), True, datetime.datetime(2022, 10, 9, 8, 54, 58))
+  (2, 'Anna', 'Lopez', 'anna.lopez2@rideshare.ca', '+1-230-195-4582', 'Victoria', 'BC', 'driver', datetime.date(2023, 3, 9), True, datetime.datetime(2023, 3, 9, 1, 9, 25))
+  (3, 'Emma', 'Brown', 'emma.brown3@rideshare.ca', '+1-918-658-7873', 'Halifax', 'NS', 'driver', datetime.date(2022, 7, 23), True, datetime.datetime(2022, 7, 23, 23, 39, 41))
+  (4, 'Nicole', 'Scott', 'nicole.scott4@rideshare.ca', '+1-548-384-3547', 'Toronto', 'ON', 'driver', datetime.date(2022, 6, 13), True, datetime.datetime(2022, 6, 13, 15, 23, 12))
+  (5, 'Amanda', 'Wilson', 'amanda.wilson5@rideshare.ca', '+1-567-967-6635', 'Vancouver', 'BC', 'driver', datetime.date(2023, 1, 25), True, datetime.datetime(2023, 1, 25, 3, 31, 16))
+
+Table: vehicles
+------------------------------
+Columns:
+  - vehicle_id: integer
+  - driver_id: integer
+  - make: character varying
+  - model: character varying
+  - year: integer
+  - license_plate: character varying
+  - insurance_provider: character varying
+  - color: character varying
+  - is_active: boolean
+  - created_at: timestamp without time zone
+
+Sample Data (First 5 rows):
+  (1, 1, 'Subaru', 'Forester', 2020, 'JE81-282-1', 'ICBC', 'Black', True, datetime.datetime(2023, 9, 19, 0, 0))
+  (2, 2, 'Honda', 'CR-V', 2019, 'KL20-941-2', 'Desjardins', 'Grey', True, datetime.datetime(2023, 5, 20, 0, 0))
+  (3, 3, 'Tesla', 'Model Y', 2022, 'CP92-649-3', 'Desjardins', 'Dark Blue', True, datetime.datetime(2023, 7, 4, 0, 0))
+  (4, 4, 'Honda', 'Accord', 2022, 'OF24-344-4', 'TD Insurance', 'Blue', True, datetime.datetime(2022, 5, 3, 0, 0))
+  (5, 5, 'Chevrolet', 'Equinox', 2021, 'NA31-232-5', 'ICBC', 'Grey', True, datetime.datetime(2022, 12, 1, 0, 0))

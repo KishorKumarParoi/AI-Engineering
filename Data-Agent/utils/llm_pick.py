@@ -30,6 +30,6 @@ def pick_llm(level: str) -> ChatOpenAI:
         max_tokens=500,
     )
 
-
-llm_obj = pick_llm("low")
-print(llm_obj.invoke("What is the capital of France?"))
+if __name__ == "__main__":
+    llm_obj = pick_llm("low")
+    print(llm_obj.invoke("What is the capital of France?"))
