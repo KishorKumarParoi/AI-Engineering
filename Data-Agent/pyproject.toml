@@ -11,6 +11,8 @@ dependencies = [
     "langchain-community>=0.4.2",
     "langchain-openai>=1.6.2",
     "langgraph>=1.2.11",
+    "pandas>=3.0.6",
     "psycopg2-binary>=2.9.13",
+    "python-dotenv>=1.2.3",
     "sqlalchemy>=2.0.54",
 ]
