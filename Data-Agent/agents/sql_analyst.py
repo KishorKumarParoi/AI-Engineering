@@ -1,14 +1,15 @@
-from models.schema import JudgeSchema
 import sys
 import os
 # pyrefly: ignore [missing-import]
 from langchain_core.messages import HumanMessage, AIMessage
-from utils.db import DatabaseUtil
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from utils.db import DatabaseUtil
 from utils.llm_pick import pick_llm
-from models.schema import AgentSchema
+from models.schema import AgentSchema, JudgeSchema
+# pyrefly: ignore [missing-import]
+from langgraph.graph import StateGraph, START, END 
 
 def curate_question(state: AgentSchema) -> AgentSchema:
     user_question = state.user_question
@@ -60,7 +61,13 @@ def generate_sql(state: AgentSchema) -> AgentSchema:
     prompt = state.prompt_query_text
     llm = pick_llm("high")
 
-    generated_sql_query = llm.invoke(prompt)
+    generated_sql_query = llm.invoke(prompt).content
+    if "```" in generated_sql_query:
+        generated_sql_query = generated_sql_query.split("```")[1]
+        if generated_sql_query.startswith("sql"):
+            generated_sql_query = generated_sql_query[3:]
+        generated_sql_query = generated_sql_query.strip()
+
     state.generated_sql_query = generated_sql_query
     return state
     
@@ -132,3 +139,66 @@ def represent_final_answer(state: AgentSchema) -> AgentSchema:
     state.final_response = final_answer
     state.messages = state.messages + [AIMessage(content=f"{final_answer}")]
     return state
+
+# StateGraph
+sql_agent_graph = StateGraph(AgentSchema)
+
+# Nodes
+sql_agent_graph.add_node("curate_question", curate_question)
+sql_agent_graph.add_node("prompt_query_context", prompt_query_context)
+sql_agent_graph.add_node("generate_sql", generate_sql)
+sql_agent_graph.add_node("is_safe_sql", is_safe_sql)
+sql_agent_graph.add_node("canceled_sql", canceled_sql)
+sql_agent_graph.add_node("execute_sql", execute_sql)
+sql_agent_graph.add_node("represent_final_answer", represent_final_answer)
+
+sql_agent_graph.add_edge(START, "curate_question")
+sql_agent_graph.add_edge("curate_question", "prompt_query_context")
+sql_agent_graph.add_edge("prompt_query_context", "generate_sql")
+sql_agent_graph.add_edge("generate_sql", "is_safe_sql")
+
+# Conditional Edges
+
+def is_safe_sql_edge(state: AgentSchema) -> str: 
+    is_safe = state.is_safe 
+    if str(is_safe).lower() == "yes":
+        return "execute_sql"
+    else:
+        return "canceled_sql"
+
+sql_agent_graph.add_conditional_edges("is_safe_sql", is_safe_sql_edge,["execute_sql","canceled_sql"])
+sql_agent_graph.add_edge("canceled_sql", END)
+sql_agent_graph.add_edge("execute_sql", "represent_final_answer")
+sql_agent_graph.add_edge("represent_final_answer", END)
+
+
+
+if __name__ == "__main__":
+    # Compile the graph
+    sql_agent_workflow = sql_agent_graph.compile()
+
+    # Visualize the graph
+    try:
+        from IPython.display import Image 
+        img = Image(sql_agent_workflow.get_graph().draw_mermaid_png())
+        with open("sql_agent_graph.png", "wb") as f:
+            f.write(img.data)
+        print("Graph saved to sql_agent_graph.png")
+    except Exception as e:
+        print(f"Could not save graph image: {e}")
+
+    # Test the agent workflow
+    input_state = {
+        "user_question": "What are the different payment methods in our database?"
+    }
+
+    result = sql_agent_workflow.invoke(input_state)
+    print("\n" + "=" * 50)
+    print(f"User Question : {input_state['user_question']}")
+    print(f"Curated Q     : {result.get('curated_ques')}")
+    print(f"SQL Query     :\n{result.get('generated_sql_query')}")
+    print(f"Is Safe       : {result.get('is_safe')}")
+    print(f"SQL Result    : {result.get('sql_query_execution_result')}")
+    print(f"Final Answer  :\n{result.get('final_response')}")
+    print("=" * 50)
+
