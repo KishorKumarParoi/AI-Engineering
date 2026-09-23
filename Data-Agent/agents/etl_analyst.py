@@ -202,7 +202,7 @@ etl_analyst_graph.add_edge("tool_node", "llm_node")
 if __name__ == "__main__":
     etl_analyst = etl_analyst_graph.compile()
 
-    # from IPython.display import display, Image 
+    # from IPython.display import display, Image w
     # img = Image(etl_analyst.get_graph().draw_mermaid_png())
     
     # with open("etlag_agent_graph.png", "wb") as f:
