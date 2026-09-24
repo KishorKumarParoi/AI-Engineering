@@ -2,210 +2,186 @@
 import json
 import subprocess
 import sys
-
-# Standard GCP US Region On-Demand Reference Rates (USD)
-RATES = {
-    # Full G2 instance hourly rates (CPU + RAM + L4 GPU included)
-    "g2-standard-4": {"on_demand": 0.702, "spot": 0.226, "gpu": "1x NVIDIA L4 (24GB)"},
-    "g2-standard-8": {"on_demand": 1.012, "spot": 0.330, "gpu": "1x NVIDIA L4 (24GB)"},
-    "g2-standard-12": {"on_demand": 1.518, "spot": 0.495, "gpu": "1x NVIDIA L4 (24GB)"},
-    "g2-standard-16": {"on_demand": 2.024, "spot": 0.660, "gpu": "1x NVIDIA L4 (24GB)"},
-    # N1 standard compute rates (per hour)
-    "n1-standard-1": {"on_demand": 0.0475, "spot": 0.0100},
-    "n1-standard-2": {"on_demand": 0.0950, "spot": 0.0200},
-    "n1-standard-4": {"on_demand": 0.1900, "spot": 0.0400},
-    "n1-standard-8": {"on_demand": 0.3800, "spot": 0.0800},
-    # Individual Accelerators (per GPU per hour)
-    "nvidia-tesla-t4": {"on_demand": 0.350, "spot": 0.110},
-    "nvidia-l4": {"on_demand": 0.560, "spot": 0.170},
-    "nvidia-tesla-v100": {"on_demand": 2.480, "spot": 0.740},
-    "nvidia-tesla-a100": {"on_demand": 2.934, "spot": 0.880},
-    # Disks (per GB per month)
-    "pd-standard": 0.040,
-    "pd-balanced": 0.100,
-    "pd-ssd": 0.170,
-    # External IP (per hour)
-    "ip_in_use": 0.005,
-    "ip_unused": 0.010,
-}
+import os
 
 COLORS = {
     "HEADER": "\033[95m",
     "BLUE": "\033[94m",
     "CYAN": "\033[96m",
     "GREEN": "\033[92m",
-    "WARNING": "\033[93m",
-    "FAIL": "\033[91m",
-    "ENDC": "\033[0m",
+    "YELLOW": "\033[93m",
+    "RED": "\033[91m",
     "BOLD": "\033[1m",
+    "UNDERLINE": "\033[4m",
+    "ENDC": "\033[0m",
 }
 
+BASE_RATES = {
+    "g2-standard-4": {"rate": 0.702, "gpu": "1x NVIDIA L4 (24GB)"},
+    "g2-standard-8": {"rate": 1.012, "gpu": "1x NVIDIA L4 (24GB)"},
+    "n1-standard-4": {"rate": 0.190, "gpu": "None"},
+    "nvidia-tesla-t4": 0.350,
+    "nvidia-l4": 0.560,
+    "pd-balanced": 0.100,  # per GB/month
+    "pd-standard": 0.040,
+    "pd-ssd": 0.170,
+    "ip_in_use": 0.005,
+    "ip_unused": 0.010,
+}
 
-def run_gcloud(cmd):
+def run_cmd(cmd):
     try:
-        res = subprocess.run(
-            cmd,
-            shell=True,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
+        res = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=20)
         return json.loads(res.stdout) if res.stdout.strip() else []
-    except subprocess.CalledProcessError as e:
-        print(f"{COLORS['FAIL']}Error running gcloud: {e.stderr.strip()}{COLORS['ENDC']}")
+    except Exception:
         return []
 
-
 def main():
-    # 1. Get Project ID
-    proj_res = subprocess.run(
-        "gcloud config get-value project",
-        shell=True,
-        stdout=subprocess.PIPE,
-        text=True,
-    )
+    # 1. Project & Billing Discovery
+    proj_res = subprocess.run("gcloud config get-value project", shell=True, stdout=subprocess.PIPE, text=True)
     project_id = proj_res.stdout.strip()
 
-    print(
-        f"\n{COLORS['BOLD']}{COLORS['CYAN']}========================================================================{COLORS['ENDC']}"
-    )
-    print(
-        f"{COLORS['BOLD']} 📊 GOOGLE CLOUD DETAILED COST & RESOURCE ANALYSIS{COLORS['ENDC']}"
-    )
-    print(
-        f" Active Project: {COLORS['GREEN']}{project_id}{COLORS['ENDC']}"
-    )
-    print(
-        f"{COLORS['BOLD']}{COLORS['CYAN']}========================================================================{COLORS['ENDC']}\n"
-    )
+    billing_info = run_cmd(f"gcloud billing projects describe {project_id} --format=json")
+    billing_acct_name = billing_info.get("billingAccountName", "") if billing_info else ""
+    billing_acct_id = billing_acct_name.split("/")[-1] if billing_acct_name else "UNKNOWN"
 
-    # 2. Fetch Compute Instances
-    instances = run_gcloud("gcloud compute instances list --format=json")
-    disks = run_gcloud("gcloud compute disks list --format=json")
+    credits_url = f"https://console.cloud.google.com/billing/{billing_acct_id}/credits"
+    billing_url = f"https://console.cloud.google.com/billing/{billing_acct_id}"
 
-    total_hourly_active = 0.0
+    # If --open flag passed, open credit dashboard directly on Mac
+    if "--open" in sys.argv:
+        print(f"Opening Google Cloud Credits page in browser...")
+        subprocess.run(f"open '{credits_url}'", shell=True)
+        return
+
+    # 2. Gather Compute & Storage Resources
+    instances = run_cmd("gcloud compute instances list --format=json")
+    disks = run_cmd("gcloud compute disks list --format=json")
+    addresses = run_cmd("gcloud compute addresses list --format=json")
+
+    total_hourly_burn = 0.0
     total_monthly_storage = 0.0
-    running_vms_count = 0
-    stopped_vms_count = 0
+    running_vms = 0
+    stopped_vms = 0
 
-    print(f"{COLORS['BOLD']}[1] COMPUTE & GPU INSTANCES{COLORS['ENDC']}")
+    print(f"\n{COLORS['BOLD']}{COLORS['CYAN']}========================================================================================{COLORS['ENDC']}")
+    print(f"{COLORS['BOLD']} 📊 GOOGLE CLOUD COMPLETE COST & $300 FREE TIER CREDIT MONITOR{COLORS['ENDC']}")
+    print(f" Active Project: {COLORS['GREEN']}{project_id}{COLORS['ENDC']} | Billing Account: {COLORS['YELLOW']}{billing_acct_id}{COLORS['ENDC']}")
+    print(f"{COLORS['BOLD']}{COLORS['CYAN']}========================================================================================{COLORS['ENDC']}\n")
+
+    # -------------------------------------------------------------
+    # [1] $300 FREE TIER CREDIT TRACKER & RUNWAY
+    # -------------------------------------------------------------
+    print(f"{COLORS['BOLD']}[1] 🎁 FREE TIER $300 CREDIT & RUNWAY ESTIMATOR{COLORS['ENDC']}")
     print("-" * 88)
-    print(
-        f"{'Instance Name':<16} {'Zone':<15} {'Status':<12} {'Machine Type':<15} {'GPU / Accel':<20} {'Est. $/hr'}"
-    )
+    print(f" • Starting Free Trial Credit: {COLORS['BOLD']}$300.00 USD{COLORS['ENDC']}")
+
+    # Calculate active instance costs
+    for inst in instances:
+        mtype = inst.get("machineType", "").split("/")[-1]
+        status = inst.get("status")
+        if status == "RUNNING":
+            running_vms += 1
+            cost = BASE_RATES.get(mtype, {}).get("rate", 0.702) + BASE_RATES["ip_in_use"]
+            total_hourly_burn += cost
+        else:
+            stopped_vms += 1
+
+    for d in disks:
+        size = int(d.get("sizeGb", 0))
+        dtype = d.get("type", "").split("/")[-1]
+        rate = BASE_RATES.get(dtype, 0.10)
+        total_monthly_storage += (size * rate)
+
+    daily_storage_cost = total_monthly_storage / 30.0
+    total_daily_burn = (total_hourly_burn * 24) + daily_storage_cost
+
+    # Runway calculations based on remaining credit
+    print(f" • Current Active Burn Rate : {COLORS['RED'] if total_hourly_burn > 0 else COLORS['GREEN']}${total_hourly_burn:.3f} / hour{COLORS['ENDC']}")
+    print(f" • Current Daily Burn Rate  : ${total_daily_burn:.2f} / day")
+    
+    if total_hourly_burn > 0:
+        total_hours_left = 300.0 / total_hourly_burn
+        total_days_left = 300.0 / total_daily_burn
+        print(f" • Total L4 GPU Hours Left  : ~{COLORS['BOLD']}{int(total_hours_left)} hours{COLORS['ENDC']} of continuous compute")
+        print(f" • Projected Runway (24/7)  : ~{COLORS['BOLD']}{total_days_left:.1f} days{COLORS['ENDC']} before $300 is consumed")
+    else:
+        print(f" • Projected Runway         : {COLORS['GREEN']}Zero compute burn{COLORS['ENDC']} (Only disk storage: ~${daily_storage_cost:.2f}/day)")
+
+    print(f"\n 🔗 {COLORS['BOLD']}View Official Live Credit Meter:{COLORS['ENDC']}")
+    print(f"    Google updates your exact remaining cents and expiration date live here:")
+    print(f"    👉 {COLORS['UNDERLINE']}{COLORS['BLUE']}{credits_url}{COLORS['ENDC']}")
+    print(f"    👉 Or run: {COLORS['GREEN']}./cost-analysis.sh --open{COLORS['ENDC']} (opens directly in your Mac browser)")
+
+    # -------------------------------------------------------------
+    # [2] INSTANCES & HARDWARE BREAKDOWN
+    # -------------------------------------------------------------
+    print(f"\n{COLORS['BOLD']}[2] COMPUTE INSTANCES BREAKDOWN{COLORS['ENDC']}")
+    print("-" * 88)
+    print(f"{'Instance':<16} {'Zone':<14} {'Status':<12} {'Machine Type':<16} {'GPU / Accel':<22} {'Hourly Cost'}")
     print("-" * 88)
 
     if not instances:
-        print("  No compute instances found.")
+        print("  No VM instances found.")
     else:
         for inst in instances:
             name = inst.get("name")
             zone = inst.get("zone", "").split("/")[-1]
             status = inst.get("status")
             mtype = inst.get("machineType", "").split("/")[-1]
+            
+            gpu_desc = BASE_RATES.get(mtype, {}).get("gpu", "NVIDIA L4 (24GB)")
+            hourly = BASE_RATES.get(mtype, {}).get("rate", 0.702) if status == "RUNNING" else 0.0
 
-            gpu_info = "None"
-            inst_hourly = 0.0
+            status_disp = f"{COLORS['GREEN']}{status:<12}{COLORS['ENDC']}" if status == "RUNNING" else f"{COLORS['YELLOW']}{status:<12}{COLORS['ENDC']}"
+            cost_disp = f"${hourly:.3f}/hr" if status == "RUNNING" else "$0.000/hr (Stopped)"
+            print(f"{name:<16} {zone:<14} {status_disp} {mtype:<16} {gpu_desc:<22} {cost_disp}")
 
-            # G2 series has built-in L4
-            if mtype.startswith("g2-"):
-                gpu_info = RATES.get(mtype, {}).get("gpu", "NVIDIA L4")
-                inst_hourly = RATES.get(mtype, {}).get("on_demand", 0.702)
-            else:
-                # Check attached accelerators (e.g. N1 + T4)
-                accels = inst.get("guestAccelerators", [])
-                if accels:
-                    accel_type = accels[0].get("acceleratorType", "").split("/")[-1]
-                    count = accels[0].get("acceleratorCount", 1)
-                    gpu_info = f"{count}x {accel_type}"
-                    gpu_rate = RATES.get(accel_type, {}).get("on_demand", 0.35) * count
-                    cpu_rate = RATES.get(mtype, {}).get("on_demand", 0.19)
-                    inst_hourly = gpu_rate + cpu_rate
-                else:
-                    inst_hourly = RATES.get(mtype, {}).get("on_demand", 0.05)
-
-            # Add IP cost if running with external IP
-            has_ext_ip = any(
-                "natIP" in access
-                for iface in inst.get("networkInterfaces", [])
-                for access in iface.get("accessConfigs", [])
-            )
-            if has_ext_ip and status == "RUNNING":
-                inst_hourly += RATES["ip_in_use"]
-
-            if status == "RUNNING":
-                running_vms_count += 1
-                total_hourly_active += inst_hourly
-                status_colored = f"{COLORS['GREEN']}{status:<12}{COLORS['ENDC']}"
-                hourly_str = f"${inst_hourly:.3f}/hr"
-            else:
-                stopped_vms_count += 1
-                status_colored = f"{COLORS['WARNING']}{status:<12}{COLORS['ENDC']}"
-                hourly_str = f"$0.000/hr (Idle)"
-
-            print(
-                f"{name:<16} {zone:<15} {status_colored} {mtype:<15} {gpu_info:<20} {hourly_str}"
-            )
-
-    print("\n" + f"{COLORS['BOLD']}[2] STORAGE & DISKS (Billed 24/7 even when VM is stopped){COLORS['ENDC']}")
+    # -------------------------------------------------------------
+    # [3] STORAGE COSTS (DISK BILLING)
+    # -------------------------------------------------------------
+    print(f"\n{COLORS['BOLD']}[3] PERSISTENT STORAGE (Billed 24/7 regardless of VM state){COLORS['ENDC']}")
     print("-" * 88)
-    print(
-        f"{'Disk Name':<20} {'Size (GB)':<12} {'Type':<18} {'Attached To':<22} {'Est. $/Month'}"
-    )
+    print(f"{'Disk Name':<22} {'Size':<10} {'Type':<18} {'Attached To':<20} {'Monthly Cost'}")
     print("-" * 88)
 
+    orphan_disks = []
     if not disks:
         print("  No persistent disks found.")
     else:
-        for disk in disks:
-            d_name = disk.get("name")
-            size_gb = int(disk.get("sizeGb", 0))
-            dtype = disk.get("type", "").split("/")[-1]
-            users = disk.get("users", [])
-            attached_vm = users[0].split("/")[-1] if users else f"{COLORS['FAIL']}ORPHAN (Unattached){COLORS['ENDC']}"
+        for d in disks:
+            d_name = d.get("name")
+            size = int(d.get("sizeGb", 0))
+            dtype = d.get("type", "").split("/")[-1]
+            users = d.get("users", [])
+            attached = users[0].split("/")[-1] if users else f"{COLORS['RED']}UNATTACHED ORPHAN{COLORS['ENDC']}"
+            if not users:
+                orphan_disks.append(d_name)
 
-            rate_per_gb = RATES.get(dtype, 0.10)
-            monthly_cost = size_gb * rate_per_gb
-            total_monthly_storage += monthly_cost
+            cost = size * BASE_RATES.get(dtype, 0.10)
+            print(f"{d_name:<22} {f'{size} GB':<10} {dtype:<18} {attached:<20} ${cost:.2f}/mo")
 
-            print(
-                f"{d_name:<20} {size_gb:<12} {dtype:<18} {attached_vm:<22} ${monthly_cost:.2f}/mo"
-            )
+    # -------------------------------------------------------------
+    # [4] COST SUMMARY & SAFETY RECOMMENDATIONS
+    # -------------------------------------------------------------
+    print(f"\n{COLORS['BOLD']}{COLORS['CYAN']}========================================================================================{COLORS['ENDC']}")
+    print(f"{COLORS['BOLD']} 💡 SPEND SUMMARY & ACTIONS{COLORS['ENDC']}")
+    print(f"{COLORS['BOLD']}{COLORS['CYAN']}========================================================================================{COLORS['ENDC']}")
+    print(f" • Running VMs:             {COLORS['BOLD']}{running_vms}{COLORS['ENDC']}")
+    print(f" • Stopped VMs:             {COLORS['BOLD']}{stopped_vms}{COLORS['ENDC']}")
+    print(f" • Hourly Compute Burn:     {COLORS['RED'] if total_hourly_burn > 0 else COLORS['GREEN']}${total_hourly_burn:.3f} / hour{COLORS['ENDC']}")
+    print(f" • Monthly Storage Burn:    ${total_monthly_storage:.2f} / month")
+    print(f" • 30-Day Total Projected:  ${(total_hourly_burn * 730) + total_monthly_storage:.2f} / month (if kept 24/7)")
 
-    # 3. Cost Summary Calculations
-    monthly_compute_if_kept = total_hourly_active * 730  # 730 avg hours/month
-    total_estimated_monthly = monthly_compute_if_kept + total_monthly_storage
-    daily_burn_current = (total_hourly_active * 24) + (total_monthly_storage / 30)
-
-    print("\n" + f"{COLORS['BOLD']}{COLORS['CYAN']}========================================================================{COLORS['ENDC']}")
-    print(f"{COLORS['BOLD']} 📈 COST SUMMARY & RUN RATE{COLORS['ENDC']}")
-    print(f"{COLORS['BOLD']}{COLORS['CYAN']}========================================================================{COLORS['ENDC']}")
-    print(f" • Running VMs:             {COLORS['BOLD']}{running_vms_count}{COLORS['ENDC']}")
-    print(f" • Stopped VMs:             {COLORS['BOLD']}{stopped_vms_count}{COLORS['ENDC']}")
-    print(f" • Current Active Burn Rate: {COLORS['FAIL'] if total_hourly_active > 0 else COLORS['GREEN']}${total_hourly_active:.3f} / hour{COLORS['ENDC']}")
-    print(f" • Daily Projected Burn:    ${daily_burn_current:.2f} / day")
-    print(f" • Disk Storage Overhead:   ${total_monthly_storage:.2f} / month")
-    print(f" • Total 30-Day Projection:  {COLORS['BOLD']}${total_estimated_monthly:.2f} / month{COLORS['ENDC']} (if left as-is)")
-
-    # 4. Actionable Cost Optimization Recommendations
-    print("\n" + f"{COLORS['BOLD']}💡 OPTIMIZATION & SAVINGS RECOMMENDATIONS{COLORS['ENDC']}")
-    print("-" * 88)
-    if running_vms_count > 0:
-        print(f" ⚠️  You have {running_vms_count} running VM(s). When you are done for the day, run:")
-        print(f"    {COLORS['GREEN']}gcloud compute instances stop <NAME> --zone=<ZONE>{COLORS['ENDC']}")
-        print(f"    This immediately halts the ${total_hourly_active:.3f}/hr GPU billing.")
-
-    orphan_disks = [d.get("name") for d in disks if not d.get("users")]
+    if running_vms > 0:
+        print(f"\n ⚠️  {COLORS['BOLD']}Remember to stop your VM when finished to preserve your $300 credit:{COLORS['ENDC']}")
+        print(f"    {COLORS['GREEN']}gcloud compute instances stop ai-lab-l4 --zone=us-central1-a{COLORS['ENDC']}")
+    
     if orphan_disks:
-        print(f" ⚠️  Found unattached orphan disk(s): {orphan_disks}")
-        print(f"    Delete unattached disks to stop recurring storage fees:")
-        print(f"    {COLORS['GREEN']}gcloud compute disks delete {' '.join(orphan_disks)}{COLORS['ENDC']}")
+        print(f"\n 🚨 {COLORS['RED']}Found unattached disks charging monthly fees:{COLORS['ENDC']} {orphan_disks}")
+        print(f"    Delete with: {COLORS['GREEN']}gcloud compute disks delete {' '.join(orphan_disks)}{COLORS['ENDC']}")
 
-    print(f" 💡 Consider using Spot VMs for training/experiments: saves up to 60-70% on GPU compute.")
     print("-" * 88 + "\n")
-
 
 if __name__ == "__main__":
     main()
-

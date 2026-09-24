@@ -65,7 +65,7 @@ for ZONE in "${ZONES[@]}"; do
         rm miniconda.sh
         \$HOME/miniconda/bin/conda init bash
       fi
-      \$HOME/miniconda/bin/conda create -n ai python=3.10 -y
+      \$HOME/miniconda/bin/conda create -n ai python=3.12 -y
     "
 
     echo ""
