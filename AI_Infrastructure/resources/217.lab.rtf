@@ -1,0 +1,323 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 .SFNS-Regular_wdth_opsz1F869A_GRAD_wght1F40000;\f1\fnil\fcharset0 HelveticaNeue;\f2\fnil\fcharset0 .SFNS-Regular_wdth_opsz14BD9E_GRAD_wght12C0000;
+\f3\fnil\fcharset0 .SFNS-Regular_wdth_opsz110000_GRAD_wght12C0000;\f4\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red187\green181\blue173;\red19\green20\blue21;\red238\green147\blue55;
+\red180\green173\blue164;\red82\green223\blue143;\red155\green147\blue135;}
+{\*\expandedcolortbl;;\cssrgb\c78039\c76078\c73333;\cssrgb\c9412\c10196\c10588;\cssrgb\c95294\c64314\c27451;
+\cssrgb\c75686\c73333\c70196;\cssrgb\c36863\c88627\c62745;\cssrgb\c67059\c64314\c60000;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid201\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid3}
+{\list\listtemplateid4\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid301\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid4}
+{\list\listtemplateid5\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid401\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid5}
+{\list\listtemplateid6\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid501\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid6}
+{\list\listtemplateid7\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid601\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid7}
+{\list\listtemplateid8\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid701\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid8}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}{\listoverride\listid4\listoverridecount0\ls4}{\listoverride\listid5\listoverridecount0\ls5}{\listoverride\listid6\listoverridecount0\ls6}{\listoverride\listid7\listoverridecount0\ls7}{\listoverride\listid8\listoverridecount0\ls8}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs63 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 217. Lab \'96 Train Transformer Across Multiple Nodes\
+\pard\pardeftab720\sa191\partightenfactor0
+
+\f1\fs50\fsmilli25363 \cf2 Day 217 Lab \'96 Train Transformer Across Multiple Nodes\cb1 \
+\cb3 Learning Goals\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa383\partightenfactor0
+\ls1\ilvl0
+\f2\fs41\fsmilli20741 \cf2 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Understand 
+\f1 multi-node distributed training
+\f2  with PyTorch DDP
+\f3\fs32 \cb1 \
+\ls1\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Launch training jobs with 
+\f4\fs32\fsmilli16200 \cf4 \strokec4 torchrun
+\f2\fs41\fsmilli20741 \cf2 \strokec2  across nodes
+\f3\fs32 \cb1 \
+\ls1\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Train a BERT model on a classification task (IMDB sentiment)
+\f3\fs32 \cb1 \
+\ls1\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Save, resume, and evaluate the distributed model
+\f3\fs32 \cb1 \
+\pard\pardeftab720\sa191\partightenfactor0
+
+\f1\fs50\fsmilli25363 \cf2 \cb3 0) Prerequisites\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa383\partightenfactor0
+\ls2\ilvl0
+\fs41\fsmilli20741 \cf2 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Two or more GPU nodes
+\f2  (bare metal or cloud VMs)
+\f3\fs32 \cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa383\partightenfactor0
+\ls2\ilvl0
+\f2\fs41\fsmilli20741 \cf2 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 PyTorch 2.x with NCCL backend
+\f3\fs32 \cb1 \
+\ls2\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Shared filesystem or checkpoint sync directory
+\f3\fs32 \cb1 \
+\ls2\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Install packages:
+\f3\fs32 \cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls3\ilvl0
+\f4\fs28\fsmilli14400 \cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 pip install torch torchvision torchaudio transformers datasets\cf2 \cb1 \strokec2 \
+\pard\pardeftab720\sa191\partightenfactor0
+
+\f1\fs50\fsmilli25363 \cf2 \cb3 1) Networking Setup\cb1 \
+\pard\pardeftab720\sa383\partightenfactor0
+
+\f2\fs41\fsmilli20741 \cf2 \cb3 On each node, set environment variables:\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls4\ilvl0
+\f4\fs28\fsmilli14400 \cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 export\cf5 \strokec5  MASTER_ADDR=\cf6 \strokec6 "node0_ip"\cf5 \strokec5  \cf7 \strokec7 # IP of rank 0 node\cf2 \cb1 \strokec2 \
+\ls4\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 export\cf5 \strokec5  MASTER_PORT=29500 \cf7 \strokec7 # any free port\cf2 \cb1 \strokec2 \
+\ls4\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 export\cf5 \strokec5  WORLD_SIZE=2 \cf7 \strokec7 # number of nodes\cf2 \cb1 \strokec2 \
+\ls4\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	4	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 export\cf5 \strokec5  NODE_RANK=0 \cf7 \strokec7 # 0 for master, 1 for worker, etc.\cf2 \cb1 \strokec2 \
+\pard\pardeftab720\sa191\partightenfactor0
+
+\f1\fs50\fsmilli25363 \cf2 \cb3 2) Training Script (DDP)\cb1 \
+\pard\pardeftab720\sa383\partightenfactor0
+
+\f2\fs41\fsmilli20741 \cf2 \cb3 File: 
+\f4\fs32\fsmilli16200 \cf4 \strokec4 train_ddp.py
+\f2\fs41\fsmilli20741 \cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0
+\f4\fs28\fsmilli14400 \cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 import\cf5 \strokec5  os\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 import\cf5 \strokec5  torch\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 import\cf5 \strokec5  torch.distributed \cf4 \strokec4 as\cf5 \strokec5  dist\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	4	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 from\cf5 \strokec5  torch.nn.parallel \cf4 \strokec4 import\cf5 \strokec5  DistributedDataParallel \cf4 \strokec4 as\cf5 \strokec5  DDP\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	5	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 from\cf5 \strokec5  torch.utils.data \cf4 \strokec4 import\cf5 \strokec5  DataLoader, DistributedSampler\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	6	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 from\cf5 \strokec5  transformers \cf4 \strokec4 import\cf5 \strokec5  AutoTokenizer, AutoModelForSequenceClassification\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	7	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 from\cf5 \strokec5  datasets \cf4 \strokec4 import\cf5 \strokec5  load_dataset\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	8	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	9	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 def\cf5 \strokec5  setup():\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	10	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 dist.init_process_group(\cf6 \strokec6 "nccl"\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	11	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	12	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 def\cf5 \strokec5  cleanup():\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	13	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 dist.destroy_process_group()\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	14	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	15	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 def\cf5 \strokec5  main():\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	16	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 setup()\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	17	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 rank = dist.get_rank()\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	18	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 device = torch.device(f\cf6 \strokec6 "cuda:\{rank % torch.cuda.device_count()\}"\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	19	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf7 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	20	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 # Load dataset & tokenizer\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	21	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 dataset = load_dataset(\cf6 \strokec6 "imdb"\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	22	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 tokenizer = AutoTokenizer.from_pretrained(\cf6 \strokec6 "bert-base-uncased"\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	23	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	24	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 def\cf5 \strokec5  tokenize(batch):\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	25	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 return\cf5 \strokec5  tokenizer(batch[\cf6 \strokec6 "text"\cf5 \strokec5 ], padding=\cf6 \strokec6 "max_length"\cf5 \strokec5 , truncation=\cf4 \strokec4 True\cf5 \strokec5 , max_length=128)\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	26	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	27	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 tokenized = dataset[\cf6 \strokec6 "train"\cf5 \strokec5 ].map(tokenize, batched=\cf4 \strokec4 True\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	28	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 tokenized.set_format(\cf6 \strokec6 "torch"\cf5 \strokec5 , columns=[\cf6 \strokec6 "input_ids"\cf5 \strokec5 , \cf6 \strokec6 "attention_mask"\cf5 \strokec5 , \cf6 \strokec6 "label"\cf5 \strokec5 ])\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	29	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	30	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 sampler = DistributedSampler(tokenized)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	31	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 dataloader = DataLoader(tokenized, batch_size=8, sampler=sampler)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	32	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf7 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	33	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 # Model\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	34	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 model = AutoModelForSequenceClassification.from_pretrained(\cf6 \strokec6 "bert-base-uncased"\cf5 \strokec5 , num_labels=2)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	35	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 model.to(device)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	36	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 model = DDP(model, device_ids=[device])\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	37	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	38	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	39	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 loss_fn = torch.nn.CrossEntropyLoss()\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	40	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf7 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	41	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 # Training loop\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	42	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 for\cf5 \strokec5  epoch \cf4 \strokec4 in\cf5 \strokec5  range(2):\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	43	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 sampler.set_epoch(epoch)\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	44	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 for\cf5 \strokec5  batch \cf4 \strokec4 in\cf5 \strokec5  dataloader:\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	45	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 inputs, attn, labels = batch[\cf6 \strokec6 "input_ids"\cf5 \strokec5 ].to(device), batch[\cf6 \strokec6 "attention_mask"\cf5 \strokec5 ].to(device), batch[\cf6 \strokec6 "label"\cf5 \strokec5 ].to(device)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	46	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 outputs = model(inputs, attention_mask=attn)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	47	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 loss = loss_fn(outputs.logits, labels)\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	48	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 optimizer.zero_grad()\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	49	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 loss.backward()\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	50	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 optimizer.step()\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	51	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 if\cf5 \strokec5  rank == 0:\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	52	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 print\cf5 \strokec5 (f\cf6 \strokec6 "Epoch \{epoch\} done."\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	53	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	54	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 if\cf5 \strokec5  rank == 0:\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	55	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 torch.save(model.\cf4 \strokec4 module\cf5 \strokec5 .state_dict(), \cf6 \strokec6 "bert_ddp.pt"\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	56	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	57	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 cleanup()\cf2 \cb1 \strokec2 \
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	58	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	59	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 if\cf5 \strokec5  __name__ == \cf6 \strokec6 "__main__"\cf5 \strokec5 :\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls5\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	60	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 main()\cf2 \cb1 \strokec2 \
+\pard\pardeftab720\sa191\partightenfactor0
+
+\f1\fs50\fsmilli25363 \cf2 \cb3 3) Launch Multi-Node Training\cb1 \
+\pard\pardeftab720\sa383\partightenfactor0
+
+\f2\fs41\fsmilli20741 \cf2 \cb3 On each node, run:\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls6\ilvl0
+\f4\fs28\fsmilli14400 \cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 torchrun --nnodes=$WORLD_SIZE \\\cf2 \cb1 \strokec2 \
+\ls6\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 --nproc_per_node=4 \\ \cf7 \strokec7 # GPUs per node\cf2 \cb1 \strokec2 \
+\ls6\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 --node_rank=$NODE_RANK \\\cf2 \cb1 \strokec2 \
+\ls6\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	4	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 --master_addr=$MASTER_ADDR \\\cf2 \cb1 \strokec2 \
+\ls6\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	5	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 --master_port=$MASTER_PORT \\\cf2 \cb1 \strokec2 \
+\ls6\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	6	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 train_ddp.py\cf2 \cb1 \strokec2 \
+\pard\pardeftab720\sa191\partightenfactor0
+
+\f1\fs50\fsmilli25363 \cf2 \cb3 4) Validate Model Checkpoint\cb1 \
+\pard\pardeftab720\sa383\partightenfactor0
+
+\f2\fs41\fsmilli20741 \cf2 \cb3 On master node:\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls7\ilvl0
+\f4\fs28\fsmilli14400 \cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 import\cf5 \strokec5  torch\cf2 \cb1 \strokec2 \
+\ls7\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 from\cf5 \strokec5  transformers \cf4 \strokec4 import\cf5 \strokec5  AutoModelForSequenceClassification\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls7\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \'a0\cf2 \cb1 \strokec2 \
+\ls7\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	4	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 model = AutoModelForSequenceClassification.from_pretrained(\cf6 \strokec6 "bert-base-uncased"\cf5 \strokec5 , num_labels=2)\cf2 \cb1 \strokec2 \
+\ls7\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	5	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 model.load_state_dict(torch.load(\cf6 \strokec6 "bert_ddp.pt"\cf5 \strokec5 ))\cf2 \cb1 \strokec2 \
+\ls7\ilvl0\cf5 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	6	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 model.\cf4 \strokec4 eval\cf5 \strokec5 ()\cf2 \cb1 \strokec2 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
+\ls7\ilvl0\cf4 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	7	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 print\cf5 \strokec5 (\cf6 \strokec6 "Loaded checkpoint successfully!"\cf5 \strokec5 )\cf2 \cb1 \strokec2 \
+\pard\pardeftab720\sa191\partightenfactor0
+
+\f1\fs50\fsmilli25363 \cf2 \cb3 5) Stretch Goals\cb1 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa383\partightenfactor0
+\ls8\ilvl0
+\f2\fs41\fsmilli20741 \cf2 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Run on 
+\f1 more than 2 nodes
+\f2  with InfiniBand interconnect
+\f3\fs32 \cb1 \
+\ls8\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Switch optimizer \uc0\u8594  
+\f1 AdamW + ZeRO/FSDP
+\f2  for memory scaling
+\f3\fs32 \cb1 \
+\ls8\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Replace IMDB with 
+\f1 WikiText or C4
+\f2  for larger runs
+\f3\fs32 \cb1 \
+\ls8\ilvl0
+\f2\fs41\fsmilli20741 \cb3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Deploy with 
+\f1 Slurm or Kubernetes + TorchElastic
+\f2  for elastic training
+\f3\fs32 \cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs41\fsmilli20741 \cf2 \cb3 \uc0\u9989  
+\f1 Outcome:
+\f2  You trained a Transformer with 
+\f1 multi-node DDP
+\f2 , learned about setup, distributed data loading, and checkpoint handling.\cb1 \
+}
