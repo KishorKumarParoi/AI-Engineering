@@ -91,34 +91,73 @@ echo "==========================================================================
 echo "⏳ [2/4] Checking NVIDIA GPU Drivers on $VM_NAME..."
 echo "=========================================================================="
 
-# If nvidia-smi is already installed and working, skip driver install & reboot
-if gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=15" --command="command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1"; then
+check_nvidia() {
+  gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=15" --command="command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1" 2>/dev/null
+}
+
+if check_nvidia; then
   echo "✅ NVIDIA Drivers are ALREADY installed and active. Skipping driver installation and reboot."
 else
   echo "NVIDIA Driver not loaded. Installing nvidia-driver-535-server..."
-  gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=60" --command="
-    sudo apt update
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nvidia-driver-535-server
-    echo 'Rebooting VM to load kernel modules...'
-    sudo reboot
-  " || true
 
-  echo ""
-  echo "🔄 VM is rebooting. Waiting for it to come back online..."
-  for i in {1..30}; do
-    if gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=5" --command="true" 2>/dev/null; then
-      echo "✅ VM is back online!"
+  INSTALL_SUCCESS=0
+  for attempt in {1..3}; do
+    echo "Attempt $attempt/3: Installing driver packages..."
+    if gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=60" --command="
+      sudo apt update
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nvidia-driver-535-server
+    "; then
+      INSTALL_SUCCESS=1
       break
+    else
+      echo "⚠️ Transient error connecting via gcloud (HTTP 502 / network). Retrying in 10s..."
+      sleep 10
     fi
-    sleep 5
   done
+
+  if [ $INSTALL_SUCCESS -eq 1 ]; then
+    echo "Driver installed. Rebooting VM to load kernel modules..."
+    gcloud compute ssh "$VM_NAME" --zone="$ZONE" --command="sudo reboot" >/dev/null 2>&1 || true
+
+    echo ""
+    echo "🔄 VM is rebooting. Waiting 30s for shutdown and power cycle..."
+    sleep 30
+
+    echo "Polling for VM restart..."
+    for i in {1..30}; do
+      # Test if SSH connects AND the machine has a fresh uptime (< 180s)
+      UPTIME=$(gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=5" --command="cat /proc/uptime" 2>/dev/null | awk '{print int($1)}' || echo "9999")
+      if [ "$UPTIME" -lt 180 ] 2>/dev/null; then
+        echo "✅ VM has successfully rebooted (Uptime: ${UPTIME}s)!"
+        break
+      fi
+      sleep 5
+    done
+  else
+    echo "❌ Failed to install NVIDIA driver after 3 attempts."
+    exit 1
+  fi
 fi
 
 echo ""
 echo "=========================================================================="
 echo "🔍 [3/4] Verifying GPU Hardware (nvidia-smi)..."
 echo "=========================================================================="
-gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=60" --command="nvidia-smi"
+NVIDIA_OK=0
+for i in {1..5}; do
+  if gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=15" --command="nvidia-smi"; then
+    NVIDIA_OK=1
+    break
+  else
+    echo "Waiting for NVIDIA driver kernel modules to finish initializing (attempt $i/5)..."
+    sleep 5
+  fi
+done
+
+if [ $NVIDIA_OK -eq 0 ]; then
+  echo "❌ nvidia-smi failed to initialize after reboot."
+  exit 1
+fi
 
 echo ""
 echo "=========================================================================="
