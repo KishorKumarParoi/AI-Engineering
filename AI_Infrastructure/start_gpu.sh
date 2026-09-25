@@ -63,82 +63,18 @@ for ZONE in "${ZONES[@]}"; do
 
     echo ""
     echo "=========================================================================="
-    echo "📦 [4/4] Setting Up Conda 'ai' Environment & PyTorch with CUDA..."
+    echo "📦 [4/4] Uploading & Executing setup_env.sh on VM..."
     echo "=========================================================================="
     
-    # Run setup script through remote bash stdin
-    gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=60" -- 'bash -s' << 'EOF'
-      set -e
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
+    # 1. Copy setup_env.sh to VM home directory
+    echo "Uploading setup_env.sh to VM..."
+    gcloud compute scp "$SCRIPT_DIR/setup_env.sh" "$VM_NAME:~/setup_env.sh" --zone="$ZONE"
 
-      # 1. Wait for unattended-upgrades / cloud-init apt locks to release after reboot
-      echo "Checking for background apt locks..."
-      while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1; do
-        echo "Apt lock held by system startup. Waiting 5s..."
-        sleep 5
-      done
-
-      # 2. Install prerequisites required by Conda in Ubuntu 24.04
-      sudo apt-get update && sudo apt-get install -y bzip2 ca-certificates wget curl
-
-      # 3. Clean install of Miniconda
-      if [ ! -d "$HOME/miniconda" ]; then
-        echo "Downloading and installing Miniconda..."
-        rm -rf "$HOME/miniconda" /tmp/miniconda.sh
-        wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
-        bash /tmp/miniconda.sh -b -p "$HOME/miniconda"
-        rm -f /tmp/miniconda.sh
-      fi
-
-      # 4. Permanently configure PATH in ~/.bashrc and ~/.profile + symlink so 'conda' is NEVER missing
-      "$HOME/miniconda/bin/conda" init bash
-      
-      grep -qxF 'export PATH="$HOME/miniconda/bin:$PATH"' "$HOME/.bashrc" || echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> "$HOME/.bashrc"
-      grep -qxF 'export PATH="$HOME/miniconda/bin:$PATH"' "$HOME/.profile" || echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> "$HOME/.profile"
-      sudo ln -sf "$HOME/miniconda/bin/conda" /usr/local/bin/conda
-
-      # Source conda for the current subshell
-      source "$HOME/miniconda/etc/profile.d/conda.sh"
-      export PATH="$HOME/miniconda/bin:$PATH"
-
-      # 5. Configure conda-forge (Free, open-source, avoids CondaToSNonInteractiveError entirely)
-      conda config --set auto_activate_base true
-      conda config --add channels conda-forge
-      conda config --set channel_priority strict
-
-      # 6. Create the 'ai' environment cleanly
-      if conda info --envs 2>/dev/null | grep -w "ai" >/dev/null 2>&1; then
-        echo "Removing existing/partial 'ai' environment..."
-        conda env remove -n ai -y
-      fi
-
-      conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
-      conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
-
-      echo "Creating 'ai' environment with Python 3.10 and pip via conda-forge..."
-      conda create -n ai -c conda-forge python=3.10 pip -y
-
-      # 7. Activate and install PyTorch + Jupyter
-      echo "Activating 'ai' environment and installing PyTorch..."
-      conda activate ai
-      pip install --upgrade pip --quiet
-      pip install torch torchvision torchaudio jupyter --index-url https://download.pytorch.org/whl/cu121 --quiet
-
-      echo ""
-      echo "=========================================================="
-      echo "🧪 Running PyTorch GPU Matrix Multiplication Test..."
-      echo "=========================================================="
-      python - <<'PY'
-import torch
-print('CUDA Available  :', torch.cuda.is_available())
-if torch.cuda.is_available():
-    print('Device Name    :', torch.cuda.get_device_name(0))
-    print('VRAM Available :', round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2), 'GB')
-    x = torch.randn(4096, 4096, device='cuda')
-    y = torch.matmul(x, x)
-    print('GPU Tensor Test: PASSED! Result tensor shape:', y.shape)
-print('=' * 50)
-PY
-EOF
+    # 2. Execute setup_env.sh directly on the VM
+    echo "Running setup_env.sh on VM..."
+    gcloud compute ssh "$VM_NAME" --zone="$ZONE" --ssh-flag="-o ConnectTimeout=60" --command="chmod +x ~/setup_env.sh && bash ~/setup_env.sh"
 
     echo ""
     echo "🎉========================================================================"
