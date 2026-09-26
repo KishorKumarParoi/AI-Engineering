@@ -1,0 +1,16 @@
+project:
+    name: user_survival_prediction
+    version: v1
+
+# astro file deployment code 
+
+deployments:
+   - name: dev 
+     executor: celery
+     image: FROM astrocrpublic.azurecr.io/runtime:3.3-8
+     env: dev 
+     volumes:
+      - ./include:/usr/local/airflow/include
+      - ./dags:/usr/local/airflow/dags
+      - ./data:/usr/local/airflow/data 
+      
