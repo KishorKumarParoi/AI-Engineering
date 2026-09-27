@@ -6,4 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "apache-airflow-providers-postgres>=7.0.2",
+    "numpy>=2.5.3",
+    "pandas>=3.0.6",
+    "psycopg2>=2.9.13",
+    "scikit-learn>=1.9.1",
+    "setuptools>=84.0.0",
 ]
