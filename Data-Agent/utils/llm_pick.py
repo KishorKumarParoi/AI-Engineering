@@ -1,35 +1,51 @@
-from langchain_openai import ChatOpenAI
+import os
+from typing import Optional
 from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+
 load_dotenv()
 
-def pick_llm(level: str) -> ChatOpenAI:
+
+def pick_llm(
+    level: str = "low",
+    temperature: float = 0.0,
+    max_tokens: int = 2048,
+    model_override: Optional[str] = None,
+) -> ChatOpenAI:
     """
-    Picks and initializes the ChatOpenAI model based on the level.
+    Picks and initializes a ChatOpenAI model based on the complexity level.
 
     Args:
-        level (str): The level of the LLM to pick ("low", "medium", "high").
+        level (str): "low", "medium", or "high".
+        temperature (float): Sampling temperature (default 0.0 for deterministic output).
+        max_tokens (int): Maximum output tokens (default 2048).
+        model_override (str, optional): Explicit model name to use.
 
     Returns:
-        ChatOpenAI: Initialized ChatOpenAI instance.
+        ChatOpenAI: Initialized LangChain ChatOpenAI instance.
     """
     models = {
-        "low": "gpt-4o-mini",
-        "medium": "gpt-4o",
-        "high": "gpt-4-turbo",
+        "low": os.getenv("MODEL_LOW", "gpt-4o-mini"),
+        "medium": os.getenv("MODEL_MEDIUM", "gpt-4o"),
+        "high": os.getenv("MODEL_HIGH", "gpt-4o"),
     }
 
     normalized_level = level.lower().strip()
-    if normalized_level not in models:
-        raise ValueError(
-            f"Invalid level '{level}'. Supported levels: {list(models.keys())}"
-        )
+    selected_model = model_override or models.get(normalized_level, "gpt-4o-mini")
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable is not set. Please check your .env file.")
 
     return ChatOpenAI(
-        model=models[normalized_level],
-        temperature=0.0,
-        max_tokens=500,
+        model=selected_model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        api_key=api_key,
     )
+
 
 if __name__ == "__main__":
     llm_obj = pick_llm("low")
-    print(llm_obj.invoke("What is the capital of France?"))
+    response = llm_obj.invoke("Hello, respond with 'LLM is working!'")
+    print(response.content)
