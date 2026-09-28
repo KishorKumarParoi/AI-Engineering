@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Survival Prediction</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Survival Prediction</h1>
+        <form action="/predict" method="POST" class="prediction-form">
+            <div class="form-group">
+                <label for="Age">Age:</label>
+                <input type="number" step="0.01" id="Age" name="Age" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Fare">Fare:</label>
+                <input type="number" step="0.01" id="Fare" name="Fare" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Pclass">Pclass:</label>
+                <select id="Pclass" name="Pclass" required>
+                    <option value="1">1st Class (Upper)</option>
+                    <option value="2">2nd Class (Middle)</option>
+                    <option value="3" selected>3rd Class (Lower)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Sex">Sex:</label>
+                <select id="Sex" name="Sex" required>
+                    <option value="0">Male</option>
+                    <option value="1">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Embarked">Embarked:</label>
+                <select id="Embarked" name="Embarked" required>
+                    <option value="0">Cherbourg</option>
+                    <option value="1">Queenstown</option>
+                    <option value="2" selected>Southampton</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Familysize">Family Size:</label>
+                <input type="number" id="Familysize" name="Familysize" value="1" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Isalone">Is Alone:</label>
+                <select id="Isalone" name="Isalone" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="HasCabin">Has Cabin:</label>
+                <select id="HasCabin" name="HasCabin" required>
+                    <option value="1">Yes</option>
+                    <option value="0" selected>No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Title">Title:</label>
+                <select id="Title" name="Title" required>
+                    <option value="0">Mr (0)</option>
+                    <option value="1">Miss (1)</option>
+                    <option value="2">Mrs (2)</option>
+                    <option value="3">Master (3)</option>
+                    <option value="4">Rare / Other (Dr, Rev, Officer) (4)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Pclass_Fare">Pclass Fare (Pclass × Fare):</label>
+                <input type="number" step="0.01" id="Pclass_Fare" name="Pclass_Fare" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Age_Fare">Age Fare (Age × Fare):</label>
+                <input type="number" step="0.01" id="Age_Fare" name="Age_Fare" required>
+            </div>
+
+            <button type="submit" class="btn">Predict</button>
+        </form>
+
+        <script>
+            // Automatically calculate Pclass_Fare and Age_Fare when Age, Fare, or Pclass change
+            function autoCalculateInteractions() {
+                const age = parseFloat(document.getElementById('Age').value) || 0;
+                const fare = parseFloat(document.getElementById('Fare').value) || 0;
+                const pclass = parseFloat(document.getElementById('Pclass').value) || 0;
+
+                const pclassFareInput = document.getElementById('Pclass_Fare');
+                const ageFareInput = document.getElementById('Age_Fare');
+
+                pclassFareInput.value = (pclass * fare).toFixed(2);
+                ageFareInput.value = (age * fare).toFixed(2);
+            }
+
+            document.getElementById('Age').addEventListener('input', autoCalculateInteractions);
+            document.getElementById('Fare').addEventListener('input', autoCalculateInteractions);
+            document.getElementById('Pclass').addEventListener('change', autoCalculateInteractions);
+        </script>
+
+        <div class="prediction-result">
+            <h3>Prediction Result</h3>
+            {% if prediction_text %}
+            <p>{{ prediction_text }}</p>
+            {% else %}
+            <p>No predictions yet made...</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

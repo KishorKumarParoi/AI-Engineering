@@ -7,3 +7,6 @@ scikit-learn
 imbalanced-learn
 ipykernel
 redis
+flask
+alibi-detect
+prometheus-client
