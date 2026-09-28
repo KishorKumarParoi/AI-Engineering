@@ -80,7 +80,12 @@ def process_query(user_query: str) -> str:
         })
     elapsed = time.time() - start_time
 
-    final_text = response.get("final_response") or "Analysis completed without explicit output."
+    final_text = response.get("final_response")
+    if not final_text and response.get("messages"):
+        last_msg = response["messages"][-1]
+        final_text = getattr(last_msg, "content", str(last_msg))
+    if not final_text:
+        final_text = "Analysis completed without explicit output."
     route_used = response.get("route_response", "Unknown").upper()
 
     console.print(f"\n[dim]⏱️ Execution time: {elapsed:.2f}s | Route: [bold cyan]{route_used}[/bold cyan][/dim]")
