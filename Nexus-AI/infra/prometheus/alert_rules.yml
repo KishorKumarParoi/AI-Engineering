@@ -1,0 +1,309 @@
+# ──────────────────────────────────────────────────────────────
+# Nexus-AI: Prometheus Alert Rules
+# ──────────────────────────────────────────────────────────────
+groups:
+  # ──────────────────────────────────────────────────────────────
+  # Group 1: MLOps & Model Serving Telemetry (Rules 01 - 05)
+  # ──────────────────────────────────────────────────────────────
+  - name: nexus_mlops_alerts
+    rules:
+      - alert: ModelDriftDetected
+        expr: nexus_model_drift_psi > 0.25
+        for: 5m
+        labels:
+          rule_id: NEXUS-001
+          severity: critical
+          tier: mlops
+          env: production
+        annotations:
+          summary: "Production model feature drift detected (PSI > 0.25)"
+          description: "Population Stability Index is {{ $value }}. Automatic model retraining trigger recommended."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/mlops-drift"
+          dashboard_url: "http://localhost:3001/d/mlops-overview"
+
+      - alert: ModelRMSEDegraded
+        expr: nexus_delivery_eta_rmse > 10
+        for: 10m
+        labels:
+          rule_id: NEXUS-002
+          severity: warning
+          tier: mlops
+          env: production
+        annotations:
+          summary: "Delivery ETA prediction error degraded (RMSE > 10 min)"
+          description: "Current RMSE is {{ $value }} minutes against validation threshold of 10.0m."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/mlops-rmse"
+          dashboard_url: "http://localhost:3001/d/mlops-overview"
+
+      - alert: InferenceLatencyHigh
+        expr: nexus_model_avg_inference_latency_seconds > 0.5
+        for: 5m
+        labels:
+          rule_id: NEXUS-003
+          severity: warning
+          tier: platform
+          env: production
+        annotations:
+          summary: "FastAPI / Triton inference latency exceeded 500ms"
+          description: "Average inference latency is {{ $value }}s across p95 evaluations."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/latency-tuning"
+          dashboard_url: "http://localhost:3001/d/mlops-overview"
+
+      - alert: InferenceServerDown
+        expr: up{job="nexus-inference"} == 0
+        for: 1m
+        labels:
+          rule_id: NEXUS-004
+          severity: critical
+          tier: platform
+          env: production
+        annotations:
+          summary: "Nexus-AI inference service is unreachable"
+          description: "Inference API endpoint failed consecutive health probes for > 1 minute."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/service-recovery"
+          dashboard_url: "http://localhost:3001/d/mlops-overview"
+
+      - alert: LowAccuracyRate
+        expr: nexus_delivery_eta_within_5min < 70
+        for: 15m
+        labels:
+          rule_id: NEXUS-005
+          severity: warning
+          tier: mlops
+          env: production
+        annotations:
+          summary: "Prediction accuracy within ±5 minutes dropped below 70%"
+          description: "Only {{ $value }}% of recent predictions met SLA accuracy target."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/accuracy-troubleshooting"
+          dashboard_url: "http://localhost:3001/d/mlops-overview"
+
+  # ──────────────────────────────────────────────────────────────
+  # Group 2: Medallion Lakehouse & ETL Pipeline (Rules 06 - 09)
+  # ──────────────────────────────────────────────────────────────
+  - name: nexus_data_pipeline_alerts
+    rules:
+      - alert: BronzeIngestionFailed
+        expr: nexus_etl_bronze_status == 0
+        for: 5m
+        labels:
+          rule_id: NEXUS-006
+          severity: critical
+          tier: data-eng
+          env: production
+        annotations:
+          summary: "Bronze raw ingestion job failed or aborted"
+          description: "Batch ingestion into Bronze lakehouse storage encountered fatal IO or format exception."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/etl-bronze-recovery"
+          dashboard_url: "http://localhost:3001/d/data-lineage"
+
+      - alert: SilverQualityCheckBreached
+        expr: nexus_etl_silver_failed_checks > 0
+        for: 2m
+        labels:
+          rule_id: NEXUS-007
+          severity: warning
+          tier: data-eng
+          env: production
+        annotations:
+          summary: "Data quality validation constraints violated in Silver layer"
+          description: "{{ $value }} automated validation checks failed (completeness, range, uniqueness)."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/silver-quality"
+          dashboard_url: "http://localhost:3001/d/data-lineage"
+
+      - alert: GoldFeatureFreshnessStale
+        expr: (time() - nexus_etl_gold_last_sync_timestamp) > 86400
+        for: 30m
+        labels:
+          rule_id: NEXUS-008
+          severity: warning
+          tier: data-eng
+          env: production
+        annotations:
+          summary: "Gold feature store tables not updated in over 24 hours"
+          description: "Last sync occurred {{ $value | humanizeDuration }} ago. Downstream inference may degrade."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/gold-freshness"
+          dashboard_url: "http://localhost:3001/d/data-lineage"
+
+      - alert: LakehouseStorageQuotaHigh
+        expr: nexus_storage_usage_percent > 85
+        for: 15m
+        labels:
+          rule_id: NEXUS-009
+          severity: warning
+          tier: platform
+          env: production
+        annotations:
+          summary: "Parquet/DuckDB lakehouse disk usage exceeds 85%"
+          description: "Lakehouse volume is {{ $value }}% full. Schedule partition archival to cloud cold storage."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/storage-management"
+          dashboard_url: "http://localhost:3001/d/infrastructure"
+
+  # ──────────────────────────────────────────────────────────────
+  # Group 3: Multi-Agent Mesh & AI Security Guardrails (Rules 10 - 13)
+  # ──────────────────────────────────────────────────────────────
+  - name: nexus_agent_mesh_alerts
+    rules:
+      - alert: AgentExecutionTimeout
+        expr: nexus_agent_execution_seconds > 15
+        for: 3m
+        labels:
+          rule_id: NEXUS-010
+          severity: warning
+          tier: ai-agent
+          env: production
+        annotations:
+          summary: "Agent mesh reasoning step exceeded 15 seconds"
+          description: "Sub-agent query routing latency is {{ $value }}s, impacting interactive UX."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/agent-performance"
+          dashboard_url: "http://localhost:3001/d/agent-mesh"
+
+      - alert: AgentRouterFallbackSpike
+        expr: rate(nexus_agent_fallback_total[5m]) > 0.1
+        for: 5m
+        labels:
+          rule_id: NEXUS-011
+          severity: warning
+          tier: ai-agent
+          env: production
+        annotations:
+          summary: "Orchestrator fallback route activation rate exceeds 10%"
+          description: "Intent classification confidence low; routing fallback rate = {{ $value }}/s."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/agent-classification"
+          dashboard_url: "http://localhost:3001/d/agent-mesh"
+
+      - alert: SecurityPromptInjectionSpike
+        expr: increase(nexus_security_injection_attempts_total[5m]) > 5
+        for: 1m
+        labels:
+          rule_id: NEXUS-012
+          severity: critical
+          tier: secops
+          env: production
+        annotations:
+          summary: "OWASP LLM01 prompt injection attempts detected"
+          description: "Firewall blocked {{ $value }} injection attempts in the last 5 minutes."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/llm-security-incident"
+          dashboard_url: "http://localhost:3001/d/security-compliance"
+
+      - alert: PiiDataLeakageDetected
+        expr: increase(nexus_security_pii_masked_total[5m]) > 20
+        for: 5m
+        labels:
+          rule_id: NEXUS-013
+          severity: warning
+          tier: secops
+          env: production
+        annotations:
+          summary: "Unusual volume of PII detected and masked in agent prompts"
+          description: "{{ $value }} sensitive entities (emails, credit cards, phones) redacted in last 5m."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/pii-audit"
+          dashboard_url: "http://localhost:3001/d/security-compliance"
+
+  # ──────────────────────────────────────────────────────────────
+  # Group 4: API Gateway & High-Concurrency Network (Rules 14 - 16)
+  # ──────────────────────────────────────────────────────────────
+  - name: nexus_gateway_alerts
+    rules:
+      - alert: GatewayHttp5xxErrorRateHigh
+        expr: (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) > 0.05
+        for: 3m
+        labels:
+          rule_id: NEXUS-014
+          severity: critical
+          tier: platform
+          env: production
+        annotations:
+          summary: "API Gateway 5xx internal server error rate exceeds 5%"
+          description: "Current 5xx failure ratio is {{ $value | humanizePercentage }} across all public routes."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/gateway-5xx"
+          dashboard_url: "http://localhost:3001/d/api-gateway"
+
+      - alert: GatewayRateLimitExceeded
+        expr: increase(nexus_gateway_rate_limited_total[5m]) > 100
+        for: 2m
+        labels:
+          rule_id: NEXUS-015
+          severity: warning
+          tier: platform
+          env: production
+        annotations:
+          summary: "Client traffic exceeding token bucket rate limit thresholds"
+          description: "{{ $value }} requests rate-limited with HTTP 429 in the last 5 minutes."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/rate-limiting"
+          dashboard_url: "http://localhost:3001/d/api-gateway"
+
+      - alert: SseStreamConnectionDrops
+        expr: rate(nexus_sse_client_disconnects_total[5m]) > 10
+        for: 5m
+        labels:
+          rule_id: NEXUS-016
+          severity: warning
+          tier: frontend
+          env: production
+        annotations:
+          summary: "Elevated Server-Sent Events (SSE) telemetry drop rate"
+          description: "SSE stream disconnect rate is {{ $value }}/s. Check frontend keepalive and reverse proxy."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/sse-troubleshooting"
+          dashboard_url: "http://localhost:3001/d/frontend-ux"
+
+  # ──────────────────────────────────────────────────────────────
+  # Group 5: Cloud Infrastructure, GPU & Kubernetes (Rules 17 - 20)
+  # ──────────────────────────────────────────────────────────────
+  - name: nexus_infrastructure_alerts
+    rules:
+      - alert: KubernetesPodCrashLooping
+        expr: increase(kube_pod_container_status_restarts_total{namespace="nexus-ai"}[15m]) > 3
+        for: 5m
+        labels:
+          rule_id: NEXUS-017
+          severity: critical
+          tier: devops
+          env: production
+        annotations:
+          summary: "Kubernetes pod is crashing repeatedly (CrashLoopBackOff)"
+          description: "Container restarted {{ $value }} times within the last 15 minutes."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/k8s-pod-crash"
+          dashboard_url: "http://localhost:3001/d/infrastructure"
+
+      - alert: GpuMemoryExhaustion
+        expr: (container_gpu_memory_used_bytes / container_gpu_memory_total_bytes) > 0.90
+        for: 5m
+        labels:
+          rule_id: NEXUS-018
+          severity: critical
+          tier: mlops
+          env: production
+        annotations:
+          summary: "Triton GPU inference VRAM utilization exceeds 90%"
+          description: "GPU VRAM usage is {{ $value | humanizePercentage }}. OOM kill risk imminent."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/gpu-memory"
+          dashboard_url: "http://localhost:3001/d/infrastructure"
+
+      - alert: DiskSpaceCritical
+        expr: (node_filesystem_free_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.10
+        for: 5m
+        labels:
+          rule_id: NEXUS-019
+          severity: critical
+          tier: devops
+          env: production
+        annotations:
+          summary: "Root filesystem remaining disk space under 10%"
+          description: "Only {{ $value | humanizePercentage }} disk space remains on the node host."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/disk-cleanup"
+          dashboard_url: "http://localhost:3001/d/infrastructure"
+
+      - alert: TlsCertificateExpiringSoon
+        expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 14
+        for: 1h
+        labels:
+          rule_id: NEXUS-020
+          severity: warning
+          tier: secops
+          env: production
+        annotations:
+          summary: "Ingress TLS certificate expires in less than 14 days"
+          description: "TLS certificate will expire in {{ $value | humanizeDuration }}. Cert-manager renewal check needed."
+          runbook_url: "https://docs.nexus-ai.internal/runbooks/tls-certificates"
+          dashboard_url: "http://localhost:3001/d/security-compliance"
+
