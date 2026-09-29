@@ -1,0 +1,32 @@
+[
+  {
+    "city": "Delhi NCR",
+    "total_orders": 742,
+    "total_revenue_inr": 1296097.71,
+    "fulfillment_rate_percent": 96.9
+  },
+  {
+    "city": "Pune",
+    "total_orders": 647,
+    "total_revenue_inr": 1124494.08,
+    "fulfillment_rate_percent": 96.45
+  },
+  {
+    "city": "Mumbai",
+    "total_orders": 531,
+    "total_revenue_inr": 923170.06,
+    "fulfillment_rate_percent": 98.12
+  },
+  {
+    "city": "Hyderabad",
+    "total_orders": 623,
+    "total_revenue_inr": 1107117.4,
+    "fulfillment_rate_percent": 95.35
+  },
+  {
+    "city": "Bengaluru",
+    "total_orders": 457,
+    "total_revenue_inr": 595121.63,
+    "fulfillment_rate_percent": 97.16
+  }
+]
