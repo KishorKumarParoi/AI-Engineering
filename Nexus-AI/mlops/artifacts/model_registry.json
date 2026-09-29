@@ -1,0 +1,59 @@
+{
+  "run_id": "run_1790649380",
+  "experiment_name": "nexus-ai-delivery-eta",
+  "timestamp": "2026-09-29T02:36:20.457865+00:00",
+  "model_type": "sklearn.GradientBoostingRegressor",
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 5,
+    "learning_rate": 0.1,
+    "subsample": 0.8
+  },
+  "metrics": {
+    "rmse": 3.431,
+    "mae": 2.6231,
+    "r2_score": 0.9542,
+    "mape": 6.7636,
+    "median_absolute_error": 2.107,
+    "p90_error": 5.4552,
+    "p95_error": 6.4138,
+    "within_5min_pct": 86.5478,
+    "within_10min_pct": 99.4327
+  },
+  "feature_names": [
+    "distance_km",
+    "preparation_time_min",
+    "weather_code",
+    "traffic_code",
+    "partner_tier_code",
+    "vehicle_type_code",
+    "hour_of_day",
+    "is_weekend",
+    "items_count",
+    "order_value",
+    "restaurant_rating",
+    "avg_cost_for_two",
+    "price_tier_code",
+    "cuisine_restaurant_count",
+    "estimated_eta_min"
+  ],
+  "feature_importance": {
+    "distance_km": 0.022551132239216926,
+    "preparation_time_min": 0.008150412104465005,
+    "weather_code": 0.10865775627331933,
+    "traffic_code": 0.1563295660605286,
+    "partner_tier_code": 0.031088245307503454,
+    "vehicle_type_code": 0.0033875839912270844,
+    "hour_of_day": 0.002055625946989454,
+    "is_weekend": 7.42070451359408e-05,
+    "items_count": 0.00039930232286828466,
+    "order_value": 0.0020778466265698233,
+    "restaurant_rating": 0.0009096689854534373,
+    "avg_cost_for_two": 0.0014856249211904681,
+    "price_tier_code": 3.374903566354731e-05,
+    "cuisine_restaurant_count": 0.0006235892404702454,
+    "estimated_eta_min": 0.6621756898993985
+  },
+  "status": "REGISTERED",
+  "model_stage": "Production"
+}
