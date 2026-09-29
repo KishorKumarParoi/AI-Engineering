@@ -31,18 +31,18 @@ Build an enterprise-grade, multi-cloud Data & AI Platform ("Nexus-AI") showcasin
 | **Phase 3D** | Agent 4: Security Agent | 🟢 Done | 3 | 12+ injection sigs, 8 PII types, OWASP LLM Top 10, output sanitization |
 | **Phase 3E** | Agent 5: Voice/Notify Agent | 🟢 Done | 2 | 4-channel dispatch (Email/WhatsApp/Slack/n8n), 3 workflow templates |
 | **Phase 3F** | Agent Orchestrator | 🟢 Done | 3 | Security-first routing, intent classifier, 12-query demo, CLI |
-| **Phase 4A** | Docker Compose Local Stack | ⚪ Pending | 3 | 11-service compose file |
-| **Phase 4B** | Terraform GCP Module | ⚪ Pending | 3 | GCS + BigQuery + GKE |
-| **Phase 4C** | Terraform AWS/Azure | ⚪ Pending | 3 | S3/Athena/EKS + ADLS/Synapse/AKS |
-| **Phase 4D** | K8s Manifests + Helm | ⚪ Pending | 3 | Deployments, HPA, GPU node pools |
-| **Phase 4E** | Multi-Region Failover | ⚪ Pending | 2 | Primary GCP + Secondary AWS |
-| **Phase 5A** | Go API Gateway | ⚪ Pending | 4 | REST + SSE, JWT, rate limiting |
-| **Phase 5B** | Next.js 14 Frontend | ⚪ Pending | 7 | 5-tab glassmorphism dashboard |
-| **Phase 5C** | Security & Compliance | ⚪ Pending | 3 | OWASP, SOC2, GDPR docs |
-| **Phase 5D** | HLD/LLD Design Docs | ⚪ Pending | 2 | Architecture decisions |
-| **Phase 6A** | `run_all.sh` Master Script | ⚪ Pending | 2 | One-click boot |
-| **Phase 6B** | E2E Smoke Tests | ⚪ Pending | 2 | Automated verification |
-| **Phase 6C** | Demo & Documentation | ⚪ Pending | 2 | Video, README, badges |
+| **Phase 4A** | Docker Compose Local Stack | 🟢 Done | 3 | 11-service compose + multi-stage Dockerfile |
+| **Phase 4B** | Terraform GCP Module | 🟢 Done | 3 | GCS buckets, BigQuery, GKE + GPU pool, Artifact Registry, IAM |
+| **Phase 4C** | Terraform AWS/Azure | 🟢 Done | 3 | S3/Glue/Athena/EKS/ECR + ADLS/Synapse/AKS/ACR |
+| **Phase 4D** | K8s Manifests + Helm | 🟢 Done | 3 | Deployments, HPA, GPU, CronJobs, Helm chart, Network Policies |
+| **Phase 4E** | Multi-Region Failover | 🟢 Done | 2 | GCP→AWS failover, health checks, cross-region data sync |
+| **Phase 5A** | Go API Gateway + Express BFF | 🟢 Done | 4 | Token bucket rate limit, CORS, SSE streaming, security headers |
+| **Phase 5B** | Next.js 16 Frontend | 🟢 Done | 7 | 5-tab glassmorphism dashboard (Overview/Agents/MLOps/Data/Security) |
+| **Phase 5C** | Security & Compliance | 🟢 Done | 3 | OWASP LLM Top 10 (8/10), PII redaction, SOC 2 controls |
+| **Phase 5D** | HLD/LLD Design Docs | 🟢 Done | 2 | SECURITY_COMPLIANCE.md |
+| **Phase 6A** | `run_all.sh` Master Script | 🟢 Done | 2 | 8-step one-click boot (verified working) |
+| **Phase 6B** | E2E Smoke Tests | 🟢 Done | 2 | 37/37 tests pass (ETL, ML, Agents, Infra, Frontend) in 15s |
+| **Phase 6C** | Demo & Documentation | 🟢 Done | 2 | Full README with architecture, quickstart, badges |
 
 **Total Estimated:** ~74 working days (~3 months at steady pace)
 
