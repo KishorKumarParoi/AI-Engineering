@@ -1,0 +1,51 @@
+# HELP nexus_delivery_eta_rmse Root Mean Squared Error of delivery ETA prediction (minutes)
+# TYPE nexus_delivery_eta_rmse gauge
+nexus_delivery_eta_rmse{model="sklearn.GradientBoostingRegressor",version="v1790649380"} 3.431
+
+# HELP nexus_delivery_eta_mae Mean Absolute Error of delivery ETA prediction (minutes)
+# TYPE nexus_delivery_eta_mae gauge
+nexus_delivery_eta_mae{model="sklearn.GradientBoostingRegressor",version="v1790649380"} 2.6231
+
+# HELP nexus_delivery_eta_r2 R-squared score of delivery ETA model
+# TYPE nexus_delivery_eta_r2 gauge
+nexus_delivery_eta_r2{model="sklearn.GradientBoostingRegressor",version="v1790649380"} 0.9542
+
+# HELP nexus_delivery_eta_mape Mean Absolute Percentage Error (%)
+# TYPE nexus_delivery_eta_mape gauge
+nexus_delivery_eta_mape{model="sklearn.GradientBoostingRegressor",version="v1790649380"} 6.7636
+
+# HELP nexus_delivery_eta_within_5min Percentage of predictions within 5 minutes of actual
+# TYPE nexus_delivery_eta_within_5min gauge
+nexus_delivery_eta_within_5min{model="sklearn.GradientBoostingRegressor"} 86.5478
+
+# HELP nexus_delivery_eta_within_10min Percentage of predictions within 10 minutes of actual
+# TYPE nexus_delivery_eta_within_10min gauge
+nexus_delivery_eta_within_10min{model="sklearn.GradientBoostingRegressor"} 99.4327
+
+# HELP nexus_delivery_eta_p95_error 95th percentile absolute error (minutes)
+# TYPE nexus_delivery_eta_p95_error gauge
+nexus_delivery_eta_p95_error{model="sklearn.GradientBoostingRegressor"} 6.4138
+
+# HELP nexus_model_drift_psi Population Stability Index for prediction drift
+# TYPE nexus_model_drift_psi gauge
+nexus_model_drift_psi{model="sklearn.GradientBoostingRegressor",version="v1790649380"} 0
+
+# HELP nexus_model_info Metadata about the active model
+# TYPE nexus_model_info gauge
+nexus_model_info{model="sklearn.GradientBoostingRegressor",n_estimators="100",learning_rate="0.1",max_depth="5"} 1
+
+# HELP nexus_model_predictions_total Total number of inference predictions made
+# TYPE nexus_model_predictions_total counter
+nexus_model_predictions_total{model="sklearn.GradientBoostingRegressor"} 0
+
+# HELP nexus_model_inference_latency_seconds Inference latency in seconds
+# TYPE nexus_model_inference_latency_seconds histogram
+nexus_model_inference_latency_seconds_bucket{model="sklearn.GradientBoostingRegressor",le="0.01"} 0
+nexus_model_inference_latency_seconds_bucket{model="sklearn.GradientBoostingRegressor",le="0.05"} 0
+nexus_model_inference_latency_seconds_bucket{model="sklearn.GradientBoostingRegressor",le="0.1"} 0
+nexus_model_inference_latency_seconds_bucket{model="sklearn.GradientBoostingRegressor",le="0.5"} 0
+nexus_model_inference_latency_seconds_bucket{model="sklearn.GradientBoostingRegressor",le="1.0"} 0
+nexus_model_inference_latency_seconds_bucket{model="sklearn.GradientBoostingRegressor",le="+Inf"} 0
+nexus_model_inference_latency_seconds_sum{model="sklearn.GradientBoostingRegressor"} 0
+nexus_model_inference_latency_seconds_count{model="sklearn.GradientBoostingRegressor"} 0
+
