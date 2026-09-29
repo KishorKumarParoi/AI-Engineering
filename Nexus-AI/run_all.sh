@@ -231,15 +231,14 @@ demo_pause
 log_step 7 $TOTAL_STEPS "Initializing 5-Agent AI Mesh"
 
 if [ -f "agents/orchestrator.py" ]; then
-    log_info "Starting Agent Orchestrator (LangGraph State Machine)..."
+    log_info "Running 5-Agent Mesh Demo..."
     log_info "  Agent 1: Data Agent (NL2SQL)"
     log_info "  Agent 2: Business Analysis Agent"
     log_info "  Agent 3: MLOps Agent"
-    log_info "  Agent 4: Security and Guardrails Agent"
-    log_info "  Agent 5: Voice and Notification Agent"
-    python3 -m backend.services.agent_service.app &
-    AGENT_PID=$!
-    log_success "Agent Mesh initialized (PID: $AGENT_PID)"
+    log_info "  Agent 4: Security Agent (OWASP LLM Top 10)"
+    log_info "  Agent 5: Voice & Notification Agent"
+    python3 -m agents.orchestrator --demo
+    log_success "Agent Mesh demo complete!"
 else
     log_warn "Agent mesh not yet implemented (Phase 3). Skipping."
 fi
@@ -250,22 +249,26 @@ demo_pause
 # ═══════════════════════════════════════════════════════════════════════
 log_step 8 $TOTAL_STEPS "Launching Backend API and Frontend Dashboard"
 
-if [ -f "backend/services/etl_service/app.py" ]; then
-    log_info "Starting FastAPI backend services..."
-    python3 -m uvicorn backend.services.etl_service.app:app --host 0.0.0.0 --port 8080 &
+# Start FastAPI Inference API
+if [ -f "mlops/predict.py" ]; then
+    log_info "Starting FastAPI Inference Server..."
+    python3 -m uvicorn mlops.predict:app --host 0.0.0.0 --port 8081 &
     BACKEND_PID=$!
-    log_success "Backend API running on http://localhost:8080"
+    sleep 1
+    log_success "Inference API running on http://localhost:8081"
 else
-    log_warn "Backend not yet implemented (Phase 5A). Skipping."
+    log_warn "Inference API not found. Skipping."
 fi
 
+# Start Next.js Frontend
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
-    log_info "Starting Next.js frontend..."
-    (cd frontend && npm run dev) &
+    log_info "Starting Next.js 16 frontend..."
+    (cd frontend && npm run dev -- -p 3001) &
     FRONTEND_PID=$!
-    log_success "Frontend dashboard on http://localhost:3000"
+    sleep 2
+    log_success "Frontend dashboard on http://localhost:3001"
 else
-    log_warn "Frontend not yet implemented (Phase 5B). Skipping."
+    log_warn "Frontend not found. Skipping."
 fi
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -280,12 +283,12 @@ echo "======================================================================"
 echo "                  NEXUS-AI IS RUNNING!"
 echo "======================================================================"
 echo ""
-echo "  Frontend Dashboard:  http://localhost:3000"
-echo "  Backend API:         http://localhost:8080"
+echo "  Frontend Dashboard:  http://localhost:3001"
+echo "  Inference API:       http://localhost:8081"
 echo "  MLflow UI:           http://localhost:5000"
 echo "  Prometheus:          http://localhost:9090"
-echo "  Grafana:             http://localhost:3001"
-echo "  Agent API:           http://localhost:8080/api/agents"
+echo "  Grafana:             http://localhost:3002"
+echo "  API Docs:            http://localhost:8081/docs"
 echo ""
 echo "  Boot time: ${ELAPSED}s"
 echo ""
