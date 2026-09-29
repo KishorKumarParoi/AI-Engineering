@@ -1,0 +1,109 @@
+# ──────────────────────────────────────────────────────────────
+# Nexus-AI: K8s Network Policies — Zero-Trust Security
+# ──────────────────────────────────────────────────────────────
+# Default: Deny all ingress/egress
+# Then: Whitelist specific service-to-service traffic
+# ──────────────────────────────────────────────────────────────
+
+# ── Default Deny All ─────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: nexus-ai
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# ── Allow Inference API to receive traffic ───────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-inference-ingress
+  namespace: nexus-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: nexus-inference
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - port: 8081
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              app: nexus-agents
+      ports:
+        - port: 8081
+          protocol: TCP
+---
+# ── Allow Prometheus to scrape all nexus pods ────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-scrape
+  namespace: nexus-ai
+spec:
+  podSelector:
+    matchLabels:
+      tier: serving
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - port: 8081
+        - port: 8082
+---
+# ── Allow DNS resolution for all pods ────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: nexus-ai
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+---
+# ── Allow ETL pods to access cloud storage ───────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-etl-egress
+  namespace: nexus-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: nexus-etl
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - port: 53
+          protocol: UDP
+    - to: []
+      ports:
+        - port: 443
+          protocol: TCP

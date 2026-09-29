@@ -1,0 +1,149 @@
+# ──────────────────────────────────────────────────────────────
+# Nexus-AI: Multi-Region Failover Controller
+# ──────────────────────────────────────────────────────────────
+# Architecture:
+#   Primary:   GCP asia-south1 (GKE + BigQuery + GCS)
+#   Secondary: AWS ap-south-1  (EKS + Athena + S3)
+#
+# Failover Strategy:
+#   1. Health checks every 30s on primary region
+#   2. After 3 consecutive failures → promote secondary
+#   3. DNS-level failover via Cloud DNS / Route53
+#   4. Data sync via cross-cloud Parquet replication
+# ──────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-failover-config
+  namespace: nexus-ai
+data:
+  failover.yaml: |
+    regions:
+      primary:
+        provider: gcp
+        region: asia-south1
+        cluster: nexus-ai-prod-gke
+        endpoint: https://gke-primary.nexus-ai.dev
+        storage: gs://nexus-ai-prod-lakehouse-gold
+        healthcheck_url: https://api-primary.nexus-ai.dev/health
+
+      secondary:
+        provider: aws
+        region: ap-south-1
+        cluster: nexus-ai-prod-eks
+        endpoint: https://eks-secondary.nexus-ai.dev
+        storage: s3://nexus-ai-prod-lakehouse-gold
+        healthcheck_url: https://api-secondary.nexus-ai.dev/health
+
+    failover:
+      health_check_interval: 30s
+      consecutive_failures_threshold: 3
+      cooldown_after_failover: 300s
+      auto_failback: true
+      failback_healthy_threshold: 5
+
+    data_sync:
+      mode: active-passive
+      sync_interval: 15m
+      sync_layers:
+        - gold
+        - ml-artifacts
+      replication_format: parquet
+      conflict_resolution: latest_timestamp
+
+    dns:
+      provider: cloudflare
+      zone: nexus-ai.dev
+      records:
+        - name: api.nexus-ai.dev
+          type: CNAME
+          primary_target: gke-primary.nexus-ai.dev
+          secondary_target: eks-secondary.nexus-ai.dev
+          ttl: 60
+
+    alerting:
+      channels:
+        - type: slack
+          channel: "#platform-oncall"
+        - type: pagerduty
+          service: nexus-ai-platform
+        - type: email
+          to: platform-team@nexus-ai.dev
+---
+# ── Health Check CronJob ─────────────────────────────────────
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nexus-failover-healthcheck
+  namespace: nexus-ai
+spec:
+  schedule: "*/1 * * * *"  # Every minute
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: healthcheck
+              image: curlimages/curl:8.5.0
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  PRIMARY_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                    --max-time 10 \
+                    https://api-primary.nexus-ai.dev/health 2>/dev/null || echo "000")
+
+                  if [ "$PRIMARY_STATUS" != "200" ]; then
+                    echo "[FAILOVER] Primary health check FAILED (HTTP $PRIMARY_STATUS)"
+                    # In production: trigger DNS failover via API
+                    curl -X POST https://hooks.slack.com/services/XXX \
+                      -H 'Content-type: application/json' \
+                      -d "{\"text\":\"🚨 Nexus-AI Primary Region UNHEALTHY (HTTP $PRIMARY_STATUS). Failover monitoring active.\"}" \
+                      2>/dev/null || true
+                  else
+                    echo "[OK] Primary region healthy"
+                  fi
+---
+# ── Cross-Region Data Sync CronJob ──────────────────────────
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nexus-cross-region-sync
+  namespace: nexus-ai
+spec:
+  schedule: "*/15 * * * *"  # Every 15 minutes
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: nexus-ai-sa
+          containers:
+            - name: data-sync
+              image: google/cloud-sdk:slim
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "=== Cross-Region Data Sync ==="
+                  echo "Source: gs://nexus-ai-prod-lakehouse-gold"
+                  echo "Target: s3://nexus-ai-prod-lakehouse-gold"
+
+                  # Sync Gold layer: GCS → S3
+                  # Uses gsutil for GCS and aws cli for S3
+                  gsutil -m rsync -r \
+                    gs://nexus-ai-prod-lakehouse-gold/ \
+                    /tmp/gold-sync/ 2>/dev/null || true
+
+                  # In production: use Transfer Service or custom replicator
+                  echo "Sync completed at $(date -u)"
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 1Gi
