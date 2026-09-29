@@ -1,0 +1,109 @@
+# ──────────────────────────────────────────────────────────────
+# Nexus-AI: K8s GPU Deployment — ML Inference
+# ──────────────────────────────────────────────────────────────
+# Requires: NVIDIA GPU Operator / Device Plugin
+# Node selector targets GPU-labeled nodes only
+# ──────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-gpu-inference
+  namespace: nexus-ai
+  labels:
+    app: nexus-gpu-inference
+    tier: gpu-serving
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-gpu-inference
+  template:
+    metadata:
+      labels:
+        app: nexus-gpu-inference
+        tier: gpu-serving
+    spec:
+      serviceAccountName: nexus-ai-sa
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: present
+          effect: NoSchedule
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-tesla-t4
+      containers:
+        - name: gpu-inference
+          image: nexus-ai/inference:latest-gpu
+          ports:
+            - containerPort: 8082
+          env:
+            - name: CUDA_VISIBLE_DEVICES
+              value: "0"
+            - name: PYTHONPATH
+              value: /app
+          resources:
+            requests:
+              cpu: "1"
+              memory: 4Gi
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "2"
+              memory: 8Gi
+              nvidia.com/gpu: "1"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          volumeMounts:
+            - name: model-artifacts
+              mountPath: /app/mlops/artifacts
+      volumes:
+        - name: model-artifacts
+          persistentVolumeClaim:
+            claimName: nexus-model-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-gpu-inference-svc
+  namespace: nexus-ai
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8082
+      targetPort: 8082
+  selector:
+    app: nexus-gpu-inference
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nexus-gpu-hpa
+  namespace: nexus-ai
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nexus-gpu-inference
+  minReplicas: 0
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 120
+    scaleDown:
+      stabilizationWindowSeconds: 600
