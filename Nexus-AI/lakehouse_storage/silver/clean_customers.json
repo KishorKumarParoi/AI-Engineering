@@ -1,0 +1,4502 @@
+[
+  {
+    "customer_id": "CUST_00001",
+    "full_name": "Rahul Das",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX44",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00002",
+    "full_name": "Priya Joshi",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-99XXXX39",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00003",
+    "full_name": "Arjun Das",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-95XXXX14",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00004",
+    "full_name": "Aditi Mehta",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-94XXXX52",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00005",
+    "full_name": "Vikram Patel",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-93XXXX88",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00006",
+    "full_name": "Neha Verma",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-97XXXX89",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00007",
+    "full_name": "Aarav Rao",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-91XXXX45",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00008",
+    "full_name": "Pooja Nair",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-91XXXX40",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00009",
+    "full_name": "Amit Verma",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-98XXXX71",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00010",
+    "full_name": "Vikram Gupta",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-95XXXX57",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00011",
+    "full_name": "Arjun Mukherjee",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-97XXXX07",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00012",
+    "full_name": "Aditi Das",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-93XXXX02",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00013",
+    "full_name": "Deepak Gupta",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-93XXXX14",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00014",
+    "full_name": "Priya Mehta",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-96XXXX39",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00015",
+    "full_name": "Amit Rao",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-91XXXX47",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00016",
+    "full_name": "Rahul Mukherjee",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-94XXXX88",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00017",
+    "full_name": "Kavya Patel",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-95XXXX33",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00018",
+    "full_name": "Neha Verma",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-98XXXX09",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00019",
+    "full_name": "Rohan Kapoor",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-97XXXX92",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00020",
+    "full_name": "Kavya Mehta",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-95XXXX28",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00021",
+    "full_name": "Deepak Kapoor",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-91XXXX40",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00022",
+    "full_name": "Amit Iyer",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-95XXXX50",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00023",
+    "full_name": "Ananya Verma",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-97XXXX09",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00024",
+    "full_name": "Neha Nair",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-93XXXX45",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00025",
+    "full_name": "Ananya Rao",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-99XXXX54",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00026",
+    "full_name": "Shreya Singh",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-99XXXX73",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00027",
+    "full_name": "Arjun Kapoor",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX72",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00028",
+    "full_name": "Pooja Mukherjee",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-97XXXX28",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00029",
+    "full_name": "Pooja Singh",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-91XXXX77",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00030",
+    "full_name": "Rohan Das",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-97XXXX25",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00031",
+    "full_name": "Aditi Singh",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-97XXXX42",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00032",
+    "full_name": "Rahul Sharma",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-92XXXX94",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00033",
+    "full_name": "Ananya Sharma",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-98XXXX19",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00034",
+    "full_name": "Ananya Nair",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-94XXXX71",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00035",
+    "full_name": "Aditi Mukherjee",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-91XXXX17",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00036",
+    "full_name": "Amit Mehta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-98XXXX91",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00037",
+    "full_name": "Rahul Nair",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-98XXXX88",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00038",
+    "full_name": "Rohan Mehta",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-95XXXX27",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00039",
+    "full_name": "Rohan Das",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-96XXXX56",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00040",
+    "full_name": "Ananya Reddy",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-99XXXX67",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00041",
+    "full_name": "Rahul Patel",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-94XXXX47",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00042",
+    "full_name": "Aditi Das",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-99XXXX26",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00043",
+    "full_name": "Rahul Patel",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-99XXXX57",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00044",
+    "full_name": "Aditi Gupta",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-98XXXX53",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00045",
+    "full_name": "Deepak Reddy",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-93XXXX16",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00046",
+    "full_name": "Vikram Nair",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-95XXXX62",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00047",
+    "full_name": "Kavya Patel",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-99XXXX42",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00048",
+    "full_name": "Aditi Das",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-94XXXX61",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00049",
+    "full_name": "Priya Mehta",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-99XXXX58",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00050",
+    "full_name": "Rahul Kapoor",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX95",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00051",
+    "full_name": "Aarav Gupta",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-95XXXX02",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00052",
+    "full_name": "Rohan Nair",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-91XXXX45",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00053",
+    "full_name": "Arjun Mukherjee",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX38",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00054",
+    "full_name": "Shreya Joshi",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-99XXXX81",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00055",
+    "full_name": "Rohan Sharma",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX15",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00056",
+    "full_name": "Kavya Verma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-93XXXX55",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00057",
+    "full_name": "Kavya Das",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-95XXXX13",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00058",
+    "full_name": "Shreya Rao",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-91XXXX21",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00059",
+    "full_name": "Rahul Mehta",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX95",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00060",
+    "full_name": "Kavya Patel",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX58",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00061",
+    "full_name": "Aarav Gupta",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-91XXXX34",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00062",
+    "full_name": "Kunal Joshi",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-94XXXX24",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00063",
+    "full_name": "Priya Mukherjee",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-98XXXX15",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00064",
+    "full_name": "Arjun Kapoor",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-99XXXX60",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00065",
+    "full_name": "Shreya Das",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-99XXXX02",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00066",
+    "full_name": "Deepak Sharma",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-93XXXX82",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00067",
+    "full_name": "Arjun Mehta",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-95XXXX22",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00068",
+    "full_name": "Vikram Mehta",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-99XXXX54",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00069",
+    "full_name": "Neha Gupta",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-98XXXX71",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00070",
+    "full_name": "Ananya Singh",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-94XXXX54",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00071",
+    "full_name": "Kavya Verma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-97XXXX96",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00072",
+    "full_name": "Priya Verma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-98XXXX13",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00073",
+    "full_name": "Kavya Patel",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-94XXXX03",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00074",
+    "full_name": "Neha Rao",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-93XXXX73",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00075",
+    "full_name": "Amit Nair",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-99XXXX55",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00076",
+    "full_name": "Rahul Kapoor",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-98XXXX77",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00077",
+    "full_name": "Sneha Mukherjee",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-94XXXX31",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00078",
+    "full_name": "Rahul Das",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-94XXXX10",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00079",
+    "full_name": "Rahul Iyer",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-95XXXX05",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00080",
+    "full_name": "Priya Sharma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-96XXXX74",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00081",
+    "full_name": "Priya Mehta",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-98XXXX47",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00082",
+    "full_name": "Pooja Joshi",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-93XXXX57",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00083",
+    "full_name": "Deepak Patel",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-91XXXX87",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00084",
+    "full_name": "Rohan Iyer",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-94XXXX20",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00085",
+    "full_name": "Ananya Mukherjee",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX21",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00086",
+    "full_name": "Rahul Reddy",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX60",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00087",
+    "full_name": "Deepak Mukherjee",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-92XXXX92",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00088",
+    "full_name": "Amit Joshi",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-96XXXX15",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00089",
+    "full_name": "Rohan Patel",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-97XXXX10",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00090",
+    "full_name": "Neha Patel",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-97XXXX97",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00091",
+    "full_name": "Rahul Gupta",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX94",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00092",
+    "full_name": "Ananya Patel",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-98XXXX83",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00093",
+    "full_name": "Pooja Kapoor",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-93XXXX07",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00094",
+    "full_name": "Pooja Rao",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-92XXXX84",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00095",
+    "full_name": "Rahul Patel",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-98XXXX37",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00096",
+    "full_name": "Aditi Kapoor",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-91XXXX77",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00097",
+    "full_name": "Vikram Mukherjee",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-95XXXX51",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00098",
+    "full_name": "Pooja Das",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-96XXXX50",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00099",
+    "full_name": "Rohan Joshi",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-92XXXX90",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00100",
+    "full_name": "Vikram Nair",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-92XXXX81",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00101",
+    "full_name": "Neha Gupta",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-99XXXX16",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00102",
+    "full_name": "Arjun Reddy",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX99",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00103",
+    "full_name": "Priya Sharma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-95XXXX36",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00104",
+    "full_name": "Ananya Kapoor",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-97XXXX33",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00105",
+    "full_name": "Shreya Iyer",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-96XXXX54",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00106",
+    "full_name": "Amit Iyer",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-93XXXX13",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00107",
+    "full_name": "Aditi Mehta",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-97XXXX95",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00108",
+    "full_name": "Aarav Kapoor",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-95XXXX71",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00109",
+    "full_name": "Amit Nair",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-95XXXX45",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00110",
+    "full_name": "Neha Iyer",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-91XXXX13",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00111",
+    "full_name": "Kunal Kapoor",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-98XXXX78",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00112",
+    "full_name": "Priya Gupta",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-99XXXX94",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00113",
+    "full_name": "Rahul Reddy",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-96XXXX36",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00114",
+    "full_name": "Aditi Patel",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-99XXXX65",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00115",
+    "full_name": "Rahul Nair",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-94XXXX16",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00116",
+    "full_name": "Pooja Rao",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-96XXXX17",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00117",
+    "full_name": "Pooja Singh",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-94XXXX85",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00118",
+    "full_name": "Pooja Mukherjee",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-97XXXX18",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00119",
+    "full_name": "Sneha Joshi",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-97XXXX48",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00120",
+    "full_name": "Amit Patel",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-91XXXX77",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00121",
+    "full_name": "Deepak Nair",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-92XXXX77",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00122",
+    "full_name": "Shreya Kapoor",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-98XXXX86",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00123",
+    "full_name": "Arjun Das",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-96XXXX94",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00124",
+    "full_name": "Deepak Iyer",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-96XXXX03",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00125",
+    "full_name": "Vikram Reddy",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-96XXXX79",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00126",
+    "full_name": "Pooja Mukherjee",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-98XXXX18",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00127",
+    "full_name": "Neha Iyer",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-94XXXX89",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00128",
+    "full_name": "Amit Gupta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-99XXXX96",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00129",
+    "full_name": "Rohan Nair",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-98XXXX30",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00130",
+    "full_name": "Kunal Iyer",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-92XXXX16",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00131",
+    "full_name": "Aditi Das",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-93XXXX86",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00132",
+    "full_name": "Kavya Nair",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-92XXXX68",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00133",
+    "full_name": "Ananya Gupta",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX40",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00134",
+    "full_name": "Pooja Nair",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-97XXXX09",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00135",
+    "full_name": "Sneha Iyer",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-92XXXX75",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00136",
+    "full_name": "Aditi Kapoor",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-99XXXX87",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00137",
+    "full_name": "Pooja Sharma",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-94XXXX97",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00138",
+    "full_name": "Arjun Mehta",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-97XXXX57",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00139",
+    "full_name": "Rahul Kapoor",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-96XXXX79",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00140",
+    "full_name": "Arjun Patel",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-97XXXX85",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00141",
+    "full_name": "Arjun Mukherjee",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-97XXXX44",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00142",
+    "full_name": "Amit Kapoor",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-96XXXX97",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00143",
+    "full_name": "Priya Patel",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-96XXXX37",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00144",
+    "full_name": "Amit Reddy",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-99XXXX42",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00145",
+    "full_name": "Aarav Mehta",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-98XXXX09",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00146",
+    "full_name": "Deepak Mehta",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-95XXXX69",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00147",
+    "full_name": "Pooja Joshi",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-97XXXX60",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00148",
+    "full_name": "Sneha Patel",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-92XXXX48",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00149",
+    "full_name": "Shreya Mukherjee",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-99XXXX62",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00150",
+    "full_name": "Rohan Iyer",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-96XXXX69",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00151",
+    "full_name": "Priya Sharma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-96XXXX99",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00152",
+    "full_name": "Ananya Nair",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-95XXXX84",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00153",
+    "full_name": "Shreya Verma",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-95XXXX94",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00154",
+    "full_name": "Kavya Singh",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-91XXXX92",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00155",
+    "full_name": "Pooja Joshi",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-95XXXX90",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00156",
+    "full_name": "Rohan Sharma",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-94XXXX52",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00157",
+    "full_name": "Aditi Verma",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-91XXXX63",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00158",
+    "full_name": "Rahul Mukherjee",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-95XXXX51",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00159",
+    "full_name": "Amit Gupta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-98XXXX28",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00160",
+    "full_name": "Neha Verma",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-96XXXX06",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00161",
+    "full_name": "Sneha Kapoor",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-99XXXX71",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00162",
+    "full_name": "Kavya Iyer",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-99XXXX42",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00163",
+    "full_name": "Rahul Mehta",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-98XXXX34",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00164",
+    "full_name": "Kavya Rao",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-93XXXX65",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00165",
+    "full_name": "Aditi Singh",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-98XXXX85",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00166",
+    "full_name": "Amit Singh",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-96XXXX81",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00167",
+    "full_name": "Pooja Reddy",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-94XXXX33",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00168",
+    "full_name": "Rahul Das",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-93XXXX39",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00169",
+    "full_name": "Ananya Das",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX09",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00170",
+    "full_name": "Amit Mukherjee",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-94XXXX18",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00171",
+    "full_name": "Pooja Gupta",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-99XXXX18",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00172",
+    "full_name": "Sneha Mehta",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-99XXXX67",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00173",
+    "full_name": "Kavya Iyer",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-92XXXX93",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00174",
+    "full_name": "Arjun Das",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-95XXXX20",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00175",
+    "full_name": "Vikram Sharma",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-95XXXX31",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00176",
+    "full_name": "Vikram Mukherjee",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-98XXXX24",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00177",
+    "full_name": "Vikram Kapoor",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-94XXXX58",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00178",
+    "full_name": "Priya Joshi",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-93XXXX47",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00179",
+    "full_name": "Sneha Iyer",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-99XXXX95",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00180",
+    "full_name": "Neha Mehta",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-94XXXX67",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00181",
+    "full_name": "Shreya Mukherjee",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-93XXXX80",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00182",
+    "full_name": "Sneha Joshi",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-91XXXX86",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00183",
+    "full_name": "Kavya Mehta",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-93XXXX26",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00184",
+    "full_name": "Sneha Singh",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-98XXXX44",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00185",
+    "full_name": "Shreya Joshi",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-95XXXX70",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00186",
+    "full_name": "Shreya Patel",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-97XXXX59",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00187",
+    "full_name": "Rohan Kapoor",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX88",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00188",
+    "full_name": "Sneha Verma",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-91XXXX72",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00189",
+    "full_name": "Aditi Rao",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-96XXXX10",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00190",
+    "full_name": "Kavya Sharma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX64",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00191",
+    "full_name": "Aarav Iyer",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-99XXXX74",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00192",
+    "full_name": "Rahul Reddy",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-97XXXX10",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00193",
+    "full_name": "Kunal Mukherjee",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-91XXXX71",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00194",
+    "full_name": "Sneha Joshi",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-94XXXX17",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00195",
+    "full_name": "Aditi Verma",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-95XXXX44",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00196",
+    "full_name": "Aarav Joshi",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-91XXXX47",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00197",
+    "full_name": "Arjun Rao",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-96XXXX00",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00198",
+    "full_name": "Shreya Mehta",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-91XXXX21",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00199",
+    "full_name": "Aditi Patel",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-91XXXX51",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00200",
+    "full_name": "Amit Verma",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-92XXXX24",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00201",
+    "full_name": "Amit Das",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-94XXXX04",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00202",
+    "full_name": "Rohan Iyer",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-91XXXX07",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00203",
+    "full_name": "Rohan Nair",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX33",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00204",
+    "full_name": "Arjun Sharma",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-99XXXX06",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00205",
+    "full_name": "Amit Gupta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-98XXXX99",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00206",
+    "full_name": "Pooja Mukherjee",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-98XXXX62",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00207",
+    "full_name": "Amit Joshi",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-98XXXX23",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00208",
+    "full_name": "Rohan Sharma",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-95XXXX02",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00209",
+    "full_name": "Rohan Patel",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-95XXXX28",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00210",
+    "full_name": "Priya Sharma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-94XXXX70",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00211",
+    "full_name": "Arjun Kapoor",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-91XXXX37",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00212",
+    "full_name": "Rohan Joshi",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX99",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00213",
+    "full_name": "Amit Patel",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-93XXXX42",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00214",
+    "full_name": "Rohan Patel",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX02",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00215",
+    "full_name": "Rohan Nair",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX64",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00216",
+    "full_name": "Vikram Singh",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-92XXXX75",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00217",
+    "full_name": "Arjun Kapoor",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-95XXXX32",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00218",
+    "full_name": "Rahul Mehta",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-97XXXX66",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00219",
+    "full_name": "Ananya Gupta",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-94XXXX71",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00220",
+    "full_name": "Sneha Nair",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-94XXXX89",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00221",
+    "full_name": "Vikram Rao",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-92XXXX72",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00222",
+    "full_name": "Deepak Joshi",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-95XXXX23",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00223",
+    "full_name": "Kavya Das",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-92XXXX40",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00224",
+    "full_name": "Rahul Joshi",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-99XXXX26",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00225",
+    "full_name": "Shreya Rao",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-96XXXX26",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00226",
+    "full_name": "Neha Joshi",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-97XXXX04",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00227",
+    "full_name": "Sneha Das",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-92XXXX92",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00228",
+    "full_name": "Amit Mukherjee",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-99XXXX93",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00229",
+    "full_name": "Kunal Reddy",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-99XXXX35",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00230",
+    "full_name": "Sneha Singh",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-95XXXX13",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00231",
+    "full_name": "Rahul Nair",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-96XXXX08",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00232",
+    "full_name": "Rohan Verma",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-94XXXX41",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00233",
+    "full_name": "Vikram Iyer",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-94XXXX94",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00234",
+    "full_name": "Deepak Nair",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-94XXXX06",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00235",
+    "full_name": "Arjun Das",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-98XXXX23",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00236",
+    "full_name": "Ananya Nair",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-95XXXX37",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00237",
+    "full_name": "Ananya Patel",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-95XXXX48",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00238",
+    "full_name": "Kavya Gupta",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-98XXXX08",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00239",
+    "full_name": "Rohan Rao",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX17",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00240",
+    "full_name": "Vikram Singh",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-93XXXX08",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00241",
+    "full_name": "Arjun Rao",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-97XXXX21",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00242",
+    "full_name": "Neha Kapoor",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-97XXXX28",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00243",
+    "full_name": "Rohan Das",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-94XXXX35",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00244",
+    "full_name": "Ananya Nair",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX24",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00245",
+    "full_name": "Amit Gupta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-96XXXX65",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00246",
+    "full_name": "Ananya Iyer",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX26",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00247",
+    "full_name": "Deepak Rao",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-94XXXX72",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00248",
+    "full_name": "Amit Iyer",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-98XXXX19",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00249",
+    "full_name": "Kavya Joshi",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX11",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00250",
+    "full_name": "Sneha Mehta",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-93XXXX74",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00251",
+    "full_name": "Deepak Rao",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-96XXXX93",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00252",
+    "full_name": "Kunal Mukherjee",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-99XXXX76",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00253",
+    "full_name": "Aditi Mukherjee",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-96XXXX60",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00254",
+    "full_name": "Sneha Mehta",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-95XXXX28",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00255",
+    "full_name": "Rohan Singh",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX37",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00256",
+    "full_name": "Neha Kapoor",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-97XXXX89",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00257",
+    "full_name": "Vikram Kapoor",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-99XXXX49",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00258",
+    "full_name": "Kunal Rao",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-92XXXX19",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00259",
+    "full_name": "Kunal Kapoor",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-98XXXX84",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00260",
+    "full_name": "Kavya Sharma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-98XXXX67",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00261",
+    "full_name": "Arjun Kapoor",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-99XXXX34",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00262",
+    "full_name": "Kunal Das",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-95XXXX21",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00263",
+    "full_name": "Rohan Gupta",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX79",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00264",
+    "full_name": "Shreya Nair",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-91XXXX49",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00265",
+    "full_name": "Neha Kapoor",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-99XXXX70",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00266",
+    "full_name": "Kavya Kapoor",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX29",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00267",
+    "full_name": "Arjun Iyer",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX05",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00268",
+    "full_name": "Aditi Sharma",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-97XXXX41",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00269",
+    "full_name": "Ananya Singh",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-91XXXX68",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00270",
+    "full_name": "Rahul Das",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-92XXXX44",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00271",
+    "full_name": "Kunal Verma",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-98XXXX97",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00272",
+    "full_name": "Pooja Joshi",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-95XXXX10",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00273",
+    "full_name": "Aarav Reddy",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-91XXXX71",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00274",
+    "full_name": "Deepak Sharma",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-98XXXX07",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00275",
+    "full_name": "Kavya Joshi",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX31",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00276",
+    "full_name": "Priya Verma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-94XXXX52",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00277",
+    "full_name": "Rahul Das",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX03",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00278",
+    "full_name": "Ananya Singh",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-98XXXX87",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00279",
+    "full_name": "Deepak Kapoor",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-91XXXX61",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00280",
+    "full_name": "Amit Nair",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-94XXXX39",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00281",
+    "full_name": "Rohan Reddy",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-97XXXX24",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00282",
+    "full_name": "Aarav Kapoor",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-93XXXX61",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00283",
+    "full_name": "Amit Mehta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-99XXXX54",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00284",
+    "full_name": "Sneha Singh",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-91XXXX59",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00285",
+    "full_name": "Arjun Patel",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-97XXXX96",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00286",
+    "full_name": "Ananya Mukherjee",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-99XXXX23",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00287",
+    "full_name": "Aarav Mehta",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-91XXXX64",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00288",
+    "full_name": "Kavya Gupta",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-91XXXX90",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00289",
+    "full_name": "Rahul Mehta",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-94XXXX89",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00290",
+    "full_name": "Rahul Iyer",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-95XXXX55",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00291",
+    "full_name": "Kavya Joshi",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-91XXXX39",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00292",
+    "full_name": "Priya Singh",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-97XXXX20",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00293",
+    "full_name": "Ananya Verma",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-98XXXX91",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00294",
+    "full_name": "Neha Iyer",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-99XXXX96",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00295",
+    "full_name": "Kunal Joshi",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-99XXXX66",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00296",
+    "full_name": "Kunal Iyer",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-93XXXX33",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00297",
+    "full_name": "Neha Sharma",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-97XXXX46",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00298",
+    "full_name": "Priya Rao",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-93XXXX78",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00299",
+    "full_name": "Aarav Reddy",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-96XXXX72",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00300",
+    "full_name": "Ananya Kapoor",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX42",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00301",
+    "full_name": "Sneha Gupta",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-93XXXX14",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00302",
+    "full_name": "Aditi Patel",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-99XXXX72",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00303",
+    "full_name": "Rohan Singh",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX02",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00304",
+    "full_name": "Deepak Sharma",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-93XXXX14",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00305",
+    "full_name": "Sneha Singh",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-97XXXX97",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00306",
+    "full_name": "Sneha Patel",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-95XXXX20",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00307",
+    "full_name": "Aarav Nair",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-99XXXX75",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00308",
+    "full_name": "Pooja Verma",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-96XXXX68",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00309",
+    "full_name": "Aditi Patel",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-91XXXX96",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00310",
+    "full_name": "Kavya Joshi",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-95XXXX54",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00311",
+    "full_name": "Rahul Das",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX17",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00312",
+    "full_name": "Rahul Reddy",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-93XXXX85",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00313",
+    "full_name": "Arjun Nair",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-93XXXX97",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00314",
+    "full_name": "Rahul Mukherjee",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-92XXXX88",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00315",
+    "full_name": "Deepak Nair",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-92XXXX83",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00316",
+    "full_name": "Vikram Singh",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-95XXXX16",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00317",
+    "full_name": "Pooja Kapoor",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-91XXXX06",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00318",
+    "full_name": "Sneha Nair",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-96XXXX28",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00319",
+    "full_name": "Ananya Sharma",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-95XXXX05",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00320",
+    "full_name": "Deepak Verma",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-92XXXX44",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00321",
+    "full_name": "Sneha Patel",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-99XXXX94",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00322",
+    "full_name": "Rohan Rao",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX52",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00323",
+    "full_name": "Vikram Das",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-99XXXX29",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00324",
+    "full_name": "Arjun Verma",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-95XXXX31",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00325",
+    "full_name": "Kavya Kapoor",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX63",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00326",
+    "full_name": "Ananya Nair",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-93XXXX78",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00327",
+    "full_name": "Rahul Sharma",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-97XXXX55",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00328",
+    "full_name": "Shreya Gupta",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-96XXXX45",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00329",
+    "full_name": "Rahul Gupta",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-97XXXX93",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00330",
+    "full_name": "Aarav Gupta",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-96XXXX44",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00331",
+    "full_name": "Arjun Gupta",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX24",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00332",
+    "full_name": "Aarav Mukherjee",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-91XXXX55",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00333",
+    "full_name": "Sneha Patel",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-93XXXX84",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00334",
+    "full_name": "Aditi Mukherjee",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-97XXXX95",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00335",
+    "full_name": "Ananya Patel",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-97XXXX83",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00336",
+    "full_name": "Aarav Joshi",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-97XXXX14",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00337",
+    "full_name": "Vikram Kapoor",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-96XXXX60",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00338",
+    "full_name": "Rohan Sharma",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-97XXXX01",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00339",
+    "full_name": "Aarav Nair",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-93XXXX31",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00340",
+    "full_name": "Arjun Sharma",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX68",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00341",
+    "full_name": "Neha Verma",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-98XXXX25",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00342",
+    "full_name": "Arjun Mehta",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX57",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00343",
+    "full_name": "Shreya Das",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-92XXXX90",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00344",
+    "full_name": "Ananya Gupta",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-98XXXX01",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00345",
+    "full_name": "Aarav Joshi",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-95XXXX27",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00346",
+    "full_name": "Arjun Mukherjee",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-93XXXX68",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00347",
+    "full_name": "Shreya Patel",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-99XXXX10",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00348",
+    "full_name": "Arjun Patel",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-99XXXX44",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00349",
+    "full_name": "Kunal Reddy",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-98XXXX51",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00350",
+    "full_name": "Priya Joshi",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-91XXXX38",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00351",
+    "full_name": "Ananya Gupta",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-95XXXX35",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00352",
+    "full_name": "Shreya Mukherjee",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-97XXXX47",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00353",
+    "full_name": "Rohan Mukherjee",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-94XXXX12",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00354",
+    "full_name": "Priya Verma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-92XXXX71",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00355",
+    "full_name": "Rohan Nair",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-97XXXX06",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00356",
+    "full_name": "Ananya Rao",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-92XXXX02",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00357",
+    "full_name": "Vikram Gupta",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-98XXXX07",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00358",
+    "full_name": "Pooja Reddy",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-91XXXX52",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00359",
+    "full_name": "Shreya Patel",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-94XXXX09",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00360",
+    "full_name": "Shreya Reddy",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-91XXXX90",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00361",
+    "full_name": "Rohan Singh",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-94XXXX36",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00362",
+    "full_name": "Kunal Verma",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-95XXXX74",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00363",
+    "full_name": "Neha Patel",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-91XXXX58",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00364",
+    "full_name": "Sneha Kapoor",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-97XXXX62",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00365",
+    "full_name": "Priya Verma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-99XXXX36",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00366",
+    "full_name": "Sneha Iyer",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-95XXXX06",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00367",
+    "full_name": "Shreya Rao",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-96XXXX35",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00368",
+    "full_name": "Aditi Iyer",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-96XXXX50",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00369",
+    "full_name": "Deepak Patel",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-93XXXX25",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00370",
+    "full_name": "Rohan Das",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX72",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00371",
+    "full_name": "Kunal Nair",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-91XXXX07",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00372",
+    "full_name": "Arjun Kapoor",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-96XXXX33",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00373",
+    "full_name": "Kavya Verma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-92XXXX23",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00374",
+    "full_name": "Priya Verma",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-99XXXX45",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00375",
+    "full_name": "Neha Gupta",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-95XXXX94",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00376",
+    "full_name": "Shreya Sharma",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-93XXXX82",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00377",
+    "full_name": "Amit Sharma",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-94XXXX49",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00378",
+    "full_name": "Shreya Mehta",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-91XXXX02",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00379",
+    "full_name": "Shreya Kapoor",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-93XXXX09",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00380",
+    "full_name": "Deepak Mukherjee",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-93XXXX03",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00381",
+    "full_name": "Vikram Kapoor",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-98XXXX23",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00382",
+    "full_name": "Aditi Iyer",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-91XXXX81",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00383",
+    "full_name": "Aarav Patel",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-99XXXX11",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00384",
+    "full_name": "Deepak Sharma",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-98XXXX38",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00385",
+    "full_name": "Deepak Iyer",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-97XXXX83",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00386",
+    "full_name": "Shreya Rao",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-92XXXX38",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00387",
+    "full_name": "Neha Patel",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-99XXXX92",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00388",
+    "full_name": "Amit Sharma",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-97XXXX08",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00389",
+    "full_name": "Vikram Mehta",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-96XXXX33",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00390",
+    "full_name": "Rahul Das",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-97XXXX51",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00391",
+    "full_name": "Pooja Joshi",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-95XXXX83",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00392",
+    "full_name": "Vikram Singh",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-98XXXX33",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00393",
+    "full_name": "Aarav Iyer",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-97XXXX86",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00394",
+    "full_name": "Priya Singh",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-94XXXX23",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00395",
+    "full_name": "Kunal Das",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-93XXXX01",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00396",
+    "full_name": "Aditi Mukherjee",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-95XXXX83",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00397",
+    "full_name": "Aarav Das",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-94XXXX63",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00398",
+    "full_name": "Aditi Rao",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-99XXXX13",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00399",
+    "full_name": "Sneha Das",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-97XXXX97",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00400",
+    "full_name": "Ananya Kapoor",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-92XXXX46",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00401",
+    "full_name": "Kunal Joshi",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-99XXXX95",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00402",
+    "full_name": "Sneha Nair",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-98XXXX20",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-18 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00403",
+    "full_name": "Arjun Nair",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-97XXXX49",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00404",
+    "full_name": "Shreya Sharma",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-97XXXX50",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00405",
+    "full_name": "Vikram Iyer",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-98XXXX58",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00406",
+    "full_name": "Aditi Kapoor",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-92XXXX16",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00407",
+    "full_name": "Deepak Patel",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-98XXXX55",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00408",
+    "full_name": "Ananya Nair",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-91XXXX82",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00409",
+    "full_name": "Ananya Rao",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX92",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00410",
+    "full_name": "Kavya Gupta",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX42",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00411",
+    "full_name": "Vikram Joshi",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-91XXXX89",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00412",
+    "full_name": "Aarav Das",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-93XXXX52",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00413",
+    "full_name": "Priya Gupta",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-97XXXX38",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00414",
+    "full_name": "Aditi Mehta",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-95XXXX44",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00415",
+    "full_name": "Rahul Nair",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-94XXXX96",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00416",
+    "full_name": "Amit Sharma",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-93XXXX30",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00417",
+    "full_name": "Ananya Verma",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-98XXXX41",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00418",
+    "full_name": "Kunal Mukherjee",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-97XXXX79",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00419",
+    "full_name": "Aarav Sharma",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-95XXXX57",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-08 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00420",
+    "full_name": "Kunal Singh",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-93XXXX82",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-04 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00421",
+    "full_name": "Priya Das",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-93XXXX59",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00422",
+    "full_name": "Priya Iyer",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-92XXXX30",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00423",
+    "full_name": "Shreya Reddy",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-93XXXX66",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00424",
+    "full_name": "Neha Joshi",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-94XXXX41",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00425",
+    "full_name": "Vikram Joshi",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-94XXXX32",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00426",
+    "full_name": "Rohan Verma",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-98XXXX30",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-05-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00427",
+    "full_name": "Rohan Joshi",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX50",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-31 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00428",
+    "full_name": "Pooja Mehta",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-91XXXX00",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00429",
+    "full_name": "Pooja Nair",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-95XXXX69",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00430",
+    "full_name": "Aditi Sharma",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-98XXXX35",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00431",
+    "full_name": "Deepak Rao",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-98XXXX15",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00432",
+    "full_name": "Ananya Verma",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-95XXXX05",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00433",
+    "full_name": "Shreya Mukherjee",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-97XXXX03",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-30 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00434",
+    "full_name": "Aditi Kapoor",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-92XXXX03",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00435",
+    "full_name": "Deepak Patel",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-95XXXX88",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00436",
+    "full_name": "Rahul Singh",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-92XXXX92",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00437",
+    "full_name": "Kunal Das",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-91XXXX72",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00438",
+    "full_name": "Sneha Das",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-96XXXX37",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00439",
+    "full_name": "Sneha Singh",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-98XXXX78",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00440",
+    "full_name": "Aditi Sharma",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-96XXXX45",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00441",
+    "full_name": "Rohan Mukherjee",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-94XXXX42",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00442",
+    "full_name": "Aditi Iyer",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-96XXXX13",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00443",
+    "full_name": "Sneha Verma",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-95XXXX68",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00444",
+    "full_name": "Shreya Singh",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-92XXXX04",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00445",
+    "full_name": "Kavya Sharma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-96XXXX40",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00446",
+    "full_name": "Pooja Iyer",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-93XXXX33",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-07-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00447",
+    "full_name": "Neha Kapoor",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-99XXXX31",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00448",
+    "full_name": "Shreya Joshi",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-98XXXX68",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00449",
+    "full_name": "Sneha Sharma",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-94XXXX72",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00450",
+    "full_name": "Neha Joshi",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-91XXXX70",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-06 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00451",
+    "full_name": "Kavya Verma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-97XXXX94",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00452",
+    "full_name": "Amit Reddy",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-99XXXX70",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00453",
+    "full_name": "Kavya Sharma",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-92XXXX96",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00454",
+    "full_name": "Rahul Singh",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-96XXXX77",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-08-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00455",
+    "full_name": "Shreya Iyer",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-98XXXX09",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00456",
+    "full_name": "Rahul Verma",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-98XXXX64",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00457",
+    "full_name": "Amit Gupta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-98XXXX89",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00458",
+    "full_name": "Arjun Mehta",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-99XXXX20",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-07 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00459",
+    "full_name": "Pooja Kapoor",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-94XXXX45",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-27 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00460",
+    "full_name": "Pooja Das",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-98XXXX80",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00461",
+    "full_name": "Arjun Joshi",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-99XXXX67",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00462",
+    "full_name": "Kavya Das",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-94XXXX27",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00463",
+    "full_name": "Aarav Gupta",
+    "masked_email": "aar***@example.com",
+    "masked_phone": "+91-91XXXX09",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00464",
+    "full_name": "Ananya Mehta",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-92XXXX87",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00465",
+    "full_name": "Aditi Nair",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-92XXXX68",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-23 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00466",
+    "full_name": "Amit Reddy",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-99XXXX13",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-14 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00467",
+    "full_name": "Aditi Gupta",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-95XXXX89",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00468",
+    "full_name": "Aditi Sharma",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-93XXXX43",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-24 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00469",
+    "full_name": "Neha Mukherjee",
+    "masked_email": "neh***@example.com",
+    "masked_phone": "+91-96XXXX35",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00470",
+    "full_name": "Vikram Mehta",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-92XXXX00",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00471",
+    "full_name": "Ananya Joshi",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-92XXXX79",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-12 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00472",
+    "full_name": "Kunal Patel",
+    "masked_email": "kun***@example.com",
+    "masked_phone": "+91-97XXXX54",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-03 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00473",
+    "full_name": "Rahul Sharma",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-94XXXX55",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-15 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00474",
+    "full_name": "Pooja Singh",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-96XXXX93",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00475",
+    "full_name": "Arjun Iyer",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-92XXXX43",
+    "city": "Mumbai",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-04-19 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00476",
+    "full_name": "Ananya Gupta",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-96XXXX67",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00477",
+    "full_name": "Vikram Das",
+    "masked_email": "vik***@example.com",
+    "masked_phone": "+91-94XXXX84",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00478",
+    "full_name": "Shreya Iyer",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-92XXXX55",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00479",
+    "full_name": "Sneha Sharma",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-95XXXX19",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00480",
+    "full_name": "Pooja Sharma",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-99XXXX80",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-08-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00481",
+    "full_name": "Deepak Singh",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-94XXXX46",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-21 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00482",
+    "full_name": "Rohan Verma",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX35",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00483",
+    "full_name": "Rohan Reddy",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-98XXXX08",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-28 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00484",
+    "full_name": "Kavya Das",
+    "masked_email": "kav***@example.com",
+    "masked_phone": "+91-99XXXX13",
+    "city": "Bengaluru",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-11 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00485",
+    "full_name": "Arjun Sharma",
+    "masked_email": "arj***@example.com",
+    "masked_phone": "+91-91XXXX75",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00486",
+    "full_name": "Rohan Rao",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX35",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-07-10 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00487",
+    "full_name": "Amit Gupta",
+    "masked_email": "ami***@example.com",
+    "masked_phone": "+91-91XXXX42",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-02 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00488",
+    "full_name": "Rohan Mukherjee",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-91XXXX46",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-20 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00489",
+    "full_name": "Priya Mehta",
+    "masked_email": "pri***@example.com",
+    "masked_phone": "+91-97XXXX18",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-13 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00490",
+    "full_name": "Deepak Gupta",
+    "masked_email": "dee***@example.com",
+    "masked_phone": "+91-99XXXX73",
+    "city": "Hyderabad",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-04-09 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00491",
+    "full_name": "Sneha Patel",
+    "masked_email": "sne***@example.com",
+    "masked_phone": "+91-99XXXX41",
+    "city": "Hyderabad",
+    "loyalty_tier": "Zomato Pro VIP",
+    "registered_at": "2026-06-16 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00492",
+    "full_name": "Rahul Mehta",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-91XXXX45",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00493",
+    "full_name": "Aditi Sharma",
+    "masked_email": "adi***@example.com",
+    "masked_phone": "+91-97XXXX08",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-17 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00494",
+    "full_name": "Rohan Mehta",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-99XXXX38",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-05-26 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00495",
+    "full_name": "Rahul Patel",
+    "masked_email": "rah***@example.com",
+    "masked_phone": "+91-93XXXX79",
+    "city": "Mumbai",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-05 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00496",
+    "full_name": "Ananya Das",
+    "masked_email": "ana***@example.com",
+    "masked_phone": "+91-91XXXX95",
+    "city": "Pune",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-07-29 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00497",
+    "full_name": "Rohan Mehta",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-93XXXX82",
+    "city": "Bengaluru",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-05-22 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00498",
+    "full_name": "Shreya Nair",
+    "masked_email": "shr***@example.com",
+    "masked_phone": "+91-92XXXX62",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-06-01 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00499",
+    "full_name": "Rohan Reddy",
+    "masked_email": "roh***@example.com",
+    "masked_phone": "+91-96XXXX27",
+    "city": "Delhi NCR",
+    "loyalty_tier": "Zomato Gold",
+    "registered_at": "2026-06-25 01:03:56"
+  },
+  {
+    "customer_id": "CUST_00500",
+    "full_name": "Pooja Joshi",
+    "masked_email": "poo***@example.com",
+    "masked_phone": "+91-92XXXX41",
+    "city": "Pune",
+    "loyalty_tier": "Standard",
+    "registered_at": "2026-08-25 01:03:56"
+  }
+]
