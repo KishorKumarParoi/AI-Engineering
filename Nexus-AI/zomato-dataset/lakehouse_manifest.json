@@ -1,0 +1,34 @@
+{
+  "dataset_name": "Zomato Enterprise Lakehouse",
+  "generated_at": "2026-09-29T01:03:56.393560",
+  "version": "1.0.0",
+  "tables": {
+    "restaurants": {
+      "rows": 100,
+      "primary_key": "restaurant_id"
+    },
+    "customers": {
+      "rows": 500,
+      "primary_key": "customer_id",
+      "has_pii": true
+    },
+    "delivery_partners": {
+      "rows": 150,
+      "primary_key": "partner_id"
+    },
+    "orders": {
+      "rows": 3000,
+      "primary_key": "order_id"
+    },
+    "deliveries": {
+      "rows": 2902,
+      "primary_key": "delivery_id",
+      "target_col": "actual_delivery_time_minutes"
+    },
+    "reviews": {
+      "rows": 994,
+      "primary_key": "review_id",
+      "has_adversarial_probes": true
+    }
+  }
+}

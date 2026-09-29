@@ -1,0 +1,151 @@
+partner_id,partner_name,phone_number,vehicle_type,partner_rating,total_completed_trips,active_status
+RIDER_0001,Arjun Gupta,+91-8281075299,Motorcycle,4.24,1914,Offline
+RIDER_0002,Kavya Mehta,+91-8485995156,Electric Scooter,4.65,2816,On Delivery
+RIDER_0003,Deepak Singh,+91-8485195859,Scooter,4.44,991,Active
+RIDER_0004,Rohan Kapoor,+91-8401309071,Electric Scooter,4.88,1709,On Delivery
+RIDER_0005,Rohan Joshi,+91-8180960086,Motorcycle,4.83,355,Offline
+RIDER_0006,Amit Mukherjee,+91-8733546669,Electric Scooter,4.9,2234,Offline
+RIDER_0007,Shreya Das,+91-8932361696,Electric Scooter,4.3,1929,Offline
+RIDER_0008,Pooja Patel,+91-8598969054,Motorcycle,4.34,186,Offline
+RIDER_0009,Sneha Kapoor,+91-8966015789,Electric Scooter,4.73,1249,On Delivery
+RIDER_0010,Ananya Patel,+91-8708121468,Electric Scooter,4.71,4060,On Delivery
+RIDER_0011,Aditi Reddy,+91-8917624738,Bicycle,4.15,2265,On Delivery
+RIDER_0012,Sneha Sharma,+91-8817888322,Electric Scooter,4.47,3059,On Delivery
+RIDER_0013,Shreya Singh,+91-8149861842,Motorcycle,4.98,2754,Active
+RIDER_0014,Kunal Kapoor,+91-8896619486,Scooter,4.54,1524,On Delivery
+RIDER_0015,Amit Nair,+91-8731015334,Motorcycle,4.47,3182,Active
+RIDER_0016,Amit Nair,+91-8977501292,Scooter,4.44,4049,Offline
+RIDER_0017,Aarav Iyer,+91-8249216081,Bicycle,4.08,731,Offline
+RIDER_0018,Kunal Reddy,+91-8261319410,Electric Scooter,4.07,1069,Offline
+RIDER_0019,Sneha Gupta,+91-8970989978,Scooter,4.69,4044,Offline
+RIDER_0020,Shreya Singh,+91-8326241647,Electric Scooter,4.61,3466,Active
+RIDER_0021,Sneha Sharma,+91-8237315592,Electric Scooter,4.05,421,Offline
+RIDER_0022,Rahul Sharma,+91-8278607682,Scooter,4.91,3421,Offline
+RIDER_0023,Aarav Joshi,+91-8881656471,Scooter,4.94,1874,On Delivery
+RIDER_0024,Shreya Kapoor,+91-8617187507,Electric Scooter,4.14,3465,Offline
+RIDER_0025,Rahul Mukherjee,+91-8725611522,Electric Scooter,4.59,2266,Active
+RIDER_0026,Arjun Singh,+91-8740522822,Motorcycle,4.15,3257,Active
+RIDER_0027,Priya Sharma,+91-8317270101,Bicycle,4.81,888,Active
+RIDER_0028,Shreya Rao,+91-8744045166,Motorcycle,4.87,1062,Active
+RIDER_0029,Shreya Das,+91-8239939527,Motorcycle,4.89,3634,Offline
+RIDER_0030,Kavya Nair,+91-8146641502,Bicycle,4.15,4049,On Delivery
+RIDER_0031,Neha Rao,+91-8963955258,Motorcycle,4.37,2185,On Delivery
+RIDER_0032,Sneha Kapoor,+91-8189998443,Scooter,4.56,3447,On Delivery
+RIDER_0033,Vikram Sharma,+91-8861442766,Motorcycle,4.54,1065,Offline
+RIDER_0034,Aarav Gupta,+91-8802813548,Electric Scooter,4.66,2687,On Delivery
+RIDER_0035,Neha Verma,+91-8266192234,Bicycle,4.62,2177,On Delivery
+RIDER_0036,Kavya Rao,+91-8492607356,Scooter,4.99,3355,Active
+RIDER_0037,Kavya Iyer,+91-8941586401,Bicycle,4.1,4062,On Delivery
+RIDER_0038,Pooja Rao,+91-8469749767,Bicycle,4.71,1075,Offline
+RIDER_0039,Sneha Singh,+91-8940857164,Electric Scooter,4.01,3381,On Delivery
+RIDER_0040,Aditi Patel,+91-8517796891,Motorcycle,4.78,1290,On Delivery
+RIDER_0041,Kavya Verma,+91-8168805869,Scooter,4.14,755,Offline
+RIDER_0042,Aditi Joshi,+91-8512666911,Bicycle,4.58,2446,Offline
+RIDER_0043,Aditi Mukherjee,+91-8980713897,Electric Scooter,4.6,3696,Active
+RIDER_0044,Vikram Kapoor,+91-8805324063,Scooter,4.11,1997,Offline
+RIDER_0045,Ananya Das,+91-8138720348,Scooter,4.16,102,Active
+RIDER_0046,Rohan Mehta,+91-8937167377,Bicycle,4.29,3337,On Delivery
+RIDER_0047,Vikram Iyer,+91-8116499677,Motorcycle,4.91,2430,Offline
+RIDER_0048,Neha Nair,+91-8975652436,Scooter,4.15,1693,On Delivery
+RIDER_0049,Amit Rao,+91-8104994458,Scooter,4.09,972,Offline
+RIDER_0050,Rohan Iyer,+91-8415950492,Scooter,4.94,2211,Offline
+RIDER_0051,Kunal Joshi,+91-8575419205,Bicycle,4.52,2092,On Delivery
+RIDER_0052,Deepak Das,+91-8594694805,Motorcycle,4.43,2212,Active
+RIDER_0053,Amit Das,+91-8946812945,Electric Scooter,4.64,1983,On Delivery
+RIDER_0054,Kavya Nair,+91-8654592182,Motorcycle,4.67,2257,Active
+RIDER_0055,Pooja Verma,+91-8528348505,Scooter,3.98,1562,On Delivery
+RIDER_0056,Arjun Nair,+91-8334683594,Scooter,4.1,1657,On Delivery
+RIDER_0057,Vikram Reddy,+91-8889660946,Electric Scooter,4.86,1793,Active
+RIDER_0058,Vikram Kapoor,+91-8368108429,Scooter,4.07,973,Active
+RIDER_0059,Rohan Das,+91-8812346179,Bicycle,4.58,446,On Delivery
+RIDER_0060,Neha Rao,+91-8438676325,Bicycle,4.89,2350,On Delivery
+RIDER_0061,Ananya Mukherjee,+91-8648825565,Scooter,4.34,1150,Active
+RIDER_0062,Kavya Singh,+91-8680645164,Motorcycle,4.45,3325,Offline
+RIDER_0063,Ananya Singh,+91-8229244346,Bicycle,4.25,168,Active
+RIDER_0064,Vikram Gupta,+91-8723852830,Motorcycle,4.26,2227,Active
+RIDER_0065,Kunal Reddy,+91-8389274886,Bicycle,4.95,2910,On Delivery
+RIDER_0066,Ananya Singh,+91-8555205201,Electric Scooter,4.36,3149,On Delivery
+RIDER_0067,Amit Mehta,+91-8583966573,Electric Scooter,4.53,1972,Active
+RIDER_0068,Kunal Mukherjee,+91-8353193872,Bicycle,4.84,1706,Active
+RIDER_0069,Rahul Singh,+91-8965079822,Motorcycle,4.09,4192,Active
+RIDER_0070,Arjun Mukherjee,+91-8622504463,Scooter,4.18,490,On Delivery
+RIDER_0071,Priya Joshi,+91-8275387012,Motorcycle,4.14,2183,On Delivery
+RIDER_0072,Priya Singh,+91-8899500884,Scooter,4.19,3051,Offline
+RIDER_0073,Kunal Nair,+91-8121298026,Bicycle,4.03,1729,Offline
+RIDER_0074,Ananya Mukherjee,+91-8405596297,Scooter,4.26,4093,Offline
+RIDER_0075,Deepak Verma,+91-8509171868,Scooter,4.41,1286,Active
+RIDER_0076,Arjun Gupta,+91-8777824658,Bicycle,4.83,684,Active
+RIDER_0077,Ananya Nair,+91-8345047145,Scooter,4.25,2486,Offline
+RIDER_0078,Kunal Rao,+91-8792181541,Bicycle,4.2,3744,On Delivery
+RIDER_0079,Deepak Gupta,+91-8279656450,Electric Scooter,4.84,1124,Offline
+RIDER_0080,Sneha Das,+91-8370203915,Motorcycle,4.13,3352,Active
+RIDER_0081,Priya Verma,+91-8608079376,Motorcycle,3.93,3352,Offline
+RIDER_0082,Rohan Verma,+91-8381805975,Electric Scooter,3.99,3293,On Delivery
+RIDER_0083,Sneha Reddy,+91-8891984698,Scooter,4.39,1135,Active
+RIDER_0084,Ananya Sharma,+91-8137747372,Scooter,4.85,2764,On Delivery
+RIDER_0085,Deepak Kapoor,+91-8680447823,Scooter,4.5,1206,Offline
+RIDER_0086,Ananya Rao,+91-8741651145,Bicycle,4.59,3663,Offline
+RIDER_0087,Pooja Nair,+91-8617169553,Electric Scooter,4.79,3719,On Delivery
+RIDER_0088,Neha Gupta,+91-8378965689,Electric Scooter,4.23,100,Offline
+RIDER_0089,Rahul Nair,+91-8407908620,Bicycle,4.49,4129,On Delivery
+RIDER_0090,Pooja Sharma,+91-8922345794,Bicycle,4.78,1994,Active
+RIDER_0091,Neha Reddy,+91-8542098017,Bicycle,4.33,1437,Offline
+RIDER_0092,Amit Kapoor,+91-8506258874,Electric Scooter,4.19,3558,Offline
+RIDER_0093,Sneha Iyer,+91-8920916739,Scooter,4.21,2302,On Delivery
+RIDER_0094,Vikram Kapoor,+91-8173512612,Electric Scooter,4.05,1004,Offline
+RIDER_0095,Deepak Rao,+91-8586155117,Scooter,4.67,4130,Active
+RIDER_0096,Arjun Sharma,+91-8263369074,Motorcycle,4.97,281,Active
+RIDER_0097,Priya Mehta,+91-8389046078,Electric Scooter,4.69,167,Active
+RIDER_0098,Rohan Patel,+91-8115810687,Bicycle,4.14,3542,On Delivery
+RIDER_0099,Shreya Nair,+91-8597877404,Motorcycle,4.26,1296,Active
+RIDER_0100,Kunal Mukherjee,+91-8521359675,Motorcycle,4.5,1587,Active
+RIDER_0101,Kunal Kapoor,+91-8509715619,Motorcycle,4.03,2139,On Delivery
+RIDER_0102,Deepak Reddy,+91-8892012381,Motorcycle,4.12,869,Offline
+RIDER_0103,Vikram Singh,+91-8517817593,Scooter,4.93,1399,Offline
+RIDER_0104,Aditi Joshi,+91-8690106975,Motorcycle,4.18,2547,Active
+RIDER_0105,Neha Sharma,+91-8815858075,Electric Scooter,4.97,2033,Offline
+RIDER_0106,Kavya Nair,+91-8116178827,Electric Scooter,4.77,1080,On Delivery
+RIDER_0107,Sneha Sharma,+91-8145090037,Bicycle,4.66,1369,On Delivery
+RIDER_0108,Rohan Reddy,+91-8269327426,Bicycle,4.0,2872,Offline
+RIDER_0109,Aditi Sharma,+91-8481734198,Electric Scooter,4.67,979,Active
+RIDER_0110,Shreya Reddy,+91-8440096507,Scooter,4.79,3693,Offline
+RIDER_0111,Vikram Sharma,+91-8840076530,Bicycle,4.29,1203,On Delivery
+RIDER_0112,Aditi Singh,+91-8858733870,Bicycle,4.51,4114,Active
+RIDER_0113,Ananya Iyer,+91-8473302105,Scooter,4.71,2355,Offline
+RIDER_0114,Ananya Verma,+91-8670304472,Electric Scooter,4.39,2257,Offline
+RIDER_0115,Neha Singh,+91-8100772905,Bicycle,4.71,253,Offline
+RIDER_0116,Neha Mukherjee,+91-8765931799,Electric Scooter,4.25,618,Offline
+RIDER_0117,Amit Reddy,+91-8662715631,Bicycle,4.74,1362,Offline
+RIDER_0118,Pooja Nair,+91-8540024260,Scooter,4.02,646,Active
+RIDER_0119,Rahul Patel,+91-8133579936,Electric Scooter,4.02,1669,Active
+RIDER_0120,Aditi Rao,+91-8789075603,Bicycle,4.62,2196,Active
+RIDER_0121,Neha Reddy,+91-8750637748,Motorcycle,3.91,1809,Offline
+RIDER_0122,Shreya Kapoor,+91-8185852967,Bicycle,4.78,597,On Delivery
+RIDER_0123,Kavya Kapoor,+91-8496284441,Motorcycle,4.81,2277,Offline
+RIDER_0124,Aditi Joshi,+91-8175578677,Scooter,3.99,1868,Offline
+RIDER_0125,Priya Verma,+91-8878647434,Electric Scooter,4.48,1652,Active
+RIDER_0126,Sneha Rao,+91-8771437657,Electric Scooter,4.51,3501,Offline
+RIDER_0127,Priya Mukherjee,+91-8785717617,Scooter,4.64,3598,Active
+RIDER_0128,Ananya Mukherjee,+91-8293699305,Bicycle,4.46,1395,Offline
+RIDER_0129,Deepak Nair,+91-8438395096,Scooter,4.83,3477,Offline
+RIDER_0130,Kavya Kapoor,+91-8879394493,Scooter,4.57,1852,On Delivery
+RIDER_0131,Kunal Nair,+91-8585764529,Bicycle,4.96,101,Offline
+RIDER_0132,Aditi Mehta,+91-8739695468,Motorcycle,4.47,2572,Active
+RIDER_0133,Pooja Reddy,+91-8330664237,Scooter,3.92,2360,Offline
+RIDER_0134,Rahul Verma,+91-8140519046,Bicycle,4.29,1233,On Delivery
+RIDER_0135,Neha Rao,+91-8368281808,Electric Scooter,4.18,2560,Active
+RIDER_0136,Amit Rao,+91-8333471497,Motorcycle,4.7,4052,Active
+RIDER_0137,Shreya Kapoor,+91-8840447097,Motorcycle,4.55,2560,Active
+RIDER_0138,Amit Verma,+91-8937649523,Motorcycle,4.91,2839,On Delivery
+RIDER_0139,Kavya Gupta,+91-8229429404,Electric Scooter,4.72,193,Offline
+RIDER_0140,Amit Sharma,+91-8427258676,Motorcycle,4.25,1325,On Delivery
+RIDER_0141,Sneha Patel,+91-8154245232,Bicycle,4.97,837,Active
+RIDER_0142,Kavya Mehta,+91-8944356532,Bicycle,4.06,2853,Active
+RIDER_0143,Shreya Rao,+91-8900275928,Motorcycle,4.5,2250,Active
+RIDER_0144,Amit Iyer,+91-8566531276,Electric Scooter,4.74,4039,Offline
+RIDER_0145,Vikram Singh,+91-8524470332,Electric Scooter,4.52,2117,Active
+RIDER_0146,Rohan Mehta,+91-8934052476,Bicycle,4.26,833,Active
+RIDER_0147,Kavya Gupta,+91-8492203150,Scooter,4.11,2922,Offline
+RIDER_0148,Aarav Mukherjee,+91-8427296749,Electric Scooter,4.99,3722,Offline
+RIDER_0149,Rahul Singh,+91-8148186901,Electric Scooter,4.12,3162,Active
+RIDER_0150,Rohan Verma,+91-8894119729,Motorcycle,4.17,1309,On Delivery

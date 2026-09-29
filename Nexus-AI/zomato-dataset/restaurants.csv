@@ -1,0 +1,101 @@
+restaurant_id,restaurant_name,city,locality,latitude,longitude,primary_cuisine,avg_cost_for_two,price_range,has_online_delivery,has_table_booking,aggregate_rating,votes,is_delivering_now
+REST_1001,Barbeque Grill,Bengaluru,Indiranagar,12.995247,77.61227,Chinese,500,2,1,0,4.7,381,0
+REST_1002,Flavors of Lounge,Bengaluru,Koramangala,12.977725,77.616202,Beverages,250,1,1,0,4.3,1743,1
+REST_1003,Grand Junction,Bengaluru,Koramangala,12.943131,77.620949,Italian,500,2,0,0,3.0,1581,0
+REST_1004,Barbeque Delight,Delhi NCR,Saket,28.751412,77.090353,Mughlai,400,2,1,0,4.0,3422,1
+REST_1005,Flavors of Express,Delhi NCR,Saket,28.731407,77.151022,North Indian,700,2,1,0,4.6,438,1
+REST_1006,Cafe Junction,Delhi NCR,Cyber City Gurgaon,28.724282,77.120855,Chinese,900,3,1,1,2.9,2625,1
+REST_1007,House of Grill,Hyderabad,Jubilee Hills,17.419285,78.5143,Healthy Food,1200,3,1,1,3.3,156,0
+REST_1008,Flavors of Garden,Pune,Viman Nagar,18.484687,73.820663,Continental,2200,4,1,1,4.4,2232,1
+REST_1009,Flavors of Treats,Hyderabad,Jubilee Hills,17.344091,78.441412,Desserts,2200,4,1,1,3.0,2595,1
+REST_1010,Kitchen Garden,Hyderabad,Banjara Hills,17.432108,78.522778,Desserts,900,3,1,1,2.8,2977,1
+REST_1011,Barbeque Corner,Delhi NCR,Connaught Place,28.654425,77.124709,Biryani,2200,4,1,1,4.3,2075,0
+REST_1012,Kitchen Grill,Delhi NCR,Saket,28.730351,77.106438,Biryani,1200,3,1,1,4.4,2197,1
+REST_1013,Barbeque Grill,Bengaluru,HSR Layout,13.009401,77.639295,North Indian,700,2,1,0,3.0,2015,1
+REST_1014,Urban Garden,Pune,Kothrud,18.496906,73.893943,Desserts,500,2,1,0,3.7,892,1
+REST_1015,Grand Junction,Mumbai,Powai,19.0381,72.85017,Mughlai,2200,4,1,1,3.5,2434,0
+REST_1016,Spice Delight,Bengaluru,Koramangala,12.973016,77.572448,Fast Food,400,2,1,0,3.8,2233,1
+REST_1017,Bistro Grill,Pune,Hinjewadi,18.489441,73.816393,Mughlai,1600,4,1,1,3.7,1759,0
+REST_1018,Grand Junction,Bengaluru,Indiranagar,12.940759,77.598229,South Indian,700,2,1,0,3.1,776,1
+REST_1019,House of Express,Bengaluru,Whitefield,13.0185,77.637237,North Indian,250,1,1,0,4.6,706,1
+REST_1020,Urban Corner,Hyderabad,Gachibowli,17.36152,78.515107,North Indian,1600,4,1,1,3.8,1757,1
+REST_1021,Flavors of Hub,Hyderabad,HITEC City,17.392918,78.49092,Chinese,250,1,0,0,4.4,259,0
+REST_1022,House of Treats,Hyderabad,Madhapur,17.420134,78.443552,North Indian,400,2,1,0,2.9,988,1
+REST_1023,Kitchen Central,Pune,Kothrud,18.512322,73.865067,North Indian,400,2,1,0,3.9,1093,1
+REST_1024,Grand Treats,Mumbai,Powai,19.071722,72.920602,Healthy Food,900,3,1,1,4.8,63,1
+REST_1025,Flavors of Lounge,Bengaluru,Jayanagar,13.014926,77.632686,Italian,500,2,1,0,4.6,1538,1
+REST_1026,Kitchen Lounge,Pune,Viman Nagar,18.563576,73.817059,North Indian,900,3,1,0,4.6,1108,1
+REST_1027,Kitchen Grill,Delhi NCR,Hauz Khas,28.72285,77.137791,Fast Food,700,2,1,0,3.9,1053,1
+REST_1028,Barbeque Delight,Bengaluru,Whitefield,12.998712,77.608311,North Indian,1200,3,1,1,3.4,3061,1
+REST_1029,Urban Lounge,Bengaluru,Indiranagar,12.979851,77.559409,North Indian,1200,3,1,1,3.1,1287,1
+REST_1030,Flavors of Grill,Bengaluru,HSR Layout,12.956968,77.600588,Healthy Food,400,2,1,0,4.6,2567,1
+REST_1031,Urban Corner,Mumbai,Andheri East,19.099656,72.860919,North Indian,500,2,1,0,4.8,3310,1
+REST_1032,Urban Express,Mumbai,Powai,19.111859,72.849943,Continental,250,1,1,0,4.5,1910,1
+REST_1033,The Royal Grill,Mumbai,Andheri East,19.05386,72.834642,Continental,1200,3,1,0,4.4,1463,1
+REST_1034,The Royal Express,Pune,Viman Nagar,18.528459,73.905055,Italian,500,2,1,0,2.9,2468,1
+REST_1035,Kitchen Lounge,Delhi NCR,Noida Sector 18,28.74405,77.071508,South Indian,1600,4,0,1,2.9,1811,0
+REST_1036,Cafe Corner,Pune,Kothrud,18.532716,73.873039,South Indian,1200,3,1,1,3.1,1255,1
+REST_1037,Urban Grill,Delhi NCR,Saket,28.721832,77.142781,Continental,1600,4,1,1,4.1,1257,1
+REST_1038,Kitchen Central,Mumbai,Colaba,19.072499,72.871916,Healthy Food,1200,3,1,1,3.2,1963,1
+REST_1039,House of Central,Bengaluru,HSR Layout,13.003442,77.619714,Fast Food,400,2,1,0,4.2,945,0
+REST_1040,Bistro Central,Bengaluru,Koramangala,12.963044,77.607577,South Indian,2200,4,1,0,3.2,2877,0
+REST_1041,Grand Grill,Bengaluru,Indiranagar,12.926622,77.56952,Biryani,2200,4,1,1,4.6,1894,1
+REST_1042,Cafe Garden,Pune,Hinjewadi,18.553457,73.861487,Beverages,1600,4,1,1,4.7,3071,1
+REST_1043,Bistro Grill,Delhi NCR,Saket,28.661848,77.081073,Italian,2200,4,1,0,3.4,1334,1
+REST_1044,Flavors of Express,Hyderabad,HITEC City,17.368088,78.483292,Continental,1600,4,1,1,2.9,3436,1
+REST_1045,Grand Garden,Bengaluru,Jayanagar,12.951461,77.583599,North Indian,1200,3,1,1,4.7,3448,1
+REST_1046,Bistro Grill,Pune,Kothrud,18.518964,73.845586,Italian,1600,4,1,0,4.2,3294,1
+REST_1047,House of Delight,Mumbai,Lower Parel,19.034395,72.870561,Continental,250,1,0,0,4.6,769,0
+REST_1048,Flavors of Garden,Hyderabad,Jubilee Hills,17.411123,78.474613,Fast Food,1200,3,1,1,4.4,3432,1
+REST_1049,Cafe Grill,Pune,Koregaon Park,18.548523,73.871875,Healthy Food,400,2,1,0,4.4,1037,0
+REST_1050,Urban Garden,Mumbai,Andheri East,19.082397,72.849496,Healthy Food,400,2,1,0,4.3,3166,1
+REST_1051,Barbeque Express,Bengaluru,Koramangala,13.014489,77.60218,Beverages,250,1,1,0,4.7,1562,1
+REST_1052,Flavors of Express,Bengaluru,Jayanagar,13.001223,77.601193,Italian,400,2,1,0,2.9,2207,1
+REST_1053,The Royal Corner,Pune,Viman Nagar,18.513752,73.842919,Mughlai,400,2,1,0,4.7,1908,1
+REST_1054,Kitchen Lounge,Pune,Viman Nagar,18.513957,73.879803,Mughlai,2200,4,1,0,3.4,1030,1
+REST_1055,Kitchen Central,Mumbai,Colaba,19.05964,72.877131,Healthy Food,1600,4,1,1,3.5,2022,1
+REST_1056,House of Delight,Pune,Viman Nagar,18.478961,73.878707,Desserts,700,2,1,0,3.8,3130,1
+REST_1057,The Royal Express,Hyderabad,Banjara Hills,17.37544,78.461031,Italian,700,2,1,0,4.2,1536,1
+REST_1058,Cafe Junction,Hyderabad,Madhapur,17.365662,78.459754,Mughlai,900,3,1,1,4.3,1317,1
+REST_1059,Flavors of Garden,Mumbai,Andheri East,19.124051,72.910963,Italian,900,3,1,0,3.4,1503,1
+REST_1060,The Royal Lounge,Delhi NCR,Connaught Place,28.717887,77.127779,Italian,500,2,1,0,3.0,75,1
+REST_1061,Urban Delight,Hyderabad,Jubilee Hills,17.346409,78.443234,Italian,2200,4,1,0,3.8,2388,0
+REST_1062,Spice Grill,Pune,Viman Nagar,18.531032,73.885774,South Indian,1600,4,1,1,3.3,2165,1
+REST_1063,Barbeque Central,Pune,Baner,18.531363,73.880709,Beverages,250,1,1,0,4.8,876,1
+REST_1064,Flavors of Treats,Bengaluru,Koramangala,12.937253,77.585452,Desserts,400,2,1,0,4.2,1949,1
+REST_1065,Spice Grill,Delhi NCR,Noida Sector 18,28.696614,77.106956,Italian,700,2,1,0,4.2,1113,0
+REST_1066,Kitchen Central,Mumbai,Powai,19.038435,72.896568,Italian,2200,4,1,1,4.3,1140,0
+REST_1067,Cafe Central,Bengaluru,Whitefield,12.930733,77.640791,Italian,250,1,1,0,4.6,2381,0
+REST_1068,The Royal Treats,Delhi NCR,Saket,28.745707,77.070649,Mughlai,2200,4,1,1,4.0,2625,1
+REST_1069,Cafe Express,Hyderabad,Jubilee Hills,17.376165,78.486247,Biryani,1200,3,1,1,4.2,1665,1
+REST_1070,Cafe Express,Delhi NCR,Hauz Khas,28.719866,77.106759,Continental,250,1,1,0,3.7,793,1
+REST_1071,The Royal Grill,Hyderabad,Banjara Hills,17.427767,78.480512,Italian,500,2,0,0,4.3,522,0
+REST_1072,Urban Hub,Pune,Kothrud,18.525625,73.816021,Desserts,250,1,1,0,4.9,489,0
+REST_1073,Barbeque Lounge,Mumbai,Colaba,19.109472,72.925724,Italian,1600,4,1,0,3.3,2282,1
+REST_1074,Barbeque Corner,Mumbai,Bandra West,19.108055,72.855984,Fast Food,900,3,1,1,3.4,2429,1
+REST_1075,Bistro Junction,Hyderabad,Madhapur,17.380534,78.468878,Fast Food,1600,4,1,0,3.2,2881,1
+REST_1076,Cafe Garden,Hyderabad,Gachibowli,17.433841,78.515939,Continental,1600,4,1,0,4.2,648,1
+REST_1077,Spice Garden,Pune,Viman Nagar,18.471935,73.821116,South Indian,2200,4,0,1,4.6,657,0
+REST_1078,Kitchen Corner,Delhi NCR,Hauz Khas,28.739277,77.137734,Healthy Food,400,2,1,0,4.6,1581,1
+REST_1079,The Royal Central,Hyderabad,Madhapur,17.398116,78.528793,South Indian,700,2,0,0,4.9,3083,0
+REST_1080,Bistro Treats,Bengaluru,Indiranagar,12.926199,77.624214,Italian,250,1,1,0,3.4,1560,1
+REST_1081,Urban Treats,Hyderabad,Madhapur,17.395949,78.474954,Biryani,400,2,1,0,4.2,2063,0
+REST_1082,Bistro Hub,Hyderabad,Jubilee Hills,17.424891,78.483225,Healthy Food,250,1,1,0,3.4,2263,1
+REST_1083,Barbeque Corner,Delhi NCR,Saket,28.73863,77.072422,Italian,2200,4,1,0,3.6,2004,1
+REST_1084,The Royal Corner,Delhi NCR,Hauz Khas,28.710693,77.12108,Italian,250,1,1,0,4.4,225,1
+REST_1085,Kitchen Junction,Delhi NCR,Cyber City Gurgaon,28.716189,77.120276,Chinese,700,2,1,0,4.3,2725,0
+REST_1086,Barbeque Garden,Bengaluru,Indiranagar,12.994836,77.553613,North Indian,1200,3,1,0,3.4,3086,1
+REST_1087,House of Hub,Delhi NCR,Saket,28.745505,77.146919,Biryani,900,3,1,0,4.8,1233,0
+REST_1088,Flavors of Corner,Bengaluru,Koramangala,12.93063,77.584057,Desserts,1200,3,1,1,3.4,531,1
+REST_1089,Cafe Express,Pune,Baner,18.517548,73.868655,Healthy Food,700,2,1,0,4.8,1368,1
+REST_1090,Barbeque Corner,Bengaluru,Whitefield,12.926135,77.548321,South Indian,500,2,0,0,4.9,500,0
+REST_1091,Grand Garden,Pune,Kothrud,18.529134,73.87936,Fast Food,1600,4,0,1,4.7,2707,0
+REST_1092,The Royal Junction,Hyderabad,Jubilee Hills,17.37947,78.460311,Chinese,2200,4,1,1,3.6,2833,1
+REST_1093,Barbeque Grill,Bengaluru,Whitefield,12.930767,77.565811,South Indian,2200,4,0,0,4.1,112,0
+REST_1094,Flavors of Express,Mumbai,Lower Parel,19.084638,72.909005,Desserts,700,2,1,0,3.3,3196,1
+REST_1095,Urban Treats,Bengaluru,HSR Layout,13.001451,77.555593,Desserts,900,3,0,1,4.6,564,0
+REST_1096,Cafe Delight,Mumbai,Lower Parel,19.03124,72.901872,Biryani,900,3,0,1,3.9,3079,0
+REST_1097,Kitchen Express,Delhi NCR,Saket,28.748642,77.056837,Mughlai,700,2,1,0,4.4,2723,1
+REST_1098,Bistro Corner,Bengaluru,Indiranagar,12.970627,77.63557,Continental,400,2,1,0,3.0,355,0
+REST_1099,Kitchen Central,Mumbai,Powai,19.06409,72.887439,Desserts,1200,3,1,0,3.4,2095,1
+REST_1100,Grand Garden,Pune,Kothrud,18.504293,73.85205,Chinese,1600,4,1,0,3.7,414,1
