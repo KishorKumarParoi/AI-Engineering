@@ -1,0 +1,298 @@
+# ──────────────────────────────────────────────────────────────────
+# Nexus-AI: Docker Compose — Complete Local Development Stack
+# ──────────────────────────────────────────────────────────────────
+# 11-Service Architecture:
+#   1. nexus-etl         — Medallion ETL Pipeline (Bronze→Silver→Gold)
+#   2. nexus-mlops       — ML Training Pipeline + Model Registry
+#   3. nexus-api         — FastAPI Inference Server (port 8081)
+#   4. nexus-agents      — 5-Agent Mesh Orchestrator
+#   5. nexus-gateway     — API Gateway / BFF (port 3000)
+#   6. nexus-frontend    — Next.js Dashboard (port 3001)
+#   7. prometheus        — Metrics Collection (port 9090)
+#   8. grafana           — Dashboards (port 3002)
+#   9. mlflow            — Experiment Tracking (port 5000)
+#  10. redis             — Cache + Agent State (port 6379)
+#  11. postgres          — MLflow Backend Store (port 5432)
+#
+# Usage:
+#   docker compose up -d              # Start all services
+#   docker compose up nexus-etl       # Run ETL only
+#   docker compose --profile gpu up   # Include GPU inference
+# ──────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+x-common-env: &common-env
+  PYTHONPATH: /app
+  NEXUS_PROVIDER: local
+  NEXUS_DATA_DIR: /app/data
+  TZ: Asia/Kolkata
+
+x-healthcheck: &healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 15s
+
+networks:
+  nexus-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  nexus-data:
+    driver: local
+  postgres-data:
+    driver: local
+  grafana-data:
+    driver: local
+  mlflow-data:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+
+services:
+  # ══════════════════════════════════════════════════════════════
+  # 1. ETL Pipeline — Bronze → Silver → Gold
+  # ══════════════════════════════════════════════════════════════
+  nexus-etl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexus-etl
+    command: >
+      sh -c "python -m data.generators.seed_all --rows-scale 0.1 --output-dir data/raw &&
+             python -m etl.pipeline --provider=local --input-dir=data/raw --data-dir=data"
+    environment:
+      <<: *common-env
+    volumes:
+      - nexus-data:/app/data
+    networks:
+      - nexus-net
+    restart: "no"
+
+  # ══════════════════════════════════════════════════════════════
+  # 2. MLOps Training Pipeline
+  # ══════════════════════════════════════════════════════════════
+  nexus-mlops:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexus-mlops
+    command: >
+      python -m mlops.train --data-dir=data --experiment-name=nexus-delivery-eta
+    environment:
+      <<: *common-env
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    volumes:
+      - nexus-data:/app/data
+    depends_on:
+      nexus-etl:
+        condition: service_completed_successfully
+    networks:
+      - nexus-net
+    restart: "no"
+
+  # ══════════════════════════════════════════════════════════════
+  # 3. FastAPI Inference Server
+  # ══════════════════════════════════════════════════════════════
+  nexus-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexus-api
+    command: >
+      uvicorn mlops.predict:app --host 0.0.0.0 --port 8081 --workers 2
+    ports:
+      - "8081:8081"
+    environment:
+      <<: *common-env
+    volumes:
+      - nexus-data:/app/data
+    depends_on:
+      nexus-mlops:
+        condition: service_completed_successfully
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8081/health')"]
+    networks:
+      - nexus-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+
+  # ══════════════════════════════════════════════════════════════
+  # 4. Agent Mesh Orchestrator (background)
+  # ══════════════════════════════════════════════════════════════
+  nexus-agents:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexus-agents
+    command: >
+      python -m agents.orchestrator --demo
+    environment:
+      <<: *common-env
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - nexus-data:/app/data
+    depends_on:
+      nexus-mlops:
+        condition: service_completed_successfully
+    networks:
+      - nexus-net
+    restart: "no"
+
+  # ══════════════════════════════════════════════════════════════
+  # 5. Prometheus — Metrics Collection
+  # ══════════════════════════════════════════════════════════════
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: nexus-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+    networks:
+      - nexus-net
+    restart: unless-stopped
+
+  # ══════════════════════════════════════════════════════════════
+  # 6. Grafana — Dashboards
+  # ══════════════════════════════════════════════════════════════
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: nexus-grafana
+    ports:
+      - "3002:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: nexus-ai-2024
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/mlops_overview.json
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./mlops/configs/grafana_dashboards:/var/lib/grafana/dashboards:ro
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+    networks:
+      - nexus-net
+    restart: unless-stopped
+
+  # ══════════════════════════════════════════════════════════════
+  # 7. MLflow — Experiment Tracking
+  # ══════════════════════════════════════════════════════════════
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.14.1
+    container_name: nexus-mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      MLFLOW_BACKEND_STORE_URI: postgresql://nexus:nexus@postgres:5432/mlflow
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: /mlflow/artifacts
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+        --backend-store-uri postgresql://nexus:nexus@postgres:5432/mlflow
+        --default-artifact-root /mlflow/artifacts
+    volumes:
+      - mlflow-data:/mlflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+    networks:
+      - nexus-net
+    restart: unless-stopped
+
+  # ══════════════════════════════════════════════════════════════
+  # 8. PostgreSQL — MLflow Backend
+  # ══════════════════════════════════════════════════════════════
+  postgres:
+    image: postgres:16-alpine
+    container_name: nexus-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: nexus
+      POSTGRES_DB: mlflow
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD-SHELL", "pg_isready -U nexus -d mlflow"]
+    networks:
+      - nexus-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # ══════════════════════════════════════════════════════════════
+  # 9. Redis — Cache + Agent State
+  # ══════════════════════════════════════════════════════════════
+  redis:
+    image: redis:7-alpine
+    container_name: nexus-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --save 60 1 --loglevel warning --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "redis-cli", "ping"]
+    networks:
+      - nexus-net
+    restart: unless-stopped
+
+  # ══════════════════════════════════════════════════════════════
+  # 10. GPU Inference (Profile: gpu)
+  # ══════════════════════════════════════════════════════════════
+  nexus-gpu-inference:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexus-gpu-inference
+    command: >
+      uvicorn mlops.predict:app --host 0.0.0.0 --port 8082 --workers 1
+    ports:
+      - "8082:8082"
+    environment:
+      <<: *common-env
+      CUDA_VISIBLE_DEVICES: "0"
+    volumes:
+      - nexus-data:/app/data
+    profiles:
+      - gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - nexus-net
+    restart: unless-stopped
