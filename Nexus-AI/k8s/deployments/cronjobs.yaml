@@ -1,0 +1,112 @@
+# ──────────────────────────────────────────────────────────────
+# Nexus-AI: K8s ETL CronJob
+# ──────────────────────────────────────────────────────────────
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nexus-etl-pipeline
+  namespace: nexus-ai
+  labels:
+    app: nexus-etl
+    tier: data
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: nexus-etl
+        spec:
+          serviceAccountName: nexus-ai-sa
+          restartPolicy: OnFailure
+          containers:
+            - name: etl-pipeline
+              image: nexus-ai/etl:latest
+              command:
+                - python
+                - -m
+                - etl.pipeline
+                - --provider=gcp
+                - --input-dir=data/raw
+                - --data-dir=data
+              env:
+                - name: PYTHONPATH
+                  value: /app
+                - name: NEXUS_PROVIDER
+                  valueFrom:
+                    configMapKeyRef:
+                      name: nexus-config
+                      key: PROVIDER
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 1Gi
+                limits:
+                  cpu: "2"
+                  memory: 4Gi
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /app/data
+          volumes:
+            - name: data-volume
+              persistentVolumeClaim:
+                claimName: nexus-data-pvc
+---
+# ──────────────────────────────────────────────────────────────
+# Nexus-AI: K8s ML Training CronJob
+# ──────────────────────────────────────────────────────────────
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nexus-ml-retrain
+  namespace: nexus-ai
+  labels:
+    app: nexus-mlops
+    tier: training
+spec:
+  schedule: "0 4 * * 0"  # Weekly on Sunday at 4 AM
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app: nexus-mlops
+        spec:
+          serviceAccountName: nexus-ai-sa
+          restartPolicy: OnFailure
+          containers:
+            - name: ml-training
+              image: nexus-ai/mlops:latest
+              command:
+                - python
+                - -m
+                - mlops.train
+                - --data-dir=data
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: 2Gi
+                limits:
+                  cpu: "4"
+                  memory: 8Gi
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /app/data
+                - name: model-artifacts
+                  mountPath: /app/mlops/artifacts
+          volumes:
+            - name: data-volume
+              persistentVolumeClaim:
+                claimName: nexus-data-pvc
+            - name: model-artifacts
+              persistentVolumeClaim:
+                claimName: nexus-model-pvc
