@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus-AI Master System Architecture</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 50% 20%, #0d1527 0%, #050811 100%);
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 30px;
+    }
+    .canvas {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: relative;
+    }
+    .tier {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+    .tier-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tier-header.blue { color: #38bdf8; }
+    .tier-header.purple { color: #c084fc; }
+    .tier-header.red { color: #f87171; }
+    .tier-header.emerald { color: #34d399; }
+    .tier-header.amber { color: #fbbf24; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+
+    .card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: all 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(30, 41, 59, 0.9);
+      box-shadow: 0 6px 20px -5px rgba(56, 189, 248, 0.2);
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+    .arrow-down {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #64748b;
+      font-size: 18px;
+      margin: -10px 0;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      margin-top: 6px;
+    }
+    .tag.red { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+    .tag.green { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+    .tag.amber { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  </style>
+</head>
+<body>
+
+  <h1>NEXUS-AI System Architecture</h1>
+  <p class="subtitle">Enterprise Medallion Lakehouse + Production MLOps + Autonomous 5-Agent Mesh</p>
+
+  <div class="canvas">
+
+    <!-- 1. PRESENTATION -->
+    <div class="tier">
+      <div class="tier-header blue">1. Presentation & Control Plane</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🖥️ Next.js 14 Dashboard</div>
+          <div class="card-desc">Glassmorphic UI (Port 3000) with 5 tabs: Executive Overview, Medallion Lineage, MLOps Center, Agent Mesh & Security Audit.</div>
+          <span class="tag">Port 3000</span>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ One-Click Master CLI</div>
+          <div class="card-desc">Automated launcher script (<code>./run_all.sh</code>) supporting local zero-cost emulator and multi-cloud GCP/AWS/Azure runs.</div>
+          <span class="tag green">./run_all.sh</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼</div>
+
+    <!-- 2. API GATEWAY -->
+    <div class="tier">
+      <div class="tier-header purple">2. Microservices & API Gateway</div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🌐 API Gateway (Go / Node)</div>
+          <div class="card-desc">JWT Auth, Token Bucket Rate Limiting, and high-concurrency Server-Sent Events (SSE) streaming.</div>
+          <span class="tag">Port 8080</span>
+        </div>
+        <div class="card">
+          <div class="card-title">🔄 ETL Service Facade</div>
+          <div class="card-desc">Triggers Medallion batch syncs, tracks job runs, and inspects layer row metrics.</div>
+          <span class="tag">FastAPI</span>
+        </div>
+        <div class="card">
+          <div class="card-title">📈 MLOps Service Facade</div>
+          <div class="card-desc">Exposes real-time ETA inference, PSI drift metrics, and model registry endpoints.</div>
+          <span class="tag">FastAPI</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼</div>
+
+    <!-- 3. SECURITY GATEWAY -->
+    <div class="tier">
+      <div class="tier-header red">3. AI Security & Compliance Boundary (Layer-7 AI Firewall)</div>
+      <div class="card" style="border-left: 3px solid #f87171;">
+        <div class="card-title">🛡️ Agent 4: Security Agent & Guardrails</div>
+        <div class="card-desc">
+          <strong>Pre-execution:</strong> Scans for 12+ prompt injection signatures, jailbreaks (DAN), and sanitizes PII (Presidio regex tokenization).<br/>
+          <strong>Post-execution:</strong> Redacts sensitive leakage before sending responses to the client. Satisfies OWASP LLM Top 10.
+        </div>
+        <span class="tag red">OWASP LLM01 / LLM06 Compliant</span>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼</div>
+
+    <!-- 4. AGENT MESH -->
+    <div class="tier">
+      <div class="tier-header emerald">4. Autonomous 5-Agent AI Mesh</div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-title">📊 Agent 1: Data Agent</div>
+          <div class="card-desc">Natural Language to SQL, schema reflection, DuckDB execution, and read-only validation.</div>
+          <span class="tag green">NL-to-SQL</span>
+        </div>
+        <div class="card">
+          <div class="card-title">📈 Agent 2: BI Analyst</div>
+          <div class="card-desc">Executive briefs, GMV & AOV KPIs, trend forecasting, and chart payload generation.</div>
+          <span class="tag green">Business Intel</span>
+        </div>
+        <div class="card">
+          <div class="card-title">🩺 Agent 3: MLOps Agent</div>
+          <div class="card-desc">Queries MLflow & Prometheus, tracks PSI drift, and triggers automated model retraining.</div>
+          <span class="tag green">Watchdog</span>
+        </div>
+        <div class="card">
+          <div class="card-title">📣 Agent 5: Voice / Dispatch</div>
+          <div class="card-desc">Dispatches incident alerts via Slack, Twilio WhatsApp, SMTP Email, and n8n webhooks.</div>
+          <span class="tag green">Omnichannel</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼</div>
+
+    <!-- 5. LAKEHOUSE & MLOPS -->
+    <div class="tier">
+      <div class="tier-header amber">5. Medallion Lakehouse & Production MLOps Engine</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🏛️ Medallion Lakehouse (Storage Adapter)</div>
+          <div class="card-desc">
+            • <strong>Bronze:</strong> Raw append + audit tags (<code>_raw_hash</code>, <code>_batch_id</code>)<br/>
+            • <strong>Silver:</strong> Deduplication + 32 automated quality checks<br/>
+            • <strong>Gold:</strong> Star-schema facts/dims + ML Feature Store (8,221 samples)<br/>
+            • <strong>Adapters:</strong> Local DuckDB / AWS S3 / GCP GCS / Azure ADLS
+          </div>
+          <span class="tag amber">Bronze → Silver → Gold</span>
+        </div>
+        <div class="card">
+          <div class="card-title">⚙️ Production MLOps & Telemetry</div>
+          <div class="card-desc">
+            • <strong>LightGBM Model:</strong> Predicts Delivery ETA (R²=0.954, MAE=2.6 min)<br/>
+            • <strong>MLflow Registry:</strong> Artifact tracking & model versioning (Port 5000)<br/>
+            • <strong>Drift Engine:</strong> PSI calculator with automated retraining alerts<br/>
+            • <strong>Observability:</strong> 12 Prometheus gauges + Grafana dashboard (Port 3001)
+          </div>
+          <span class="tag amber">Prometheus + Grafana + MLflow</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
