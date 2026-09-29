@@ -1,7 +1,7 @@
 {
-  "run_id": "run_1790670022",
+  "run_id": "run_1790671793",
   "experiment_name": "nexus-ai-delivery-eta",
-  "timestamp": "2026-09-29T08:20:22.111963+00:00",
+  "timestamp": "2026-09-29T08:49:53.258912+00:00",
   "model_type": "sklearn.GradientBoostingRegressor",
   "hyperparameters": {
     "n_estimators": 100,

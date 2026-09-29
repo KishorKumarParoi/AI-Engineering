@@ -1,18 +1,18 @@
 # HELP nexus_delivery_eta_rmse Root Mean Squared Error of delivery ETA prediction (minutes)
 # TYPE nexus_delivery_eta_rmse gauge
-nexus_delivery_eta_rmse{model="sklearn.GradientBoostingRegressor",version="v1790670022"} 3.431
+nexus_delivery_eta_rmse{model="sklearn.GradientBoostingRegressor",version="v1790671793"} 3.431
 
 # HELP nexus_delivery_eta_mae Mean Absolute Error of delivery ETA prediction (minutes)
 # TYPE nexus_delivery_eta_mae gauge
-nexus_delivery_eta_mae{model="sklearn.GradientBoostingRegressor",version="v1790670022"} 2.6231
+nexus_delivery_eta_mae{model="sklearn.GradientBoostingRegressor",version="v1790671793"} 2.6231
 
 # HELP nexus_delivery_eta_r2 R-squared score of delivery ETA model
 # TYPE nexus_delivery_eta_r2 gauge
-nexus_delivery_eta_r2{model="sklearn.GradientBoostingRegressor",version="v1790670022"} 0.9542
+nexus_delivery_eta_r2{model="sklearn.GradientBoostingRegressor",version="v1790671793"} 0.9542
 
 # HELP nexus_delivery_eta_mape Mean Absolute Percentage Error (%)
 # TYPE nexus_delivery_eta_mape gauge
-nexus_delivery_eta_mape{model="sklearn.GradientBoostingRegressor",version="v1790670022"} 6.7636
+nexus_delivery_eta_mape{model="sklearn.GradientBoostingRegressor",version="v1790671793"} 6.7636
 
 # HELP nexus_delivery_eta_within_5min Percentage of predictions within 5 minutes of actual
 # TYPE nexus_delivery_eta_within_5min gauge
@@ -28,7 +28,7 @@ nexus_delivery_eta_p95_error{model="sklearn.GradientBoostingRegressor"} 6.4138
 
 # HELP nexus_model_drift_psi Population Stability Index for prediction drift
 # TYPE nexus_model_drift_psi gauge
-nexus_model_drift_psi{model="sklearn.GradientBoostingRegressor",version="v1790670022"} 0
+nexus_model_drift_psi{model="sklearn.GradientBoostingRegressor",version="v1790671793"} 0
 
 # HELP nexus_model_info Metadata about the active model
 # TYPE nexus_model_info gauge
