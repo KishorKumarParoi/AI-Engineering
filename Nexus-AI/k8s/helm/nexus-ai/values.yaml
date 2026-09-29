@@ -1,0 +1,117 @@
+# ──────────────────────────────────────────────────────────────
+# Nexus-AI Helm Chart: Default Values
+# ──────────────────────────────────────────────────────────────
+# Override with: helm install nexus-ai ./k8s/helm/nexus-ai -f custom-values.yaml
+
+global:
+  namespace: nexus-ai
+  environment: production
+  provider: gcp  # gcp | aws | azure
+
+image:
+  repository: nexus-ai
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# ── Inference API ────────────────────────────────────────────
+inference:
+  enabled: true
+  replicas: 2
+  port: 8081
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPU: 70
+    targetMemory: 80
+
+# ── GPU Inference ────────────────────────────────────────────
+gpuInference:
+  enabled: false
+  replicas: 1
+  port: 8082
+  gpuType: nvidia-tesla-t4
+  resources:
+    requests:
+      cpu: "1"
+      memory: 4Gi
+      nvidia.com/gpu: "1"
+    limits:
+      cpu: "2"
+      memory: 8Gi
+      nvidia.com/gpu: "1"
+
+# ── ETL Pipeline ─────────────────────────────────────────────
+etl:
+  schedule: "0 2 * * *"  # Daily 2 AM
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 4Gi
+
+# ── ML Training ──────────────────────────────────────────────
+training:
+  schedule: "0 4 * * 0"  # Weekly Sunday 4 AM
+  resources:
+    requests:
+      cpu: "1"
+      memory: 2Gi
+    limits:
+      cpu: "4"
+      memory: 8Gi
+
+# ── Monitoring ───────────────────────────────────────────────
+prometheus:
+  enabled: true
+  port: 9090
+  retention: 30d
+
+grafana:
+  enabled: true
+  port: 3000
+  adminUser: admin
+  adminPassword: nexus-ai-2024
+
+# ── Redis ────────────────────────────────────────────────────
+redis:
+  enabled: true
+  port: 6379
+  maxMemory: 256mb
+
+# ── Network Policies ────────────────────────────────────────
+networkPolicies:
+  enabled: true
+  allowedNamespaces:
+    - nexus-ai
+    - monitoring
+
+# ── Ingress ──────────────────────────────────────────────────
+ingress:
+  enabled: true
+  className: nginx
+  host: api.nexus-ai.dev
+  tls:
+    enabled: true
+    secretName: nexus-ai-tls
+
+# ── Multi-Region Failover ───────────────────────────────────
+failover:
+  enabled: false
+  primary:
+    provider: gcp
+    region: asia-south1
+  secondary:
+    provider: aws
+    region: ap-south-1
+  healthCheckInterval: 30s
+  failoverThreshold: 3

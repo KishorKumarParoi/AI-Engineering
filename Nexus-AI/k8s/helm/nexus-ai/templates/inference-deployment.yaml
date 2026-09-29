@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-inference
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: nexus-inference
+    tier: serving
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.inference.replicas }}
+  selector:
+    matchLabels:
+      app: nexus-inference
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: nexus-inference
+        tier: serving
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.inference.port }}"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: nexus-ai-sa
+      containers:
+        - name: inference
+          image: "{{ .Values.image.repository }}/inference:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.inference.port }}
+              name: http
+          env:
+            - name: PYTHONPATH
+              value: /app
+            - name: NEXUS_PROVIDER
+              value: {{ .Values.global.provider }}
+          resources:
+            {{- toYaml .Values.inference.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.inference.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.inference.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
