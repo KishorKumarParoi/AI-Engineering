@@ -13,8 +13,9 @@ COPY INTO RAW.restaurants FROM @ZOMATO_RAW_STAGE/restaurant.csv  FILE_FORMAT = (
 COPY INTO RAW.users       FROM @ZOMATO_RAW_STAGE/users.csv       FILE_FORMAT = (FORMAT_NAME = 'ZOMATO.RAW.CSV_FMT') ON_ERROR = 'CONTINUE';
 COPY INTO RAW.food        FROM @ZOMATO_RAW_STAGE/food.csv        FILE_FORMAT = (FORMAT_NAME = 'ZOMATO.RAW.CSV_FMT') ON_ERROR = 'CONTINUE';
 COPY INTO RAW.menu        FROM @ZOMATO_RAW_STAGE/menu.csv        FILE_FORMAT = (FORMAT_NAME = 'ZOMATO.RAW.CSV_FMT') ON_ERROR = 'CONTINUE';
--- Facts = large generated data -> load orders and reviews
+-- Facts = large generated data -> load orders, order_items, and reviews
 COPY INTO RAW.orders      FROM @ZOMATO_RAW_STAGE/orders.csv      FILE_FORMAT = (FORMAT_NAME = 'ZOMATO.RAW.CSV_FMT') ON_ERROR = 'CONTINUE';
+COPY INTO RAW.order_items FROM @ZOMATO_RAW_STAGE/order_items.csv FILE_FORMAT = (FORMAT_NAME = 'ZOMATO.RAW.CSV_FMT') ON_ERROR = 'CONTINUE';
 COPY INTO RAW.reviews     FROM @ZOMATO_RAW_STAGE/reviews.csv     FILE_FORMAT = (FORMAT_NAME = 'ZOMATO.RAW.CSV_FMT') ON_ERROR = 'CONTINUE';
 
 -- Sanity check.
