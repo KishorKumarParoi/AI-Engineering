@@ -428,24 +428,61 @@ try:
     ver, r, wh = cursor.fetchone()
     print(f"[SUCCESS] Connected to Snowflake! Version: {ver} | Role: {r}")
 
-    print("[INFO] Creating / validating STORAGE INTEGRATION ZOMATO_S3_INT in Snowflake...")
-    cursor.execute(f"""
-        CREATE OR REPLACE STORAGE INTEGRATION ZOMATO_S3_INT
-          TYPE = EXTERNAL_STAGE
-          STORAGE_PROVIDER = 'S3'
-          ENABLED = TRUE
-          STORAGE_AWS_ROLE_ARN = '{role_arn}'
-          STORAGE_ALLOWED_LOCATIONS = ('s3://{bucket}/');
-    """)
-    cursor.execute("GRANT USAGE ON INTEGRATION ZOMATO_S3_INT TO ROLE ACCOUNTADMIN;")
-    cursor.execute("GRANT USAGE ON INTEGRATION ZOMATO_S3_INT TO ROLE DBT_ROLE;")
+    cursor.execute("SHOW STORAGE INTEGRATIONS LIKE 'ZOMATO_S3_INT';")
+    existing_ints = cursor.fetchall()
+    if not existing_ints:
+        print("[INFO] Creating STORAGE INTEGRATION ZOMATO_S3_INT in Snowflake...")
+        cursor.execute(f"""
+            CREATE STORAGE INTEGRATION ZOMATO_S3_INT
+              TYPE = EXTERNAL_STAGE
+              STORAGE_PROVIDER = 'S3'
+              ENABLED = TRUE
+              STORAGE_AWS_ROLE_ARN = '{role_arn}'
+              STORAGE_ALLOWED_LOCATIONS = ('s3://{bucket}/');
+        """)
+        cursor.execute("GRANT USAGE ON INTEGRATION ZOMATO_S3_INT TO ROLE ACCOUNTADMIN;")
+        cursor.execute("GRANT USAGE ON INTEGRATION ZOMATO_S3_INT TO ROLE DBT_ROLE;")
+    else:
+        print("[INFO] STORAGE INTEGRATION ZOMATO_S3_INT exists.")
+
+    # Retrieve current active External ID from Snowflake
+    cursor.execute("DESC INTEGRATION ZOMATO_S3_INT;")
+    active_ext_id = None
+    active_user_arn = None
+    for row in cursor.fetchall():
+        if row[0] == 'STORAGE_AWS_EXTERNAL_ID':
+            active_ext_id = row[2]
+        elif row[0] == 'STORAGE_AWS_IAM_USER_ARN':
+            active_user_arn = row[2]
+
+    # Auto-sync AWS IAM trust policy if needed
+    if active_ext_id and active_user_arn:
+        import subprocess, json
+        trust_doc = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"AWS": active_user_arn},
+                    "Action": "sts:AssumeRole",
+                    "Condition": {"StringEquals": {"sts:ExternalId": active_ext_id}}
+                }
+            ]
+        }
+        cmd = [
+            "aws", "iam", "update-assume-role-policy",
+            "--role-name", "snowflake-s3-role",
+            "--policy-document", json.dumps(trust_doc)
+        ]
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        import time; time.sleep(2)
     
     cursor.execute("CREATE DATABASE IF NOT EXISTS ZOMATO;")
     cursor.execute("CREATE SCHEMA IF NOT EXISTS ZOMATO.RAW;")
     
-    print(f"[INFO] Creating External Stage ZOMATO.RAW.ZOMATO_RAW_STAGE -> s3://{bucket}/raw-data/...")
+    print(f"[INFO] Ensuring External Stage ZOMATO.RAW.ZOMATO_RAW_STAGE exists...")
     cursor.execute(f"""
-        CREATE OR REPLACE STAGE ZOMATO.RAW.ZOMATO_RAW_STAGE
+        CREATE STAGE IF NOT EXISTS ZOMATO.RAW.ZOMATO_RAW_STAGE
           STORAGE_INTEGRATION = ZOMATO_S3_INT
           URL = 's3://{bucket}/raw-data/';
     """)
