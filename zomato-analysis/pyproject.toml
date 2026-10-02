@@ -4,4 +4,13 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "dbt-snowflake>=1.12.1",
+    "dotenv>=0.9.9",
+    "python-dotenv>=1.2.3",
+]
+
+[dependency-groups]
+dev = [
+    "snowflake-connector-python>=4.8.0",
+]
