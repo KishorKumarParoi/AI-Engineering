@@ -26,23 +26,29 @@ EXAMPLE_QUESTIONS = [
 SCHEMA = """
 Tables available (Snowflake). Use bare table names, no database or schema prefix.
 
-DIM_RESTAURANTS(restaurant_id, restaurant_name, city, cuisine, rating, rating_count, cost_for_two)
-DIM_CUSTOMERS(customer_id, customer_name, email, age, age_segment, gender, marital_status, occupation, income_band, family_size)
-DIM_FOOD(food_id, food_name, category)
-DIM_DATE(date_day, year, month, month_name, day, day_of_week, day_name, quarter, is_weekend)
+DIM_CUSTOMERS(customer_id, customer_name, email, age, generation_cohort, age_segment, gender, marital_status, occupation, income_band, education, family_size)
+DIM_DATE(date_day, year, quarter, month, month_name, day_of_month, day_name, is_weekend)
+DIM_FOOD(food_id, food_name, veg_or_non_veg)
+DIM_RESTAURANTS(restaurant_id, restaurant_name, city, rating, rating_count, cost_for_two, cuisine, license_number, address, restaurant_url)
 
 FCT_ORDERS(order_id, order_timestamp, order_date, customer_id, restaurant_id, city, cuisine,
            items_count, sales_qty, subtotal, discount, delivery_fee, gst, sales_amount,
            currency, payment_method, order_status, is_delivered, customer_rating, delivery_time_min)
 
-FCT_ORDER_ITEMS(order_item_id, order_id, restaurant_id, food_id, price, quantity, line_amount)
+FCT_ORDER_ITEMS(order_item_id, order_id, restaurant_id, f_id, food_id, order_ts, order_date, city, price, quantity, line_amount)
 
-MART_DAILY_CITY_REVENUE(order_date, city, orders, delivered_orders, cancel_rate, gmv, aov)
-MART_RESTAURANT_PERFORMANCE(restaurant_id, restaurant_name, city, cuisine, orders, delivered_orders, revenue, avg_customer_rating, cancel_rate)
-MART_DELIVERY_SLA(city, order_hour, delivered_orders, p50_delivery_min, p90_delivery_min, late_rate)
-MART_REVIEW_INSIGHTS(restaurant_id, restaurant_name, city, total_reviews, avg_rating, sentiment_ratio, top_topics)
+MART_DAILY_CITY_REVENUE(order_date, city, total_orders, delivered_orders, cancelled_orders, cancel_rate, gmv, aov, total_discounts_given, total_delivery_fees, avg_delivery_time_mins)
 
-Note: GMV means delivered revenue (or sales_amount when is_delivered = true). Prefer the MART_ tables when they fit the question.
+MART_RESTAURANT_PERFORMANCE(restaurant_id, restaurant_name, city, cuisine, catalog_rating, cost_for_two, total_orders, delivered_orders, total_revenue, avg_delivery_time_mins, avg_customer_rating)
+
+MART_DELIVERY_SLA(city, order_hour, total_delivered_orders, p50_delivery_time_mins, p90_delivery_time_mins, avg_delivery_time_mins, min_delivery_time_mins, max_delivery_time_mins, under_30_mins_count, delayed_over_45_mins_count, on_time_sla_percentage)
+
+MART_REVIEW_INSIGHTS(city, topic, sentiment_label, reviews, avg_sentiment_score, avg_star_rating, flagged_issues)
+
+Note:
+- Use exact column names from the schemas above (e.g. use TOTAL_ORDERS instead of orders, TOTAL_REVENUE instead of revenue).
+- GMV means delivered revenue (or sales_amount when is_delivered = true).
+- If querying for order volume by cuisine, you can use FCT_ORDERS (e.g. COUNT(*) by cuisine) or MART_RESTAURANT_PERFORMANCE (e.g. SUM(total_orders) by cuisine).
 """
 
 SYSTEM_PROMPT = f"""
@@ -50,7 +56,9 @@ You are a Snowflake SQL expert. Write ONE SELECT query that answers the question
 
 Rules:
 - SELECT queries only, never modify data.
-- Use bare table names (e.g., FCT_ORDERS, MART_DAILY_CITY_REVENUE).
+- Use bare table names (e.g. FCT_ORDERS, MART_DAILY_CITY_REVENUE).
+- Use exact column names from the schema provided below.
+- In Snowflake SQL, for conditional aggregation use COUNT_IF(condition) or SUM(IFF(condition, 1, 0)). NEVER use PostgreSQL 'FILTER (WHERE ...)' syntax.
 - Add a LIMIT of 100 or less, unless the question asks for a single aggregated scalar.
 - Reply as JSON in this exact format: {{"sql": "your query here"}}
 
