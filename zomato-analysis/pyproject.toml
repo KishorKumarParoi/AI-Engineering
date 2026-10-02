@@ -12,6 +12,7 @@ dependencies = [
     "pyarrow>=25.0.1",
     "python-dotenv>=1.2.3",
     "streamlit>=1.64.0",
+    "watchdog>=6.0.0",
 ]
 
 [dependency-groups]
