@@ -42,14 +42,24 @@ def get_snowflake_connection():
 
 def read_reviews_from_snowflake(limit=DEFAULT_SAMPLE_REVIEWS):
     conn = get_snowflake_connection()
-    query = f"""
-        SELECT REVIEW_ID, CITY, RATING, COMMENT
-        FROM ZOMATO.STAGING.STG_REVIEWS
-        WHERE COMMENT IS NOT NULL
-        SAMPLE ({limit} ROWS)
-    """
-    df = conn.cursor().execute(query).fetch_pandas_all()
-    conn.close()
+    try:
+        query = f"""
+            SELECT REVIEW_ID, CITY, RATING, COMMENT
+            FROM ZOMATO.STAGING.STG_REVIEWS SAMPLE ({limit} ROWS)
+            WHERE COMMENT IS NOT NULL
+        """
+        df = conn.cursor().execute(query).fetch_pandas_all()
+    except Exception:
+        query = f"""
+            SELECT REVIEW_ID, CITY, RATING, COMMENT
+            FROM ZOMATO.STAGING.STG_REVIEWS
+            WHERE COMMENT IS NOT NULL
+            LIMIT {limit}
+        """
+        df = conn.cursor().execute(query).fetch_pandas_all()
+    finally:
+        conn.close()
+
     df.columns = [col.lower() for col in df.columns]
     return df
 
