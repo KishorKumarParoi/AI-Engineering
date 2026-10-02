@@ -74,42 +74,37 @@ A production-grade batch data engineering and AI analytics platform processing f
 
 ```text
 zomato-analysis/
+|-- Makefile                    # Developer ergonomics CLI (make test, make de, make check, etc.)
+|-- run.sh                      # Master scripts checker and unified command dispatcher
+|-- test_conn.py                # Master test runner (aggregates testing/ suites into executive scorecard)
+|-- test_con.py                 # Compatibility wrapper delegating to test_conn.py
+|-- main.py                     # Executive CLI entrypoint (python main.py info, test, pipeline)
 |-- Dockerfile                  # Astronomer Airflow container with isolated dbt venv
 |-- airflow_settings.yaml       # Automated Airflow connections (snowflake_default) and variables
 |-- requirements.txt            # Python dependencies for Airflow runtime
 |-- packages.txt                # System packages for container (git, build tools)
 |-- pyproject.toml              # Local uv package specification
-|-- test_con.py                 # Automated Snowflake health check and population verifier
+|-- scripts/                    # Production automation scripts
+|   |-- data_engineering.sh     # dbt Medallion orchestrator (debug, snapshot, core, ai marts)
+|   |-- ai_pipeline.sh          # LLM enrichment, embeddings generation & vector caching
+|   |-- orchestration.sh        # Astronomer Airflow lifecycle controller (start, stop, trigger)
+|   |-- serve_apps.sh           # Streamlit application server launcher
+|   `-- setup_env.sh            # Environment doctor and dependency bootstrapper
+|-- testing/                    # Modular verification test suites
+|   |-- __init__.py             # Test package definition
+|   |-- test_data_engineering_part.py # Comprehensive Snowflake Medallion, S3, and SCD2 checks
+|   |-- test_ai_layer.py        # OpenAI embeddings, RAG semantic search, and SQL guardrail tests
+|   `-- test_orchestration.py   # Airflow DAG AST syntax, task graph, and container health tests
 |-- dags/
 |   `-- zomato_batch.py         # Master Airflow orchestration DAG
-|-- zomato/                     # dbt Project
+|-- zomato/                     # dbt Medallion Transformations Project
 |   |-- dbt_project.yml         # dbt project configuration with Medallion schema mappings
 |   |-- profiles.yml            # Snowflake connection profile reading environment variables
 |   |-- macros/
 |   |   `-- generate_schema_name.sql # Custom schema generator for exact Medallion schemas
 |   |-- models/
 |   |   |-- staging/            # Silver layer views + schema documentation + tests
-|   |   |   |-- _sources.yml    # Bronze layer source contracts
-|   |   |   |-- _staging.yml    # Staging tests and column descriptions
-|   |   |   |-- stg_restaurants.sql
-|   |   |   |-- stg_users.sql
-|   |   |   |-- stg_food.sql
-|   |   |   |-- stg_menu.sql
-|   |   |   |-- stg_orders.sql
-|   |   |   |-- stg_order_items.sql
-|   |   |   `-- stg_reviews.sql
 |   |   `-- marts/              # Gold layer dimensions, facts, and business marts
-|   |       |-- _marts.yml      # Marts documentation and referential integrity tests
-|   |       |-- dim_restaurants.sql
-|   |       |-- dim_customers.sql
-|   |       |-- dim_food.sql
-|   |       |-- dim_date.sql
-|   |       |-- fct_orders.sql
-|   |       |-- fct_order_items.sql
-|   |       |-- mart_daily_city_revenue.sql
-|   |       |-- mart_restaurant_performance.sql
-|   |       |-- mart_delivery_sla.sql
-|   |       `-- mart_review_insights.sql
 |   `-- snapshots/
 |       `-- snap_restaurants.sql# SCD Type 2 dimension snapshot
 |-- ai/
@@ -118,11 +113,6 @@ zomato-analysis/
 |   |-- text_to_sql.py          # Streamlit natural language query interface for Snowflake
 |   `-- example.env             # Template for AI credentials
 |-- snowflake/                  # DDL scripts for manual or bootstrap setup
-|   |-- 01_setup.sql            # Database, schemas, warehouse, roles, and privileges
-|   |-- 02_storage_integration.sql # S3 Storage Integration setup
-|   |-- 03_stage_and_formats.sql   # External Stage and CSV File Format definitions
-|   |-- 04_raw_tables.sql       # Bronze RAW table definitions
-|   `-- 05_copy_into.sql        # COPY INTO commands for manual hydration
 |-- aws/iam/                    # IAM policies and trust policies for keyless integration
 `-- docs/
     `-- architecture.png        # Architecture diagram asset
@@ -148,88 +138,90 @@ The master pipeline DAG `zomato_batch` runs on Astronomer Airflow and orchestrat
 
 ---
 
-## 5. AI Applications
+## 5. Developer Workflow & CLI Commands
 
-### A. Batch Review Enrichment (`ai/enrich_reviews.py`)
-- Pulls unenriched customer reviews from `ZOMATO.RAW.REVIEWS`.
-- Classifies sentiment (label and continuous score -1.0 to 1.0), assigns one of 6 core topics (`food quality`, `delivery`, `pricing`, `service`, `packaging`, `other`), and extracts key issues.
-- Persists structured classifications to `ZOMATO.AI.REVIEW_ENRICHED`.
+### A. One-Click Scripts Checking (`./run.sh check` or `make check`)
+Validates that all automation scripts in `scripts/` exist, have executable permissions (`chmod +x`), and pass bash syntax validation:
+```bash
+./run.sh check
+# or
+make check
+```
 
-### B. Semantic RAG Chat (`ai/rag_chat.py`)
-- Vector embeddings generated using `text-embedding-3-small` and cached in Parquet for low-latency retrieval.
-- Computes cosine similarity across customer reviews and provides grounded, factual answers with citations.
-- Run via:
-  ```bash
-  uv run streamlit run ai/rag_chat.py
-  ```
+### B. Master Test Runner (`./test_conn.py` or `make test`)
+Discovers, executes, and displays an aggregated Senior Staff / Lead Engineer verification scorecard across all modules:
+```bash
+./test_conn.py
+# or
+make test
+```
+*Run individual suites:*
+```bash
+./test_conn.py --suite de     # Snowflake Medallion, S3 stage, 35M+ rows, SCD2
+./test_conn.py --suite ai     # OpenAI embeddings, RAG search, Text-to-SQL
+./test_conn.py --suite orch   # Airflow DAG AST, task graphs, container status
+```
 
-### C. Text-to-SQL Analytics (`ai/text_to_sql.py`)
-- Translates natural language questions (e.g. "Top 10 cities by GMV in 2024") into validated Snowflake SQL queries.
-- Protected by a read-only safety guard enforcing `SELECT` / `WITH` statements and blocking mutating operations (`DROP`, `DELETE`, `UPDATE`, `ALTER`, etc.).
-- Visualizes results automatically using Streamlit dataframes and charts.
-- Run via:
-  ```bash
-  uv run streamlit run ai/text_to_sql.py
-  ```
+### C. Data Engineering Pipeline (`./scripts/data_engineering.sh` or `make de`)
+Executes the Medallion transformation pipeline:
+```bash
+make de
+# Subcommands:
+make de-debug       # Test Snowflake connectivity
+make de-snapshot    # Run SCD Type 2 dimension snapshots
+make de-core        # Build Silver views & Gold dimensions/facts
+make de-ai          # Build Gold AI marts
+```
+
+### D. AI & LLM Services (`./scripts/ai_pipeline.sh` or `make ai`)
+Enriches customer reviews using `gpt-4o-mini` and builds 1536-dimensional vector search embeddings:
+```bash
+make ai
+# or individual steps:
+make ai-enrich
+make ai-embed
+```
+
+### E. Interactive Streamlit Applications (`make sql` & `make rag`)
+Launch the interactive web user interfaces:
+```bash
+make sql    # Text-to-SQL Assistant on http://localhost:8501
+make rag    # Semantic Reviews RAG Chat on http://localhost:8502
+```
 
 ---
 
-## 6. How to Run Locally
+## 6. How to Run End-to-End
 
-### Prerequisites
-- Python 3.12+ (or `uv`)
-- Docker Desktop
-- Astro CLI (`brew install astro`)
-- Snowflake account with warehouse `ZOMATO_WH` and database `ZOMATO`
-
-### Step 1: Configure Environment
-Copy `.env.example` to `.env` (or verify existing `.env`):
+### Step 1: Environment Verification
 ```bash
-SNOWFLAKE_ACCOUNT="VVXMVZH-FL05366"
-SNOWFLAKE_USERNAME="kkp007"
-SNOWFLAKE_PASSWORD="your_password"
-SNOWFLAKE_WAREHOUSE="ZOMATO_WH"
-SNOWFLAKE_DATABASE="ZOMATO"
-SNOWFLAKE_SCHEMA="RAW"
-OPENAI_API_KEY="sk-..."
+./run.sh check
+make doctor
 ```
 
-### Step 2: Verify Connection and Data Population
-Run the health check tool:
+### Step 2: Run Full Test Verification Matrix
 ```bash
-uv run test_con.py
+./test_conn.py
 ```
 
-### Step 3: Run dbt Transformations
+### Step 3: Run Full Data Engineering Medallion Build
 ```bash
-cd zomato
-uv run dbt debug
-uv run dbt snapshot
-uv run dbt build
-cd ..
+make de
 ```
 
-### Step 4: Start Airflow Dev Environment
+### Step 4: Run Airflow Orchestration
 ```bash
-astro dev start
-```
-- Open Airflow UI: `http://localhost:8080` (or `http://zomato-analysis.localhost:6563`)
-- Trigger the `zomato_batch` DAG to run the full end-to-end pipeline.
-
-### Step 5: Launch AI Applications
-```bash
-# Chat with your reviews (RAG)
-uv run streamlit run ai/rag_chat.py
-
-# Chat with your warehouse (Text-to-SQL)
-uv run streamlit run ai/text_to_sql.py
+make astro-start
+make astro-trigger
 ```
 
 ---
 
 ## 7. Test Results & Validation Status
 
-- **dbt Suite**: 47 models, snapshots, and tests passing (100% pass rate).
-- **DAG Integrity**: Astronomer test suite passed (`pytest tests/dags/test_dag_example.py`).
+- **Test Matrix**: 100% PASS across Data Engineering, AI Layer, and Airflow Orchestration.
+- **dbt Suite**: 47 models, snapshots, and tests passing.
 - **Data Volume**: 35,098,217 rows in Bronze, 35M+ in Silver, and Gold analytical marts fully populated.
 - **SCD Type 2**: `ZOMATO.SNAPSHOTS.SNAP_RESTAURANTS` active with 148,541 versioned dimension records.
+- **Vector Search**: 1536-dimensional embeddings cached and validated for sub-second semantic retrieval.
+

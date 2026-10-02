@@ -65,21 +65,12 @@ Rules:
 {SCHEMA}
 """
 
-st.set_page_config(page_title="Zomato Text-to-SQL Analytics", page_icon="📊", layout="wide")
-st.title("Chat with your Zomato Warehouse")
-st.caption(f"Ask business questions in plain English; {MODEL} writes the Snowflake SQL")
+def get_openai_client(api_key: str | None = None) -> OpenAI:
+    key = api_key or os.getenv("OPENAI_API_KEY")
+    if not key:
+        raise ValueError("OPENAI_API_KEY not found in environment or arguments.")
+    return OpenAI(api_key=key)
 
-openai_key = os.getenv("OPENAI_API_KEY")
-if not openai_key:
-    openai_key = st.sidebar.text_input("OpenAI API Key", type="password", help="Enter your OpenAI API key or set OPENAI_API_KEY in .env")
-
-if not openai_key:
-    st.info("Please provide an OpenAI API Key in the sidebar or via the `.env` file to generate SQL.")
-    st.stop()
-
-client = OpenAI(api_key=openai_key)
-
-@st.cache_resource
 def get_connection():
     user = os.getenv("SNOWFLAKE_USER") or os.getenv("SNOWFLAKE_USERNAME")
     return snowflake.connector.connect(
@@ -92,7 +83,9 @@ def get_connection():
         role=os.getenv("SNOWFLAKE_ROLE", "DBT_ROLE"),
     )
 
-def generate_sql(question):
+def generate_sql(question: str, client: OpenAI | None = None) -> str:
+    if client is None:
+        client = get_openai_client()
     response = client.chat.completions.create(
         model=MODEL,
         temperature=0,
@@ -107,55 +100,79 @@ def generate_sql(question):
     sql = sql.replace("ZOMATO.MARTS.", "").replace("ZOMATO.", "")
     return sql.strip().rstrip(";")
 
-def is_safe(sql):
+def is_safe(sql: str) -> bool:
     lowered = sql.lower()
     if not (lowered.startswith("select") or lowered.startswith("with")):
         return False
     for word in FORBIDDEN_WORDS:
-        # Check whole word or enclosed in spaces/punctuation
         if f" {word} " in f" {lowered} ":
             return False
     return True
 
-def run_query(sql):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("USE SCHEMA ZOMATO.MARTS")
-    return cursor.execute(sql).fetch_pandas_all()
+def run_query(sql: str, conn=None):
+    close_conn = False
+    if conn is None:
+        conn = get_connection()
+        close_conn = True
+    try:
+        cursor = conn.cursor()
+        cursor.execute("USE SCHEMA ZOMATO.MARTS")
+        return cursor.execute(sql).fetch_pandas_all()
+    finally:
+        if close_conn:
+            conn.close()
 
-with st.sidebar:
-    st.header("Example Questions")
-    for q in EXAMPLE_QUESTIONS:
-        st.markdown(f"- {q}")
+def render_ui():
+    st.set_page_config(page_title="Zomato Text-to-SQL Analytics", page_icon="📊", layout="wide")
+    st.title("Chat with your Zomato Warehouse")
+    st.caption(f"Ask business questions in plain English; {MODEL} writes the Snowflake SQL")
 
-question = st.text_input(
-    "Enter your business question:",
-    placeholder="e.g. Top 10 cities by GMV in 2024"
-)
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if not openai_key:
+        openai_key = st.sidebar.text_input("OpenAI API Key", type="password", help="Enter your OpenAI API key or set OPENAI_API_KEY in .env")
 
-if question:
-    with st.spinner("Generating SQL query..."):
-        try:
-            sql = generate_sql(question)
-        except Exception as e:
-            st.error(f"Error communicating with OpenAI: {e}")
-            st.stop()
+    if not openai_key:
+        st.info("Please provide an OpenAI API Key in the sidebar or via the `.env` file to generate SQL.")
+        st.stop()
 
-    st.subheader("Generated SQL")
-    st.code(sql, language="sql")
+    client = OpenAI(api_key=openai_key)
 
-    if not is_safe(sql):
-        st.error("The generated SQL contains forbidden keywords or is not a read-only query. Execution blocked for security.")
-    else:
-        try:
-            with st.spinner("Running query against Snowflake..."):
-                df = run_query(sql)
-            st.success(f"Returned {len(df)} rows")
-            st.dataframe(df, use_container_width=True, hide_index=True)
+    with st.sidebar:
+        st.header("Example Questions")
+        for q in EXAMPLE_QUESTIONS:
+            st.markdown(f"- {q}")
 
-            if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[:, 1]):
-                col_x, col_y = df.columns[0], df.columns[1]
-                st.subheader("Visualization")
-                st.bar_chart(df.set_index(col_x)[col_y])
-        except Exception as e:
-            st.error(f"Error running Snowflake query: {e}")
+    question = st.text_input(
+        "Enter your business question:",
+        placeholder="e.g. Top 10 cities by GMV in 2024"
+    )
+
+    if question:
+        with st.spinner("Generating SQL query..."):
+            try:
+                sql = generate_sql(question, client=client)
+            except Exception as e:
+                st.error(f"Error communicating with OpenAI: {e}")
+                st.stop()
+
+        st.subheader("Generated SQL")
+        st.code(sql, language="sql")
+
+        if not is_safe(sql):
+            st.error("The generated SQL contains forbidden keywords or is not a read-only query. Execution blocked for security.")
+        else:
+            try:
+                with st.spinner("Running query against Snowflake..."):
+                    df = run_query(sql)
+                st.success(f"Returned {len(df)} rows")
+                st.dataframe(df, use_container_width=True, hide_index=True)
+
+                if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[:, 1]):
+                    col_x, col_y = df.columns[0], df.columns[1]
+                    st.subheader("Visualization")
+                    st.bar_chart(df.set_index(col_x)[col_y])
+            except Exception as e:
+                st.error(f"Error running Snowflake query: {e}")
+
+if __name__ == "__main__":
+    render_ui()
