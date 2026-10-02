@@ -30,6 +30,74 @@ This handbook serves as the **living architectural blueprint** for planning, con
 
 The platform spans **AWS (Primary Computing & Analytics)**, **GCP (Disaster Recovery & Secondary GKE)**, and **Azure (Multi-Cloud Fallback & Cognitive Services)** behind an Anycast edge.
 
+```mermaid
+flowchart TB
+    subgraph Clients["Global Client Layer"]
+        Mobile["Mobile Apps (iOS / Android)"]
+        Web["Next.js 14/15 Consumer Web App"]
+        VoiceClient["Voice Agent Interface (WebRTC / Audio Stream)"]
+        OpsUser["Internal Ops & Escalations (n8n Webhook Portals)"]
+    end
+
+    subgraph GlobalEdge["Global Anycast Edge Layer"]
+        Cloudflare["Cloudflare Anycast DNS & Edge Network"]
+        WAF["Edge WAF (DDoS Mitigation, Bot Filtering)"]
+        GeoRouting["Geo-DNS & Dynamic Traffic Steering"]
+        Cloudflare --> WAF --> GeoRouting
+    end
+
+    subgraph MultiCloudMesh["Multi-Cloud Infrastructure Mesh"]
+        subgraph AWS_Region["AWS (Primary Region - us-east-1)"]
+            EKS_AWS["Amazon EKS Cluster (Microservices & AI Agents)"]
+            MSK["Amazon MSK (Apache Kafka Event Bus)"]
+            S3_Lake["Amazon S3 Lakehouse (Raw 2.3GB Ingestion)"]
+            RDS_PG["Amazon Aurora PostgreSQL (Orders & Outbox)"]
+            ElastiCache["ElastiCache Redis (Catalog Cache & Bloom Filter)"]
+        end
+
+        subgraph GCP_Region["GCP (Secondary / DR Region - us-central1)"]
+            GKE_GCP["Google Kubernetes Engine (Warm Standby)"]
+            GCS_Backup["Google Cloud Storage (Continuous Lake Mirror)"]
+            CloudSQL["Cloud SQL PostgreSQL (Read Replica / Failover Target)"]
+        end
+
+        subgraph Azure_Cloud["Azure (AI Fallback & Enterprise Services)"]
+            AKS_Azure["Azure Kubernetes Service (Specialized AI Pods)"]
+            AzureOpenAI["Azure OpenAI Service (Redundant LLM Endpoint)"]
+        end
+    end
+
+    subgraph DataWarehouse["Centralized Lakehouse Analytics (Snowflake)"]
+        Snowflake_RAW["ZOMATO.RAW (Bronze: 35M+ Records)"]
+        Snowflake_STG["ZOMATO.STAGING (Silver: 7 Conformed Views)"]
+        Snowflake_MARTS["ZOMATO.MARTS (Gold: Dimension, Facts & Marts)"]
+        Snowflake_SCD["ZOMATO.SNAPSHOTS (SCD Type 2 History)"]
+        Snowflake_AI["ZOMATO.AI (Enriched Feedback & Vector Index)"]
+        Airflow["Astronomer Airflow DAGs (zomato_batch Orchestration)"]
+    end
+
+    Clients --> GlobalEdge
+    GeoRouting -->|"Primary (90%)"| EKS_AWS
+    GeoRouting -->|"Canary / Warm (10%)"| GKE_GCP
+    GeoRouting -->|"AI Latency Routing"| AKS_Azure
+
+    EKS_AWS --> MSK
+    EKS_AWS --> RDS_PG
+    EKS_AWS --> ElastiCache
+    MSK --> S3_Lake
+    S3_Lake --> Snowflake_RAW
+    Airflow --> Snowflake_RAW
+    Snowflake_RAW --> Snowflake_STG --> Snowflake_MARTS
+    Snowflake_RAW --> Snowflake_SCD
+    Snowflake_RAW --> Snowflake_AI
+
+    RDS_PG -.->|"Cross-Cloud Logical Replication"| CloudSQL
+    S3_Lake -.->|"Cross-Cloud Mirror"| GCS_Backup
+```
+
+<details>
+<summary><b>Click to expand Universal ASCII Diagram (Terminal / Plaintext Fallback)</b></summary>
+
 ```text
 +=======================================================================================================+
 |                                          GLOBAL CLIENT LAYER                                          |
@@ -94,6 +162,7 @@ The platform spans **AWS (Primary Computing & Analytics)**, **GCP (Disaster Reco
 |  [ Astronomer Airflow DAGs ] ===> Orchestrates Batch ELT, dbt Transformations & AI Enrichment Pipeline|
 +=======================================================================================================+
 ```
+</details>
 
 ---
 
@@ -160,6 +229,35 @@ High-throughput, sub-10ms transactional execution powered by Go microservices:
 
 Unlike standard linear RAG chains, our platform implements a **cyclic state machine** with self-critique, validation, and loopback:
 
+```mermaid
+flowchart TB
+    StartNode([User Query Input]) --> IntentRouter{Intent Classifier}
+
+    IntentRouter -->|"Analytics & Metrics"| SQLGen[SQL Generator Node]
+    IntentRouter -->|"Customer Sentiment"| RAGNode[Review RAG Node]
+    IntentRouter -->|"Orders & Actions"| ActionNode[Microservice Action Node]
+
+    SQLGen --> Guardrail{Guardrail Check}
+    Guardrail -->|"Read-Only Pass"| Executor[Snowflake Executor]
+    Guardrail -->|"Mutating Blocked"| Reflect[Self-Reflection Node]
+
+    Executor --> Evaluator{Result Evaluator}
+    RAGNode --> Evaluator
+    ActionNode --> Evaluator
+
+    Evaluator -->|"Empty or SQL Error"| Reflect
+    Evaluator -->|"High Quality Result"| FinalSynth[Format Synthesized Response]
+
+    Reflect -->|"Retry (Count < 3)"| SQLGen
+    Reflect -->|"Escalate (Count >= 3)"| HumanFallback[Human-In-The-Loop Escalation]
+
+    FinalSynth --> EndNode([Success Output])
+    HumanFallback --> EndNode
+```
+
+<details>
+<summary><b>Click to expand Universal ASCII Diagram (Terminal / Plaintext Fallback)</b></summary>
+
 ```text
 +=======================================================================================================+
 |                                LANGGRAPH STATEGRAPH CYCLIC REASONING ENGINE                           |
@@ -224,6 +322,7 @@ Unlike standard linear RAG chains, our platform implements a **cyclic state mach
                                                        v
                                                     [ END ]
 ```
+</details>
 
 ---
 
@@ -315,6 +414,53 @@ Unlike standard linear RAG chains, our platform implements a **cyclic state mach
 
 ### 4.1 Order Placement Saga Distributed Transaction
 
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer as Client (Next.js)
+    participant Gateway as Kong Gateway
+    participant OrderSvc as Order Service (Go)
+    participant DB as Postgres (Orders + Outbox)
+    participant Debezium as Debezium CDC
+    participant Kafka as Kafka Event Bus
+    participant PaySvc as Payment Service
+    participant DeliverySvc as Delivery SLA Svc
+    participant KitchenSvc as Kitchen Service
+
+    Customer->>Gateway: POST /api/v1/orders (Idempotency-Key)
+    Gateway->>OrderSvc: Forward Request with JWT & Trace ID
+    OrderSvc->>OrderSvc: Validate items, prices & delivery address
+    OrderSvc->>DB: BEGIN TX: Insert Order (PENDING) + Insert Outbox Event
+    DB-->>OrderSvc: Transaction Committed (ACID)
+    OrderSvc-->>Customer: 202 Accepted (Order Created, Status: PENDING)
+
+    DB->>Debezium: Postgres WAL stream
+    Debezium->>Kafka: Publish "zomato.order.created"
+
+    par Parallel Verification
+        Kafka->>PaySvc: Consume "zomato.order.created"
+        PaySvc->>PaySvc: Authorize Card or UPI Payment
+        alt Payment Success
+            PaySvc->>Kafka: Publish "zomato.payment.authorized"
+        else Payment Failed
+            PaySvc->>Kafka: Publish "zomato.payment.failed"
+        end
+    and
+        Kafka->>DeliverySvc: Consume "zomato.order.created"
+        DeliverySvc->>DeliverySvc: Check rider radius & reserve rider
+        DeliverySvc->>Kafka: Publish "zomato.rider.reserved"
+    end
+
+    Kafka->>OrderSvc: Consume "zomato.payment.authorized" & "zomato.rider.reserved"
+    OrderSvc->>DB: "Update Order Status to CONFIRMED"
+    OrderSvc->>Kafka: Publish "zomato.order.confirmed"
+    Kafka->>KitchenSvc: Notify Restaurant Kitchen to start food preparation
+    OrderSvc-->>Customer: "Push Event: Order Status CONFIRMED"
+```
+
+<details>
+<summary><b>Click to expand Universal ASCII Diagram (Terminal / Plaintext Fallback)</b></summary>
+
 ```text
 +==========================================================================================================================+
 |                                    DISTRIBUTED ORDER SAGA WITH TRANSACTIONAL OUTBOX                                      |
@@ -371,6 +517,7 @@ Unlike standard linear RAG chains, our platform implements a **cyclic state mach
    |<-------------------------------+                                                   |                                   |
    |                 |              |                  |                |               |            |           |          |
 ```
+</details>
 
 ---
 
