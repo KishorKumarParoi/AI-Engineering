@@ -1,0 +1,93 @@
+version: 2
+
+models:
+  - name: dim_restaurants
+    description: "Conformed restaurant dimension"
+    columns:
+      - name: restaurant_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_customers
+    description: "Customer dimension with demographic, generational cohorts and age segmentation"
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_food
+    description: "Food menu item catalog dimension"
+    columns:
+      - name: food_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: "Continuous calendar date dimension from 2024 to 2026"
+    columns:
+      - name: date_day
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_orders
+    description: "High-volume incremental orders fact table (10M rows) with merge strategy"
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: order_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Delivered', 'Cancelled', 'Refunded']
+
+  - name: fct_order_items
+    description: "High-volume incremental line-item fact table (~23M rows) with merge strategy"
+    columns:
+      - name: order_item_id
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+
+  - name: mart_daily_city_revenue
+    description: "Executive analytics mart: Daily revenue, GMV, AOV, and cancel rates by city"
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+      - name: city
+        tests:
+          - not_null
+
+  - name: mart_delivery_sla
+    description: "Operations SLA mart: p50 median, p90 90th percentile, and delivery delay tracking"
+
+  - name: mart_restaurant_performance
+    description: "Merchant performance mart: Order counts, GMV revenue, and average customer ratings"
+    columns:
+      - name: restaurant_id
+        tests:
+          - unique
+          - not_null
+
+  - name: mart_review_insights
+    description: "AI-enriched customer feedback mart combining LLM sentiment and topics by city"
+    columns:
+      - name: city
+        tests:
+          - not_null

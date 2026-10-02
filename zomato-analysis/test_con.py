@@ -136,29 +136,50 @@ def main():
         print(f"  {'-'*20}-+-{'-'*15}-+-{'-'*30}")
         print(f"  {'TOTAL ROWS':<20} | {total_rows:<15,}")
 
-    # 6. Sample Preview if data exists
-    if total_rows > 0:
-        print_header("4. SAMPLE PREVIEW (FIRST POPULATED TABLE)")
-        for t in raw_tables:
-            table_name = t[1]
-            cur.execute(f"SELECT COUNT(*) FROM {database}.{schema}.{table_name};")
-            if cur.fetchone()[0] > 0:
-                print(f"{BLUE}[INFO]{NC} Previewing top 2 rows from {table_name}:")
-                cur.execute(f"SELECT * FROM {database}.{schema}.{table_name} LIMIT 2;")
-                cols = [desc[0] for desc in cur.description]
-                print(f"  Columns: {cols[:8]}...")
-                for row in cur.fetchall():
-                    print(f"  Row: {row[:8]}...")
-                break
-
-    # 7. Next Steps Guidance
-    print_header("NEXT STEPS SUMMARY")
-    if total_rows == 0:
-        print(f"{YELLOW}• All raw tables are currently empty.{NC}")
-        print(f"• Run {BOLD}snowflake/05_copy_into.sql{NC} in Snowsight to load the 1.4 GB of S3 CSVs into Snowflake.")
+    # 4. Silver (STAGING) Layer Check
+    print_header("4. SILVER LAYER (STAGING VIEWS)")
+    cur.execute(f"SHOW VIEWS IN SCHEMA {database}.STAGING;")
+    staging_views = cur.fetchall()
+    if not staging_views:
+        print(f"{YELLOW}[INFO] No views found in {database}.STAGING yet.{NC}")
+        print(f"       Run: {BOLD}cd zomato && uv run dbt run --select staging{NC}")
     else:
-        print(f"{GREEN}• Tables are successfully populated!{NC}")
-        print(f"• You can now run dbt models: {BOLD}dbt build{NC} to build the STAGING and MARTS layers.")
+        print(f"{GREEN}[OK]{NC} Found {len(staging_views)} views in '{database}.STAGING':")
+        for v in staging_views:
+            view_name = v[1]
+            try:
+                cur.execute(f"SELECT COUNT(*) FROM {database}.STAGING.{view_name};")
+                cnt = cur.fetchone()[0]
+                print(f"  • {view_name:<25} | {cnt:<12,} rows")
+            except Exception as e:
+                print(f"  • {view_name:<25} | Error: {e}")
+
+    # 5. Gold (MARTS) Layer Check
+    print_header("5. GOLD LAYER (MARTS TABLES)")
+    cur.execute(f"SHOW TABLES IN SCHEMA {database}.MARTS;")
+    marts_tables = cur.fetchall()
+    if not marts_tables:
+        print(f"{YELLOW}[INFO] No tables found in {database}.MARTS yet.{NC}")
+        print(f"       Run: {BOLD}cd zomato && uv run dbt run --select marts{NC}")
+    else:
+        print(f"{GREEN}[OK]{NC} Found {len(marts_tables)} tables in '{database}.MARTS':")
+        for t in marts_tables:
+            table_name = t[1]
+            try:
+                cur.execute(f"SELECT COUNT(*) FROM {database}.MARTS.{table_name};")
+                cnt = cur.fetchone()[0]
+                print(f"  • {table_name:<25} | {cnt:<12,} rows")
+            except Exception as e:
+                print(f"  • {table_name:<25} | Error: {e}")
+
+    # 6. Next Steps Guidance
+    print_header("NEXT STEPS SUMMARY")
+    print(f"{GREEN}• Fresh dbt project initialized in ./zomato{NC}")
+    print(f"• Run dbt from terminal:")
+    print(f"    {BOLD}source .venv/bin/activate{NC}  (or use {BOLD}uv run dbt ...{NC})")
+    print(f"    {BOLD}cd zomato{NC}")
+    print(f"    {BOLD}dbt debug{NC}  --> Verify Snowflake connection")
+    print(f"    {BOLD}dbt build{NC}  --> Run models and tests across all layers")
 
     cur.close()
     conn.close()
