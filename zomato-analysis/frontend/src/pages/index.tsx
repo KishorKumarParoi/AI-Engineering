@@ -130,11 +130,14 @@ export default function Home() {
   const [deliveryAddr, setDeliveryAddr] = useState("Indiranagar 100ft Road, Bangalore");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   
-  // Status check for microservices
+  // Status check for microservices & Streamlit AI apps
   const [catalogHealthy, setCatalogHealthy] = useState(false);
   const [orderHealthy, setOrderHealthy] = useState(false);
+  const [streamlitSqlHealthy, setStreamlitSqlHealthy] = useState(false);
+  const [streamlitRagHealthy, setStreamlitRagHealthy] = useState(false);
+  const [embeddedApp, setEmbeddedApp] = useState<'none' | 'sql' | 'rag'>('none');
 
-  // Poll Microservices Health
+  // Poll Microservices and Streamlit Apps Health
   useEffect(() => {
     fetch('http://localhost:8082/healthz')
       .then(res => setCatalogHealthy(res.ok))
@@ -143,6 +146,15 @@ export default function Home() {
     fetch('http://localhost:8081/healthz')
       .then(res => setOrderHealthy(res.ok))
       .catch(() => setOrderHealthy(false));
+
+    // Streamlit app health checks
+    fetch('http://localhost:8501/_stcore/health', { mode: 'no-cors' })
+      .then(() => setStreamlitSqlHealthy(true))
+      .catch(() => setStreamlitSqlHealthy(false));
+
+    fetch('http://localhost:8502/_stcore/health', { mode: 'no-cors' })
+      .then(() => setStreamlitRagHealthy(true))
+      .catch(() => setStreamlitRagHealthy(false));
   }, []);
 
   // Fetch from Catalog Service if available
@@ -365,6 +377,57 @@ export default function Home() {
                 <span>Order Svc :8081</span>
               </div>
             </div>
+
+            {/* Streamlit AI Applications Quick Launch */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid var(--border-subtle)', paddingLeft: '12px' }}>
+              <a 
+                href="http://localhost:8501" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="Launch Streamlit Text-to-SQL Analytics Assistant on port 8501"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '12px',
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  color: '#10b981',
+                  padding: '5px 12px',
+                  borderRadius: '16px',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: streamlitSqlHealthy ? '#10b981' : '#f59e0b', boxShadow: streamlitSqlHealthy ? '0 0 8px #10b981' : 'none' }}></span>
+                <span>📊 Streamlit SQL (:8501) ↗</span>
+              </a>
+
+              <a 
+                href="http://localhost:8502" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="Launch Streamlit Customer Reviews RAG Chat on port 8502"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '12px',
+                  background: 'rgba(59, 130, 246, 0.12)',
+                  border: '1px solid rgba(59, 130, 246, 0.35)',
+                  color: '#60a5fa',
+                  padding: '5px 12px',
+                  borderRadius: '16px',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: streamlitRagHealthy ? '#3b82f6' : '#f59e0b', boxShadow: streamlitRagHealthy ? '0 0 8px #3b82f6' : 'none' }}></span>
+                <span>💬 Streamlit RAG (:8502) ↗</span>
+              </a>
+            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -452,7 +515,225 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Restaurant Grid */}
+          {/* Streamlit AI & Analytics Suite Hub */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(20, 24, 38, 0.9) 0%, rgba(13, 17, 28, 0.95) 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '20px',
+            padding: '24px 28px',
+            marginBottom: '36px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(255, 43, 43, 0.15)', border: '1px solid rgba(255, 43, 43, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF4B4B">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#fff', margin: 0 }}>
+                    Streamlit AI & Analytics Suite
+                  </h3>
+                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
+                    Interactive Snowflake Gold Marts exploration & Semantic Review RAG assistants
+                  </p>
+                </div>
+              </div>
+
+              {embeddedApp !== 'none' && (
+                <button
+                  onClick={() => setEmbeddedApp('none')}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid var(--border-subtle)',
+                    color: '#fff',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  ✕ Close Embedded View
+                </button>
+              )}
+            </div>
+
+            {/* App Cards Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+              {/* App 1: Text-to-SQL */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: '14px',
+                padding: '18px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px' }}>📊</span>
+                    <h4 style={{ fontSize: '15px', fontWeight: 700, margin: 0, color: '#fff' }}>Warehouse Text-to-SQL</h4>
+                  </div>
+                  <span style={{
+                    fontSize: '11px',
+                    padding: '3px 8px',
+                    borderRadius: '10px',
+                    background: streamlitSqlHealthy ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                    color: streamlitSqlHealthy ? '#10b981' : '#f59e0b',
+                    fontWeight: 700
+                  }}>
+                    {streamlitSqlHealthy ? '● Port :8501 Live' : '○ Standby (:8501)'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                  Query 35M+ rows of Snowflake Gold Marts (<code>fct_orders</code>, <code>dim_restaurants</code>, SLA metrics) using natural language with AST guardrails.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '8px' }}>
+                  <a
+                    href="http://localhost:8501"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      flex: 1,
+                      textAlign: 'center',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      background: 'rgba(16, 185, 129, 0.15)',
+                      border: '1px solid rgba(16, 185, 129, 0.4)',
+                      color: '#10b981',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Open in Tab ↗
+                  </a>
+                  <button
+                    onClick={() => setEmbeddedApp(embeddedApp === 'sql' ? 'none' : 'sql')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      background: embeddedApp === 'sql' ? 'var(--primary-gradient)' : 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid var(--border-subtle)',
+                      color: '#fff',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {embeddedApp === 'sql' ? 'Hide Frame ▲' : 'Embed Here ▼'}
+                  </button>
+                </div>
+              </div>
+
+              {/* App 2: RAG Chat */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                borderRadius: '14px',
+                padding: '18px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px' }}>🍔</span>
+                    <h4 style={{ fontSize: '15px', fontWeight: 700, margin: 0, color: '#fff' }}>Customer Feedback RAG</h4>
+                  </div>
+                  <span style={{
+                    fontSize: '11px',
+                    padding: '3px 8px',
+                    borderRadius: '10px',
+                    background: streamlitRagHealthy ? 'rgba(59, 130, 246, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                    color: streamlitRagHealthy ? '#60a5fa' : '#f59e0b',
+                    fontWeight: 700
+                  }}>
+                    {streamlitRagHealthy ? '● Port :8502 Live' : '○ Standby (:8502)'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                  Semantic vector search across 300,000 customer reviews powered by <code>text-embedding-3-small</code> and LangGraph cyclic reasoning loops.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '8px' }}>
+                  <a
+                    href="http://localhost:8502"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      flex: 1,
+                      textAlign: 'center',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      background: 'rgba(59, 130, 246, 0.15)',
+                      border: '1px solid rgba(59, 130, 246, 0.4)',
+                      color: '#60a5fa',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Open in Tab ↗
+                  </a>
+                  <button
+                    onClick={() => setEmbeddedApp(embeddedApp === 'rag' ? 'none' : 'rag')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      background: embeddedApp === 'rag' ? 'var(--primary-gradient)' : 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid var(--border-subtle)',
+                      color: '#fff',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {embeddedApp === 'rag' ? 'Hide Frame ▲' : 'Embed Here ▼'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Embedded Iframe Container */}
+            {embeddedApp !== 'none' && (
+              <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-emerald)' }}></span>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>
+                      {embeddedApp === 'sql' ? 'Live Streamlit Text-to-SQL (http://localhost:8501)' : 'Live Streamlit Reviews RAG (http://localhost:8502)'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <a
+                      href={embeddedApp === 'sql' ? 'http://localhost:8501' : 'http://localhost:8502'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: '12px', color: 'var(--accent-gold)', textDecoration: 'none', fontWeight: 600 }}
+                    >
+                      Open Full Screen ↗
+                    </a>
+                  </div>
+                </div>
+                <iframe
+                  src={embeddedApp === 'sql' ? 'http://localhost:8501' : 'http://localhost:8502'}
+                  style={{
+                    width: '100%',
+                    height: '620px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: '#0e1117'
+                  }}
+                  title="Streamlit Interactive Application"
+                />
+              </div>
+            )}
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '24px' }}>
             {restaurants.map(rst => (
               <div 
@@ -762,8 +1043,53 @@ export default function Home() {
                   </div>
 
                   <div style={{ marginTop: 'auto', padding: '16px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent-emerald)', borderRadius: '12px' }}>
-                    <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent-emerald)' }}>⚡ LIVE STREAMLIT TEXT-TO-SQL APP</p>
-                    <p style={{ fontSize: '13px', color: '#fff', marginTop: '4px' }}>Active on: <code>http://localhost:8501</code></p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent-emerald)', margin: 0 }}>⚡ LIVE STREAMLIT TEXT-TO-SQL APP</p>
+                      <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 700 }}>:8501</span>
+                    </div>
+                    <p style={{ fontSize: '13px', color: '#fff', marginTop: '6px', marginBottom: '12px' }}>
+                      Query Snowflake Gold Marts directly with natural language and SQL AST guardrails.
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <a
+                        href="http://localhost:8501"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          flex: 1,
+                          textAlign: 'center',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          background: 'var(--accent-emerald)',
+                          color: '#fff',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          textDecoration: 'none'
+                        }}
+                      >
+                        Open Streamlit App ↗
+                      </a>
+                      <button
+                        onClick={() => {
+                          setEmbeddedApp('sql');
+                          setIsAIOpen(false);
+                          window.scrollTo({ top: 380, behavior: 'smooth' });
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          border: '1px solid var(--border-subtle)',
+                          color: '#fff',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Embed on Page ⬇
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -785,8 +1111,53 @@ export default function Home() {
                   </div>
 
                   <div style={{ marginTop: 'auto', padding: '16px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-blue)', borderRadius: '12px' }}>
-                    <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent-blue)' }}>⚡ LIVE REVIEWS RAG CHAT APP</p>
-                    <p style={{ fontSize: '13px', color: '#fff', marginTop: '4px' }}>Active on: <code>http://localhost:8502</code></p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent-blue)', margin: 0 }}>⚡ LIVE REVIEWS RAG CHAT APP</p>
+                      <span style={{ fontSize: '11px', color: '#60a5fa', fontWeight: 700 }}>:8502</span>
+                    </div>
+                    <p style={{ fontSize: '13px', color: '#fff', marginTop: '6px', marginBottom: '12px' }}>
+                      Search 300K customer reviews with LangGraph self-critique cycles and grounded citations.
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <a
+                        href="http://localhost:8502"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          flex: 1,
+                          textAlign: 'center',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          background: 'var(--accent-blue)',
+                          color: '#fff',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          textDecoration: 'none'
+                        }}
+                      >
+                        Open Streamlit App ↗
+                      </a>
+                      <button
+                        onClick={() => {
+                          setEmbeddedApp('rag');
+                          setIsAIOpen(false);
+                          window.scrollTo({ top: 380, behavior: 'smooth' });
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          border: '1px solid var(--border-subtle)',
+                          color: '#fff',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Embed on Page ⬇
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
