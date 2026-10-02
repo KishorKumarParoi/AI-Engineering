@@ -1,0 +1,14 @@
+zomato:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'VVXMVZH-FL05366') }}"
+      user: "{{ env_var('SNOWFLAKE_USERNAME', env_var('SNOWFLAKE_USER', 'kkp007')) }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD', 'peAivA6Vuh549XV') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'DBT_ROLE') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'ZOMATO') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'ZOMATO_WH') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA', 'STAGING') }}"
+      threads: 4
+      client_session_keep_alive: False
