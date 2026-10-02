@@ -1,2 +1,6 @@
-dbt-snowflake
-dotenv
+apache-airflow-providers-snowflake
+apache-airflow-providers-common-sql
+openai
+snowflake-connector-python
+python-dotenv
+pandas
