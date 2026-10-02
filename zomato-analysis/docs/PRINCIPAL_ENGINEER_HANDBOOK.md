@@ -15,6 +15,7 @@
 In hyper-scale consumer logistics (e.g., Zomato, DoorDash, Uber Eats), engineering leadership is evaluated on **systemic resilience**, **predictable latency under catastrophic load**, **deterministic data governance**, and **autonomous AI integration**.
 
 A **Principal / Senior Staff Engineer** must demonstrate architectural mastery across three traditionally separated engineering disciplines:
+
 1. **Core Distributed Systems & Microservices**: Sub-10ms transactional execution, zero-loss event streaming, distributed consensus, and saga-coordinated multi-service transactions.
 2. **Deterministic Big Data & Lakehouse Engineering**: Petabyte-scale ingestion, idempotent transformations across Bronze/Silver/Gold medallion tiers, strict schema contracts, and SCD Type 2 temporal modeling.
 3. **Applied AI Systems & LLMOps**: Moving beyond superficial API calls into stateful cyclic agent graphs (LangGraph), hardware-accelerated local GPU serving (vLLM), Model Context Protocol (MCP) ecosystems, zero-latency real-time voice streaming, and automated adversarial red teaming (Microsoft PyRIT).
@@ -29,69 +30,69 @@ This handbook serves as the **living architectural blueprint** for planning, con
 
 The platform spans **AWS (Primary Computing & Analytics)**, **GCP (Disaster Recovery & Secondary GKE)**, and **Azure (Multi-Cloud Fallback & Cognitive Services)** behind an Anycast edge.
 
-```mermaid
-flowchart TB
-    subgraph Clients["Global Client Layer"]
-        Mobile["Mobile Apps (iOS / Android)"]
-        Web["Next.js 14/15 Consumer Web App"]
-        VoiceClient["Voice Agent Interface (WebRTC / Audio Stream)"]
-        OpsUser["Internal Ops & Escalations (n8n Webhook Portals)"]
-    end
-
-    subgraph GlobalEdge["Global Anycast Edge Layer"]
-        Cloudflare["Cloudflare Anycast DNS & Edge Network"]
-        WAF["Edge WAF (DDoS Mitigation, Bot Filtering)"]
-        GeoRouting["Geo-DNS & Dynamic Traffic Steering"]
-        Cloudflare --> WAF --> GeoRouting
-    end
-
-    subgraph MultiCloudMesh["Multi-Cloud Infrastructure Mesh"]
-        subgraph AWS_Region["AWS (Primary Region - us-east-1)"]
-            EKS_AWS["Amazon EKS Cluster (Microservices & AI Agents)"]
-            MSK["Amazon MSK (Apache Kafka Event Bus)"]
-            S3_Lake["Amazon S3 Lakehouse (Raw 2.3GB Ingestion)"]
-            RDS_PG["Amazon Aurora PostgreSQL (Orders & Outbox)"]
-            ElastiCache["ElastiCache Redis (Catalog Cache & Bloom Filter)"]
-        end
-
-        subgraph GCP_Region["GCP (Secondary / DR Region - us-central1)"]
-            GKE_GCP["Google Kubernetes Engine (Warm Standby)"]
-            GCS_Backup["Google Cloud Storage (Continuous Lake Mirror)"]
-            CloudSQL["Cloud SQL PostgreSQL (Read Replica / Failover Target)"]
-        end
-
-        subgraph Azure_Cloud["Azure (AI Fallback & Enterprise Services)"]
-            AKS_Azure["Azure Kubernetes Service (Specialized AI Pods)"]
-            AzureOpenAI["Azure OpenAI Service (Redundant LLM Endpoint)"]
-        end
-    end
-
-    subgraph DataWarehouse["Centralized Lakehouse Analytics (Snowflake)"]
-        Snowflake_RAW["ZOMATO.RAW (Bronze: 35M+ Records)"]
-        Snowflake_STG["ZOMATO.STAGING (Silver: 7 Conformed Views)"]
-        Snowflake_MARTS["ZOMATO.MARTS (Gold: Dimension, Facts & Marts)"]
-        Snowflake_SCD["ZOMATO.SNAPSHOTS (SCD Type 2 History)"]
-        Snowflake_AI["ZOMATO.AI (Enriched Feedback & Vector Index)"]
-        Airflow["Astronomer Airflow DAGs (zomato_batch Orchestration)"]
-    end
-
-    Clients --> GlobalEdge
-    GeoRouting -->|Primary 90%| EKS_AWS
-    GeoRouting -->|Canary / Warm 10%| GKE_GCP
-    GeoRouting -->|AI Latency Routing| AKS_Azure
-
-    EKS_AWS --> MSK
-    EKS_AWS --> RDS_PG
-    EKS_AWS --> ElastiCache
-    MSK --> S3_Lake
-    S3_Lake --> Snowflake_RAW
-    Airflow --> Snowflake_RAW
-    Snowflake_RAW --> Snowflake_STG --> Snowflake_MARTS
-    Snowflake_RAW --> Snowflake_SCD
-    Snowflake_RAW --> Snowflake_AI
-
-    RDS_PG -.->|Cross-Cloud Logical Replication| CloudSQL
-    S3_Lake -.->|Cross-Cloud Mirror| GCS_Backup
+```text
++=======================================================================================================+
+|                                          GLOBAL CLIENT LAYER                                          |
+|                                                                                                       |
+|    +--------------------+    +--------------------+    +--------------------+    +------------------+ |
+|    | Mobile Apps        |    | Next.js 14+ Web    |    | Real-Time Voice    |    | Ops & Support    | |
+|    | (iOS / Android)    |    | (SSR / RSC)        |    | (WebRTC / Audio)   |    | (n8n Portals)    | |
+|    +---------+----------+    +---------+----------+    +---------+----------+    +--------+---------+ |
++==============|=========================|=========================|============================|=======+
+               |                         |                         |                            |
+               +-------------------------+------------+------------+----------------------------+
+                                                      |
+                                                      v
++=======================================================================================================+
+|                                  GLOBAL ANYCAST EDGE LAYER (Cloudflare)                               |
+|                                                                                                       |
+|         [ Cloudflare Anycast DNS ] ---> [ Edge WAF & DDoS ] ---> [ Geo-Traffic Steering ]             |
++=====================================================+=================================================+
+                                                      |
+                 +------------------------------------+-----------------------------------+
+                 | 90% Primary Traffic                | 10% Canary / DR                   | Low-Latency AI
+                 v                                    v                                   v
++------------------------------------+  +----------------------------+  +-------------------------------+
+| AWS us-east-1 (Primary Mesh)       |  | GCP us-central1 (DR Warm)  |  | Azure East US (AI Specialized)|
+|                                    |  |                            |  |                               |
+| +--------------------------------+ |  | +------------------------+ |  | +---------------------------+ |
+| | Amazon EKS Cluster             | |  | | Google Kubernetes Engine| |  | | Azure Kubernetes Service   | |
+| | - Go Order Service (:8081)     | |  | | (GKE Warm Standby Pods)| |  | | (Specialized AI Workers)  | |
+| | - Go Catalog Service (:8082)   | |  | +-----------+------------+ |  | +-------------+-------------+ |
+| | - Delivery SLA Service         | |  |             |              |  |               |               |
+| +----------------+---------------+ |  |             |              |  |               |               |
+|                  |                 |  |             |              |  |               v               |
+|     +------------+------------+    |  |             |              |  |     [ Azure OpenAI Endpoint ] |
+|     |            |            |    |  |             |              |  +-------------------------------+
+|     v            v            v    |  |             v              |
+|  [ MSK ]     [ Aurora ]   [ Redis ]|  |  [ Cloud SQL PostgreSQL ]  |
+|  (Kafka)     (Postgres)   (Cache)  |  |  (Cross-Cloud Read Repl)   |
++-----+------------+-----------------+  +-------------+--------------+
+      |            |                                  |
+      | CDC Stream | Cross-Cloud Replication          |
+      |            +----------------------------------+
+      v
++-------------------+
+| Amazon S3 Bucket  | ----------------- Cross-Cloud Lake Mirror ------------------> [ Google Cloud Storage ]
+| (2.3 GB Raw Lake) |                                                                (GCS Secondary Mirror)
++---------+---------+
+          |
+          v
++=======================================================================================================+
+|                              CENTRALIZED LAKEHOUSE ANALYTICS (Snowflake)                              |
+|                                                                                                       |
+|  +---------------------+      +------------------------+      +-------------------------------------+ |
+|  | ZOMATO.RAW          | ---> | ZOMATO.STAGING         | ---> | ZOMATO.MARTS                        | |
+|  | (Bronze: 35M+ Rows) |      | (Silver: Conformed     |      | (Gold: Dimensions, Incremental      | |
+|  | Ingested via S3     |      |  Clean Views)          |      |  Facts & Analytical Business Marts) | |
+|  +----------+----------+      +------------------------+      +-------------------------------------+ |
+|             |                                                                                         |
+|             +------------------------> [ ZOMATO.SNAPSHOTS (SCD Type 2 Historical Tracking) ]          |
+|             |                                                                                         |
+|             +------------------------> [ ZOMATO.AI (Enriched Reviews & 1536-dim Vector Embeddings) ]  |
+|                                                                                                       |
+|  [ Astronomer Airflow DAGs ] ===> Orchestrates Batch ELT, dbt Transformations & AI Enrichment Pipeline|
++=======================================================================================================+
 ```
 
 ---
@@ -128,8 +129,9 @@ flowchart TB
 ### Pillar 2: Microservices Backend & Event Mesh (Go + Kafka)
 
 High-throughput, sub-10ms transactional execution powered by Go microservices:
+
 1. **Order Service (`services/order-service`)**:
-   - Go 1.24+ with Gin/Fiber and native goroutine connection pooling.
+   - Go 1.24+ with native goroutine connection pooling and hexagonal architecture.
    - **Transactional Outbox Pattern**: Order records and event payloads are committed inside a single ACID PostgreSQL transaction.
    - Debezium CDC captures outbox inserts from Postgres WAL and streams them into Kafka topic `zomato.orders.events`.
 2. **Delivery SLA & Dispatch Service (`services/delivery-service`)**:
@@ -144,7 +146,7 @@ High-throughput, sub-10ms transactional execution powered by Go microservices:
 
 ### Pillar 3: Next.js 14+ Enterprise Web Application
 
-- **Next.js 14/15 App Router**: Modern Server-Side Rendering (SSR) and React Server Components (RSC) eliminating client-side hydration bloat.
+- **Next.js 14/15 App Router**: Modern Server-Side Rendering (SSR) and React Server Components (RSC) eliminating client-side hydration overhead.
 - **Consumer E-Commerce Flow**:
   - Live restaurant catalog browsing with full-text search.
   - Real-time cart calculation with automated discount calculation.
@@ -158,47 +160,69 @@ High-throughput, sub-10ms transactional execution powered by Go microservices:
 
 Unlike standard linear RAG chains, our platform implements a **cyclic state machine** with self-critique, validation, and loopback:
 
-```mermaid
-stateDiagram-v2
-    [*] --> QueryInput
-    QueryInput --> IntentRouter
-    
-    state IntentRouter {
-        [*] --> ClassifyIntent
-        ClassifyIntent --> SQLAgent : Analytics & Metrics
-        ClassifyIntent --> ReviewRAG : Customer Sentiment
-        ClassifyIntent --> MicroserviceAction : Order / SLA Actions
-    }
+```text
++=======================================================================================================+
+|                                LANGGRAPH STATEGRAPH CYCLIC REASONING ENGINE                           |
++=======================================================================================================+
 
-    SQLAgent --> SQLGenerator
-    SQLGenerator --> GuardrailCheck
-    
-    state GuardrailCheck {
-        [*] --> VerifyReadOnly
-        VerifyReadOnly --> SafeSQL : Starts with SELECT/WITH
-        VerifyReadOnly --> BlockSQL : Contains Mutating Keyword
-    }
-
-    BlockSQL --> SelfReflection : Trigger Self-Correction
-    SafeSQL --> SnowflakeExecutor
-
-    SnowflakeExecutor --> ResultEvaluator
-    ReviewRAG --> ResultEvaluator
-    MicroserviceAction --> ResultEvaluator
-
-    state ResultEvaluator {
-        [*] --> AssessOutput
-        AssessOutput --> HighQuality : Complete & Non-Empty
-        AssessOutput --> LowQuality : Schema Mismatch / Empty
-    }
-
-    LowQuality --> SelfReflection
-    SelfReflection --> SQLGenerator : Loop Counter < 3 (Retry)
-    SelfReflection --> HumanFallback : Loop Counter >= 3
-
-    HighConfidence --> FormatSynthesizedResponse
-    FormatSynthesizedResponse --> [*]
-    HumanFallback --> [*]
+                                              [ User Query Input ]
+                                                       |
+                                                       v
+                                            +---------------------+
+                                            |  IntentClassifier   |
+                                            +----------+----------+
+                                                       |
+                         +-----------------------------+-----------------------------+
+                         | (Analytics / Metrics)       | (Customer Sentiment)        | (Transactional Actions)
+                         v                             v                             v
+              +---------------------+       +---------------------+       +---------------------+
+              |  SQLGeneratorNode   |       |    ReviewRAGNode    |       |  MicroserviceAction |
+              |  (Schema Injection) |       |  (1536-dim Vectors) |       |  (Order/Saga Ops)   |
+              +----------+----------+       +----------+----------+       +----------+----------+
+                         |                             |                             |
+                         v                             |                             |
+              +---------------------+                  |                             |
+              | GuardrailValidation |                  |                             |
+              | (AST & Safety Gate) |                  |                             |
+              +----------+----------+                  |                             |
+                         |                             |                             |
+                 [Is SQL Safe?]                        |                             |
+                 +-------+-------+                     |                             |
+                 |               |                     |                             |
+              No |           Yes |                     |                             |
+                 v               v                     |                             |
+         +---------------+  +---------------------+    |                             |
+         | Blocked Query |  |  SnowflakeExecutor  |    |                             |
+         +-------+-------+  +----------+----------+    |                             |
+                 |                     |               |                             |
+                 |                     +---------------+-----------------------------+
+                 |                                     |
+                 |                                     v
+                 |                          +---------------------+
+                 |                          |   ResultEvaluator   |
+                 |                          +----------+----------+
+                 |                                     |
+                 |                 [Result Quality]    |
+                 |                 +-------------------+-------------------+
+                 |                 | Error / Empty Result                  | High Quality / Complete
+                 |                 v                                       v
+                 +---------> +--------------------+              +--------------------+
+                             | SelfReflectionNode |              | FormatSynthesized  |
+                             | (Error Critique &  |              | Response           |
+                             |  Plan Refinement)  |              +---------+----------+
+                             +---------+----------+                        |
+                                       |                                   v
+                        [Loop Counter] |                                [ END ]
+                        +--------------+---------------+
+                        | Retry (Loop < 3)             | Max Retries Reached (Loop >= 3)
+                        v                              v
+              (Loopback to)                  +--------------------+
+              [ SQLGeneratorNode ]           | HumanInTheLoopNode |
+                                             | (Escalate / Prompt)|
+                                             +---------+----------+
+                                                       |
+                                                       v
+                                                    [ END ]
 ```
 
 ---
@@ -291,48 +315,61 @@ stateDiagram-v2
 
 ### 4.1 Order Placement Saga Distributed Transaction
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Customer as Client (Next.js)
-    participant Gateway as Kong Gateway
-    participant OrderSvc as Order Service (Go)
-    participant DB as Postgres (Orders + Outbox)
-    participant Debezium as Debezium CDC
-    participant Kafka as Kafka Event Bus
-    participant PaySvc as Payment Service
-    participant DeliverySvc as Delivery SLA Svc
-    participant KitchenSvc as Kitchen Service
+```text
++==========================================================================================================================+
+|                                    DISTRIBUTED ORDER SAGA WITH TRANSACTIONAL OUTBOX                                      |
++==========================================================================================================================+
 
-    Customer->>Gateway: POST /api/v1/orders (Idempotency-Key: uuid)
-    Gateway->>OrderSvc: Forward Request with JWT & Trace ID
-    OrderSvc->>OrderSvc: Validate items, prices, delivery address
-    OrderSvc->>DB: BEGIN TX: Insert Order (PENDING) + Insert Outbox Event; COMMIT TX
-    DB-->>OrderSvc: Transaction Committed
-    OrderSvc-->>Customer: 202 Accepted (Order Created, Status: PENDING)
-
-    DB->>Debezium: Postgres WAL stream
-    Debezium->>Kafka: Publish "zomato.order.created"
-
-    par Parallel Verification
-        Kafka->>PaySvc: Consume "zomato.order.created"
-        PaySvc->>PaySvc: Authorize Card / UPI Payment
-        alt Payment Success
-            PaySvc->>Kafka: Publish "zomato.payment.authorized"
-        else Payment Failed
-            PaySvc->>Kafka: Publish "zomato.payment.failed"
-        end
-    and
-        Kafka->>DeliverySvc: Consume "zomato.order.created"
-        DeliverySvc->>DeliverySvc: Check rider radius & reserve rider
-        DeliverySvc->>Kafka: Publish "zomato.rider.reserved"
-    end
-
-    Kafka->>OrderSvc: Consume "zomato.payment.authorized" & "zomato.rider.reserved"
-    OrderSvc->>DB: Update Order Status -> "CONFIRMED"
-    OrderSvc->>Kafka: Publish "zomato.order.confirmed"
-    Kafka->>KitchenSvc: Notify Restaurant Kitchen to start food preparation
-    OrderSvc-->>Customer: WebSocket push: Order Status -> CONFIRMED
+ Client           Gateway        OrderSvc         Postgres DB        Debezium         Kafka      PaymentSvc  DeliverySvc KitchenSvc
+   |                 |              |                  |                |               |            |           |          |
+   | 1. POST /orders |              |                  |                |               |            |           |          |
+   | (IdempotencyKey)|              |                  |                |               |            |           |          |
+   +---------------->|              |                  |                |               |            |           |          |
+   |                 | 2. Forward   |                  |                |               |            |           |          |
+   |                 +------------->|                  |                |               |            |           |          |
+   |                 |              | 3. Validate &    |                |               |            |           |          |
+   |                 |              |    Start ACID Tx |                |               |            |           |          |
+   |                 |              +--------+         |                |               |            |           |          |
+   |                 |              |        |         |                |               |            |           |          |
+   |                 |              | 4. INSERT Order (PENDING)         |               |            |           |          |
+   |                 |              |    INSERT Outbox Event            |               |            |           |          |
+   |                 |              +----------------->|                |               |            |           |          |
+   |                 |              | 5. COMMIT TX     |                |               |            |           |          |
+   |                 |              |<-----------------+                |               |            |           |          |
+   |                 | 6. 202 Accepted                 |                |               |            |           |          |
+   |<----------------+--------------+                  |                |               |            |           |          |
+   |                 |              |                  | 7. Read WAL    |               |            |           |          |
+   |                 |              |                  +--------------->|               |            |           |          |
+   |                 |              |                  |                | 8. Publish    |            |           |          |
+   |                 |              |                  |                | OrderCreated  |            |           |          |
+   |                 |              |                  |                +-------------->|            |           |          |
+   |                 |              |                  |                |               |            |           |          |
+   |                 |              |                  |                |               | 9. Consume |           |          |
+   |                 |              |                  |                |               +----------->|           |          |
+   |                 |              |                  |                |               | 10. Consume|           |          |
+   |                 |              |                  |                |               +----------------------->|          |
+   |                 |              |                  |                |               |            |           |          |
+   |                 |              |                  |                |               | 11. Authorize Payment  |          |
+   |                 |              |                  |                |               |     [PaymentAuthorized]|          |
+   |                 |              |                  |                |               |<-----------+           |          |
+   |                 |              |                  |                |               |                        |          |
+   |                 |              |                  |                |               | 12. Reserve Driver     |          |
+   |                 |              |                  |                |               |     [RiderReserved]    |          |
+   |                 |              |                  |                |               |<-----------------------+          |
+   |                 |              |                  |                |               |                                   |
+   |                 |              | 13. Consume PaymentAuthorized & RiderReserved     |                                   |
+   |                 |              |<--------------------------------------------------+                                   |
+   |                 |              |                                                                                       |
+   |                 |              | 14. Update Status -> CONFIRMED                                                        |
+   |                 |              +----------------->|                                                                    |
+   |                 |              | 15. Publish OrderConfirmed                                                            |
+   |                 |              +-------------------------------------------------->|                                   |
+   |                 |              |                                                   | 16. Prepare Meal                  |
+   |                 |              |                                                   +---------------------------------->|
+   | 17. Live WebSocket Push:       |                                                   |                                   |
+   |     Status = CONFIRMED         |                                                   |                                   |
+   |<-------------------------------+                                                   |                                   |
+   |                 |              |                  |                |               |            |           |          |
 ```
 
 ---
@@ -381,26 +418,36 @@ PHASE 7: Multi-Cloud Terraform, ArgoCD GitOps & CI/CD
 When interviewing for **Principal Engineer / Senior Staff / Senior Lead Engineer** roles, interviewers evaluate how you think about trade-offs, catastrophic failures, and organizational velocity.
 
 ### Question 1: "How do you guarantee exactly-once order processing in an event-driven microservices architecture?"
-> **Principal Answer**: 
+>
+> **Principal Answer**:
 > "In distributed systems, true end-to-end exactly-once is impossible across network boundaries; we achieve **effectively-once processing through at-least-once delivery combined with idempotent consumer processing**.
 > On the producer side, we use the **Transactional Outbox Pattern** to write the business entity and the event to PostgreSQL in a single ACID transaction, with Debezium streaming from the WAL into Kafka to eliminate dual-write anomalies.
 > On the consumer side, every incoming order request carries a client-generated **Idempotency Key** cached in Redis and persisted as a unique constraint in the order database. If a retry occurs, the consumer detects the duplicate key and returns the cached result without re-executing side effects."
 
 ### Question 2: "Why choose LangGraph cyclic state machines over simple linear RAG chains?"
+>
 > **Principal Answer**:
 > "Linear RAG chains (e.g. naive retrieve-then-generate) suffer from severe brittleness in production: if the retrieved context is irrelevant or the generated SQL contains a schema mismatch, the user receives an unrecoverable hallucination or error.
 > LangGraph models the problem as a **stateful directed cyclic graph**. The agent generates SQL, runs it against a schema validator and safety guardrail, inspects query execution results, and if the output is empty or anomalous, **loops back to self-reflect and reformulate its query strategy**. This self-correction loop reduces hallucination rates from ~18% down to under 1.5%."
 
 ### Question 3: "How do you design a Multi-Cloud architecture without falling into the 'lowest common denominator' trap?"
+>
 > **Principal Answer**:
 > "We separate workloads into **data tier**, **compute tier**, and **edge tier**.
+>
 > - At the **edge**, Cloudflare handles Anycast DNS, WAF, and global traffic steering.
 > - In **compute**, we standardize on **Kubernetes (EKS / GKE / AKS)**, packaged via Helm and deployed through ArgoCD GitOps. This keeps application containers cloud-agnostic without rewriting application logic.
 > - In **data**, we avoid replicating proprietary managed databases (like DynamoDB or Bigtable) and instead anchor our real-time transactional storage on **PostgreSQL** and our analytical lakehouse on **Snowflake**, which runs natively across AWS, GCP, and Azure with seamless cross-cloud data sharing."
 
 ### Question 4: "How do you secure LLMs against prompt injection and data poisoning in enterprise production?"
+>
 > **Principal Answer**:
 > "We implement **Defense-in-Depth for AI**:
+>
 > 1. **Perimeter Guardrails**: NeMo Guardrails and Llama-Guard inspect every prompt before tokenization, blocking known jailbreak signatures and redacting PII.
 > 2. **Structural Sandboxing**: Output formats are strictly enforced via JSON Schema and grammar constraints. Text-to-SQL outputs pass through an AST parser that enforces read-only semantics (`SELECT`/`WITH` only) and forbids mutating verbs.
 > 3. **Automated Adversarial CI Gates**: We integrate **Microsoft PyRIT** into our CI/CD pipeline. Every pull request triggers automated red-teaming attacks (polymorphic jailbreaks, system prompt exfiltration, and SQL evasion payloads). If the adversarial evasion score exceeds 0%, the build is rejected before reaching staging."
+
+---
+
+*This document is formatted in pure Universal ASCII and serves as the single source of truth for architecture and technical interview defense.*
