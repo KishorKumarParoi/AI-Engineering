@@ -132,14 +132,29 @@
 ========================================================================================
 </code></pre>
 <hr />
-<h2>1. Executive Charter &amp; Architectural Thesis</h2>
+<h2>1. Executive Charter: The Grand Unified Architecture Combo</h2>
 <p>In hyper-scale consumer logistics (e.g., Zomato, DoorDash, Uber Eats), engineering leadership is evaluated on <strong>systemic resilience</strong>, <strong>predictable latency under catastrophic load</strong>, <strong>deterministic data governance</strong>, and <strong>autonomous AI integration</strong>.</p>
-<p>A <strong>Principal / Senior Staff Engineer</strong> must demonstrate architectural mastery across three traditionally separated engineering disciplines:</p>
-<ol>
-<li><strong>Core Distributed Systems &amp; Microservices</strong>: Sub-10ms transactional execution, zero-loss event streaming, distributed consensus, and saga-coordinated multi-service transactions.</li>
-<li><strong>Deterministic Big Data &amp; Lakehouse Engineering</strong>: Petabyte-scale ingestion, idempotent transformations across Bronze/Silver/Gold medallion tiers, strict schema contracts, and SCD Type 2 temporal modeling.</li>
-<li><strong>Applied AI Systems &amp; LLMOps</strong>: Moving beyond superficial API calls into stateful cyclic agent graphs (LangGraph), hardware-accelerated local GPU serving (vLLM), Model Context Protocol (MCP) ecosystems, zero-latency real-time voice streaming, and automated adversarial red teaming (Microsoft PyRIT).</li>
-</ol>
+<p>A <strong>Principal / Senior Staff / Senior Lead Engineer</strong> must demonstrate architectural mastery across the <strong>Grand Unified Engineering Stack</strong>:</p>
+<pre><code class="language-text">+====================================================================================================================+
+|                     THE PRINCIPAL ENGINEER GRAND UNIFIED ARCHITECTURE COMBO                                        |
++------------------------------------+------------------------------------+------------------------------------------+
+| 1. LATEST NEXT.JS 16+ (REACT 19)   | 4. AGENTIC AI &amp; VOICE AGENT        | 6. HIGH-THROUGHPUT MICROSERVICES (GO)    |
+|    - Next.js 16 App Router &amp; RSC   |    - LangGraph Cyclic Loop-Graphs  |    - Go 1.24+ Hexagonal Architecture     |
+|    - React 19 Server Actions &amp; SSR |    - AST SQL Guardrails &amp; PyRIT    |    - Transactional Outbox Pattern        |
+|    - Real-Time SSE/WebSocket Track |    - Full-Duplex Voice Engine     |    - Distributed Saga Orchestrator       |
+|    - Glassmorphic E-Commerce Flow  |    - Model Context Protocol (MCP)  |    - Kafka + Debezium CDC WAL Stream     |
++------------------------------------+------------------------------------+------------------------------------------+
+| 2. DATA ENGINEERING LAKEHOUSE      | 5. MLOPS &amp; LLMOPS INFRASTRUCTURE   | 7. SYSTEM DESIGN &amp; RESILIENCE            |
+|    - 35M+ Rows Snowflake Medallion |    - Kubeflow Delivery SLA Pipeline|    - C4 Architecture &amp; Zero-Loss Mesh    |
+|    - Bronze, Silver, Gold Marts    |    - MLflow Experiment Registry    |    - Active-Active Multi-Cloud Topologies|
+|    - SCD2 Snapshots &amp; Airflow DAGs |    - TensorZero / LiteLLM Gateway  |    - LLD Data Contracts &amp; Idempotency    |
+|    - dbt Core Idempotent Transforms|    - Kubernetes GPU Serving (vLLM) |    - 10-Question Principal Masterclass   |
++------------------------------------+------------------------------------+------------------------------------------+
+| 3. DEVOPS, GITOPS &amp; MULTI-CLOUD    |                                                                               |
+|    - Multi-Cloud Terraform across AWS, GCP, and Azure                                                              |
+|    - ArgoCD Declarative GitOps, SonarQube &amp; Nexus Quality Gate, PyRIT CI Security                                 |
++--------------------------------------------------------------------------------------------------------------------+
+</code></pre>
 <p>This handbook serves as the <strong>living architectural blueprint</strong> for planning, constructing, and defending this system during <strong>Principal, Senior Staff, and Senior Lead Engineer</strong> technical rounds.</p>
 <hr />
 <h2>2. High-Level Design (HLD) &amp; C4 Architecture</h2>
@@ -149,7 +164,7 @@
 flowchart TB
     subgraph Clients["Global Client Layer"]
         Mobile["Mobile Apps (iOS / Android)"]
-        Web["Next.js 14/15 Consumer Web App"]
+        Web["Next.js 16+ Consumer Web App (React 19)"]
         VoiceClient["Voice Agent Interface (WebRTC / Audio Stream)"]
         OpsUser["Internal Ops & Escalations (n8n Webhook Portals)"]
     end
@@ -218,8 +233,8 @@ flowchart TB
 |                                          GLOBAL CLIENT LAYER                                          |
 |                                                                                                       |
 |    +--------------------+    +--------------------+    +--------------------+    +------------------+ |
-|    | Mobile Apps        |    | Next.js 14+ Web    |    | Real-Time Voice    |    | Ops &amp; Support    | |
-|    | (iOS / Android)    |    | (SSR / RSC)        |    | (WebRTC / Audio)   |    | (n8n Portals)    | |
+|    | Mobile Apps        |    | Next.js 16+ Web    |    | Real-Time Voice    |    | Ops &amp; Support    | |
+|    | (iOS / Android)    |    | (React 19 / RSC)   |    | (WebRTC / Audio)   |    | (n8n Portals)    | |
 |    +---------+----------+    +---------+----------+    +---------+----------+    +--------+---------+ |
 +==============|=========================|=========================|============================|=======+
                |                         |                         |                            |
@@ -287,7 +302,7 @@ flowchart TB
 +------------------------------------+-----------------------------------+---------------------------+
 | 1. Data Engineering &amp; Lakehouse    | 5. Real-Time Voice Agent          | 9. Multi-Cloud Terraform  |
 | 2. E-Commerce Microservices (Go)   | 6. Model Context Protocol (MCP)   | 10. GitOps &amp; DevSecOps    |
-| 3. Next.js 14+ Enterprise Web App  | 7. MLOps &amp; Kubeflow ETA Pipeline  |                           |
+| 3. Latest Next.js 16+ (React 19)   | 7. MLOps &amp; Kubeflow ETA Pipeline  |                           |
 | 4. Agentic RAG &amp; LangGraph Loops   | 8. AI Security &amp; PyRIT Red Team   |                           |
 +------------------------------------+-----------------------------------+---------------------------+
 </code></pre>
@@ -321,15 +336,20 @@ flowchart TB
 <li>Implements automated compensating transactions on payment failure or delivery timeout (<code>CancelOrder</code>, <code>ReleaseRiderReservation</code>, <code>IssueRefund</code>).</li>
 </ol>
 <hr />
-<h3>Pillar 3: Next.js 14+ Enterprise Web Application</h3>
+<h3>Pillar 3: Latest Next.js 16+ Enterprise Web Application (React 19)</h3>
 <ul>
-<li><strong>Next.js 14/15 App Router</strong>: Modern Server-Side Rendering (SSR) and React Server Components (RSC) eliminating client-side hydration overhead.</li>
+<li><strong>Next.js 16.3+ App Router &amp; React 19 Core</strong>:</li>
+<li>Leverages React 19 Server Components (RSC) and Server Actions for sub-50ms Time-to-First-Byte (TTFB) without client bundle hydration overhead.</li>
+<li>Streaming SSR with Suspense boundaries for progressive UI loading.</li>
 <li><strong>Consumer E-Commerce Flow</strong>:</li>
-<li>Live restaurant catalog browsing with full-text search.</li>
-<li>Real-time cart calculation with automated discount calculation.</li>
-<li>Interactive Order Tracking with Server-Sent Events (SSE) and WebSockets.</li>
-<li><strong>Embedded AI Drawer</strong>:</li>
-<li>Dual-mode assistant: Natural language Text-to-SQL data exploration and Semantic Reviews RAG Chat directly inside the customer experience.</li>
+<li>Live restaurant catalog browsing with full-text search and faceted filters (Bangalore, Mumbai, Delhi, cuisines, Veg/Non-Veg).</li>
+<li>Real-time cart calculation with automated promo code engine (<code>ZOMATO50</code>).</li>
+<li>Checkout drawer supporting idempotent order creation (<code>Idempotency-Key: uuid</code>).</li>
+<li><strong>Real-Time Saga Order Tracking</strong>:</li>
+<li>Live order tracking modal consuming Server-Sent Events (SSE) from Go Order Service (<code>/api/v1/orders/{id}/stream</code>).</li>
+<li>Visual timeline displaying state machine transitions (<code>PENDING -&gt; PAYMENT_AUTHORIZED -&gt; CONFIRMED -&gt; KITCHEN_ACCEPTED -&gt; RIDER_ASSIGNED -&gt; OUT_FOR_DELIVERY</code>).</li>
+<li><strong>Embedded Dual-Engine AI Assistant Drawer</strong>:</li>
+<li>Dual-mode conversational assistant: Natural language Text-to-SQL lakehouse data exploration and Semantic Reviews RAG Chat directly embedded in the customer portal.</li>
 </ul>
 <hr />
 <h3>Pillar 4: Agentic AI &amp; LangGraph Cyclic Reasoning Loops</h3>
@@ -627,9 +647,9 @@ sequenceDiagram
 
 <hr />
 <h2>5. Master Implementation Roadmap</h2>
-<pre><code class="language-text">PHASE 1: Core E-Commerce Microservices &amp; Next.js 14 Frontend
+<pre><code class="language-text">PHASE 1: Core E-Commerce Microservices &amp; Latest Next.js 16+ Frontend
    |-- Go Order Service with Transactional Outbox Pattern
-   |-- Next.js 14 App Router Consumer Frontend with RSC &amp; Live Tracking
+   |-- Next.js 16+ App Router Consumer Frontend with React 19 RSC &amp; Live Tracking
    `-- Kafka Event Bus &amp; Docker Compose Distributed Mesh
 
 PHASE 2: Agentic RAG &amp; LangGraph Cyclic Reasoning Loops
@@ -694,6 +714,46 @@ LangGraph models the problem as a <strong>stateful directed cyclic graph</strong
 <li><strong>Perimeter Guardrails</strong>: NeMo Guardrails and Llama-Guard inspect every prompt before tokenization, blocking known jailbreak signatures and redacting PII.</li>
 <li><strong>Structural Sandboxing</strong>: Output formats are strictly enforced via JSON Schema and grammar constraints. Text-to-SQL outputs pass through an AST parser that enforces read-only semantics (<code>SELECT</code>/<code>WITH</code> only) and forbids mutating verbs.</li>
 <li><strong>Automated Adversarial CI Gates</strong>: We integrate <strong>Microsoft PyRIT</strong> into our CI/CD pipeline. Every pull request triggers automated red-teaming attacks (polymorphic jailbreaks, system prompt exfiltration, and SQL evasion payloads). If the adversarial evasion score exceeds 0%, the build is rejected before reaching staging."</li>
+</ol>
+</blockquote>
+<h3>Question 5: "How do you architect a unified enterprise system connecting Next.js 16 frontend, Go transactional microservices, real-time Kafka event mesh, petabyte Snowflake lakehouse, Kubeflow MLOps, and LangGraph agentic reasoning without operational bottlenecks?"</h3>
+<blockquote>
+<p><strong>Principal Answer</strong>:
+"We design this as a <strong>decoupled, event-driven multi-tier platform with clear consistency and latency boundaries</strong>:</p>
+<ol>
+<li><strong>Transactional Edge &amp; Ingestion (Sub-50ms)</strong>:</li>
+<li>Next.js 16 (React 19) interacts with the Go Order Microservice via idempotent HTTP/REST and receives real-time Saga state updates over Server-Sent Events (SSE).</li>
+<li>The Go Order Service commits orders and outbox events in a single ACID PostgreSQL transaction.</li>
+<li>
+<p>Debezium CDC captures outbox inserts from the PostgreSQL WAL and streams them into Kafka with zero application-level dual-write latency.</p>
+</li>
+<li>
+<p><strong>Analytical Lakehouse &amp; Ingestion (Near-Real-Time / Batch)</strong>:</p>
+</li>
+<li>Kafka topics stream to Amazon S3 (Raw Bronze Ingestion, 2.3 GB+).</li>
+<li>
+<p>Snowflake loads S3 data into <code>ZOMATO.RAW</code>, and Astronomer Airflow orchestrates dbt Core transformations through Silver (<code>ZOMATO.STAGING</code>) and Gold analytical marts (<code>ZOMATO.MARTS</code>), with SCD Type 2 tracking in <code>ZOMATO.SNAPSHOTS</code>.</p>
+</li>
+<li>
+<p><strong>MLOps &amp; Feature Store Loop</strong>:</p>
+</li>
+<li>Historical order facts (<code>FCT_ORDERS</code>) and restaurant performance metrics from Snowflake Gold feed the Kubeflow / MLflow pipeline to continuously train the XGBoost Delivery ETA SLA model.</li>
+<li>
+<p>The trained model is deployed as a low-latency gRPC/REST microservice queried by the Go Delivery Service during checkout.</p>
+</li>
+<li>
+<p><strong>Agentic AI &amp; LLMOps Integration</strong>:</p>
+</li>
+<li>LangGraph cyclic state machines execute analytical reasoning directly against Snowflake Gold marts through AST read-only guardrails.</li>
+<li>Semantic reviews are embedded into 1536-dim vectors and cached in Redis via TensorZero / LiteLLM.</li>
+<li>
+<p>If delivery delays or bad reviews occur, Kafka triggers n8n operational webhooks for automatic customer wallet compensation and driver re-routing.</p>
+</li>
+<li>
+<p><strong>DevOps &amp; Multi-Cloud Defense</strong>:</p>
+</li>
+<li>Terraform declaratively provisions resources across AWS, GCP, and Azure.</li>
+<li>ArgoCD synchronizes GitOps deployments across Kubernetes clusters, while SonarQube, Nexus, and Microsoft PyRIT guarantee code quality, artifact immutability, and adversarial AI security in CI/CD."</li>
 </ol>
 </blockquote>
 <hr />
