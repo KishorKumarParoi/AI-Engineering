@@ -24,7 +24,7 @@ models:
     marts:
       +materialized: table
       +schema: marts
-  snapshot:
-    zomato:
-      +materialized: table
-      +schema: snapshots
+
+snapshots:
+  zomato:
+    +target_schema: snapshots
