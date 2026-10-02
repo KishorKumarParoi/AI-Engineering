@@ -80,7 +80,7 @@ def get_connection():
         password=os.getenv("SNOWFLAKE_PASSWORD"),
         warehouse=os.getenv("SNOWFLAKE_WAREHOUSE", "ZOMATO_WH"),
         database=os.getenv("SNOWFLAKE_DATABASE", "ZOMATO"),
-        schema=os.getenv("SNOWFLAKE_SCHEMA", "MARTS"),
+        schema="MARTS",
         role=os.getenv("SNOWFLAKE_ROLE", "DBT_ROLE"),
     )
 
@@ -112,6 +112,7 @@ def is_safe(sql):
 def run_query(sql):
     conn = get_connection()
     cursor = conn.cursor()
+    cursor.execute("USE SCHEMA ZOMATO.MARTS")
     return cursor.execute(sql).fetch_pandas_all()
 
 with st.sidebar:
