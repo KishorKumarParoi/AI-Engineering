@@ -38,6 +38,8 @@ A **Principal / Senior Staff / Senior Lead Engineer** must demonstrate architect
 +--------------------------------------------------------------------------------------------------------------------+
 ```
 
+![The Principal Engineer Grand Unified Architecture Combo](architecture.png)
+
 This handbook serves as the **living architectural blueprint** for planning, constructing, and defending this system during **Principal, Senior Staff, and Senior Lead Engineer** technical rounds.
 
 
