@@ -49,7 +49,7 @@ COPY_RAW = [
 default_args = {
     "owner": "data_engineering",
     "depends_on_past": False,
-    "retries": 1,
+    "retries": 2,
     "retry_delay": timedelta(minutes=5),
 }
 
