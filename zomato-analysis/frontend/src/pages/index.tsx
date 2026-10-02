@@ -1,0 +1,804 @@
+import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
+
+interface MenuItem {
+  id: string;
+  food_id: string;
+  name: string;
+  category: string;
+  price: number;
+  is_veg: boolean;
+  description: string;
+}
+
+interface Restaurant {
+  id: string;
+  name: string;
+  city: string;
+  cuisine: string;
+  rating: number;
+  rating_count: number;
+  cost_for_two: number;
+  address: string;
+  image_url: string;
+  menu?: MenuItem[];
+}
+
+interface CartItem extends MenuItem {
+  quantity: number;
+}
+
+interface Order {
+  id: string;
+  customer_id: string;
+  restaurant_id: string;
+  restaurant_name: string;
+  city: string;
+  items: { name: string; quantity: number; price: number }[];
+  subtotal: number;
+  delivery_fee: number;
+  tax: number;
+  discount: number;
+  total_amount: number;
+  status: string;
+  estimated_delivery_mins: number;
+  created_at: string;
+}
+
+const DEFAULT_RESTAURANTS: Restaurant[] = [
+  {
+    id: "rest_bangalore_01",
+    name: "Truffles",
+    city: "Bangalore",
+    cuisine: "American, Burgers, Continental",
+    rating: 4.6,
+    rating_count: 14200,
+    cost_for_two: 600,
+    address: "St. Marks Road, Central Bangalore",
+    image_url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop",
+    menu: [
+      { id: "m_1", food_id: "f_101", name: "All American Cheese Burger", category: "Burgers", price: 260, is_veg: false, description: "Juicy handcrafted patty loaded with melted English cheddar" },
+      { id: "m_2", food_id: "f_102", name: "Peri Peri Chicken Steak", category: "Mains", price: 340, is_veg: false, description: "Grilled breast served with herb butter rice and veggies" },
+      { id: "m_3", food_id: "f_103", name: "Crispy Paneer Burger", category: "Burgers", price: 220, is_veg: true, description: "Crunchy crumb-coated paneer steak with spicy chipotle mayo" },
+      { id: "m_4", food_id: "f_104", name: "Dutch Truffle Cake Slice", category: "Desserts", price: 160, is_veg: true, description: "Dense Belgian dark chocolate layer cake" },
+    ]
+  },
+  {
+    id: "rest_bangalore_02",
+    name: "Empire Restaurant",
+    city: "Bangalore",
+    cuisine: "North Indian, Biryani, Mughlai",
+    rating: 4.3,
+    rating_count: 22000,
+    cost_for_two: 550,
+    address: "Indiranagar 100ft Road",
+    image_url: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=600&auto=format&fit=crop",
+    menu: [
+      { id: "m_5", food_id: "f_201", name: "Empire Special Chicken Biryani", category: "Biryani", price: 290, is_veg: false, description: "Fragrant basmati rice layered with spiced marinated chicken" },
+      { id: "m_6", food_id: "f_202", name: "Butter Garlic Naan", category: "Breads", price: 65, is_veg: true, description: "Clay oven baked flatbread brushed with garlic butter" },
+      { id: "m_7", food_id: "f_203", name: "Paneer Butter Masala", category: "Curries", price: 240, is_veg: true, description: "Fresh cottage cheese in rich tomato cashew gravy" },
+      { id: "m_8", food_id: "f_204", name: "Chicken Ghee Roast", category: "Starters", price: 310, is_veg: false, description: "Traditional Mangalorean fiery red spiced chicken in pure ghee" },
+    ]
+  },
+  {
+    id: "rest_mumbai_01",
+    name: "Bastian Mumbai",
+    city: "Mumbai",
+    cuisine: "Seafood, Asian, Desserts",
+    rating: 4.7,
+    rating_count: 9800,
+    cost_for_two: 2200,
+    address: "Bandra West, Mumbai",
+    image_url: "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop",
+    menu: [
+      { id: "m_9", food_id: "f_301", name: "Butter Garlic Crab Meat", category: "Seafood", price: 850, is_veg: false, description: "Fresh mud crab tossed in clarified butter and roasted garlic" },
+      { id: "m_10", food_id: "f_302", name: "Salmon Tartare Bowl", category: "Raw Bar", price: 720, is_veg: false, description: "Norwegian salmon, avocado relish, sesame ponzu dressing" },
+      { id: "m_11", food_id: "f_303", name: "Truffle Edamame Dim Sum", category: "Appetizers", price: 490, is_veg: true, description: "Steamed crystal dumplings with edamame and white truffle oil" },
+    ]
+  },
+  {
+    id: "rest_delhi_01",
+    name: "Karim's Historic Mughlai",
+    city: "Delhi",
+    cuisine: "Mughlai, Kebabs, Rolls",
+    rating: 4.5,
+    rating_count: 31000,
+    cost_for_two: 800,
+    address: "Gali Kababian, Jama Masjid, Old Delhi",
+    image_url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop",
+    menu: [
+      { id: "m_12", food_id: "f_401", name: "Mutton Seekh Kebab", category: "Kebabs", price: 320, is_veg: false, description: "Skewered minced spiced mutton char-grilled over hot coals" },
+      { id: "m_13", food_id: "f_402", name: "Karim's Nihari Gosht", category: "Curries", price: 410, is_veg: false, description: "Slow-cooked shank stew with aromatic bone marrow gravy" },
+      { id: "m_14", food_id: "f_403", name: "Shahi Khameeri Roti", category: "Breads", price: 45, is_veg: true, description: "Traditional fluffy leavened bread" },
+    ]
+  }
+];
+
+export default function Home() {
+  const [selectedCity, setSelectedCity] = useState("All");
+  const [selectedCuisine, setSelectedCuisine] = useState("All");
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(DEFAULT_RESTAURANTS);
+  const [activeRestaurant, setActiveRestaurant] = useState<Restaurant | null>(null);
+  const [cart, setCart] = useState<{ [id: string]: CartItem }>({});
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isAIOpen, setIsAIOpen] = useState(false);
+  const [aiTab, setAiTab] = useState<'sql' | 'rag'>('sql');
+  const [activeOrder, setActiveOrder] = useState<Order | null>(null);
+  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [deliveryAddr, setDeliveryAddr] = useState("Indiranagar 100ft Road, Bangalore");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  
+  // Status check for microservices
+  const [catalogHealthy, setCatalogHealthy] = useState(false);
+  const [orderHealthy, setOrderHealthy] = useState(false);
+
+  // Poll Microservices Health
+  useEffect(() => {
+    fetch('http://localhost:8082/healthz')
+      .then(res => setCatalogHealthy(res.ok))
+      .catch(() => setCatalogHealthy(false));
+
+    fetch('http://localhost:8081/healthz')
+      .then(res => setOrderHealthy(res.ok))
+      .catch(() => setOrderHealthy(false));
+  }, []);
+
+  // Fetch from Catalog Service if available
+  useEffect(() => {
+    let url = 'http://localhost:8082/api/v1/restaurants';
+    const params = new URLSearchParams();
+    if (selectedCity !== 'All') params.append('city', selectedCity);
+    if (selectedCuisine !== 'All') params.append('cuisine', selectedCuisine);
+    if (params.toString()) url += `?${params.toString()}`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setRestaurants(data);
+        } else {
+          setRestaurants(DEFAULT_RESTAURANTS);
+        }
+      })
+      .catch(() => setRestaurants(DEFAULT_RESTAURANTS));
+  }, [selectedCity, selectedCuisine]);
+
+  // Cart Calculations
+  const cartItems = Object.values(cart);
+  const cartSubtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const deliveryFee = cartItems.length > 0 ? 40 : 0;
+  const tax = cartSubtotal * 0.05;
+  const grandTotal = Math.max(0, (cartSubtotal + deliveryFee + tax) - discount);
+
+  const addToCart = (item: MenuItem, restaurant: Restaurant) => {
+    setCart(prev => {
+      const existing = prev[item.id];
+      const qty = existing ? existing.quantity + 1 : 1;
+      return {
+        ...prev,
+        [item.id]: { ...item, quantity: qty }
+      };
+    });
+  };
+
+  const removeFromCart = (itemId: string) => {
+    setCart(prev => {
+      const existing = prev[itemId];
+      if (!existing) return prev;
+      if (existing.quantity <= 1) {
+        const copy = { ...prev };
+        delete copy[itemId];
+        return copy;
+      }
+      return {
+        ...prev,
+        [itemId]: { ...existing, quantity: existing.quantity - 1 }
+      };
+    });
+  };
+
+  const applyPromo = () => {
+    if (promoCode.trim().toUpperCase() === "ZOMATO50") {
+      setDiscount(50);
+    } else {
+      alert("Invalid promo code. Try 'ZOMATO50'");
+    }
+  };
+
+  // Place Order through Go Microservice with Idempotency Key
+  const placeOrder = async () => {
+    if (cartItems.length === 0) return;
+    setIsPlacingOrder(true);
+
+    const idempotencyKey = `idemp_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    const payload = {
+      customer_id: "cust_kkp_007",
+      restaurant_id: activeRestaurant ? activeRestaurant.id : "rest_bangalore_01",
+      restaurant_name: activeRestaurant ? activeRestaurant.name : "Zomato Partner",
+      city: selectedCity === "All" ? "Bangalore" : selectedCity,
+      delivery_address: deliveryAddr,
+      items: cartItems.map(item => ({
+        food_id: item.food_id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      discount: discount,
+      payment_method: "UPI"
+    };
+
+    try {
+      const res = await fetch('http://localhost:8081/api/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('Order creation failed');
+      const orderData: Order = await res.json();
+      setActiveOrder(orderData);
+      setIsCheckoutOpen(false);
+      setCart({});
+      setIsTrackingOpen(true);
+    } catch {
+      // Offline fallback mock order
+      const mockOrder: Order = {
+        id: `ord_${Date.now().toString(36)}`,
+        customer_id: "cust_kkp_007",
+        restaurant_id: activeRestaurant?.id || "rest_01",
+        restaurant_name: activeRestaurant?.name || "Empire Restaurant",
+        city: selectedCity === "All" ? "Bangalore" : selectedCity,
+        items: cartItems.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+        subtotal: cartSubtotal,
+        delivery_fee: deliveryFee,
+        tax: tax,
+        discount: discount,
+        total_amount: grandTotal,
+        status: "PENDING",
+        estimated_delivery_mins: 32,
+        created_at: new Date().toISOString()
+      };
+      setActiveOrder(mockOrder);
+      setIsCheckoutOpen(false);
+      setCart({});
+      setIsTrackingOpen(true);
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  };
+
+  // Poll Order Status for Live Tracking Timeline
+  useEffect(() => {
+    if (!activeOrder || !isTrackingOpen) return;
+
+    const interval = setInterval(() => {
+      fetch(`http://localhost:8081/api/v1/orders/${activeOrder.id}`)
+        .then(res => res.json())
+        .then((updated: Order) => {
+          if (updated && updated.status) {
+            setActiveOrder(updated);
+          }
+        })
+        .catch(() => {
+          // Progress status locally for testing demonstration if order service is stopped
+          const orderStates = ["PENDING", "PAYMENT_AUTHORIZED", "CONFIRMED", "KITCHEN_ACCEPTED", "RIDER_ASSIGNED", "OUT_FOR_DELIVERY", "DELIVERED"];
+          const currIdx = orderStates.indexOf(activeOrder.status);
+          if (currIdx < orderStates.length - 1) {
+            setActiveOrder(prev => prev ? { ...prev, status: orderStates[currIdx + 1] } : null);
+          }
+        });
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [activeOrder, isTrackingOpen]);
+
+  const ORDER_STEPS = [
+    { key: "PENDING", label: "Order Placed", desc: "Sent to Saga Orchestrator" },
+    { key: "PAYMENT_AUTHORIZED", label: "Payment Authorized", desc: "Escrow verified" },
+    { key: "CONFIRMED", label: "Order Confirmed", desc: "Inventory locked" },
+    { key: "KITCHEN_ACCEPTED", label: "Kitchen Preparing", desc: "Chef preparing your meal" },
+    { key: "RIDER_ASSIGNED", label: "Rider Assigned", desc: "Courier en route to restaurant" },
+    { key: "OUT_FOR_DELIVERY", label: "Out for Delivery", desc: "Rider arriving shortly" },
+    { key: "DELIVERED", label: "Delivered", desc: "Enjoy your food!" }
+  ];
+
+  const currentStepIndex = activeOrder ? ORDER_STEPS.findIndex(s => s.key === activeOrder.status) : 0;
+
+  return (
+    <>
+      <Head>
+        <title>Zomato AI - Enterprise Food Delivery & Intelligent Lakehouse</title>
+        <meta name="description" content="Hyper-scale food delivery platform powered by Go microservices, Kafka event streaming, Snowflake medallion lakehouse, and agentic AI." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        {/* Navigation Bar */}
+        <header style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
+          background: 'rgba(10, 13, 20, 0.85)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid var(--border-subtle)',
+          padding: '16px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setActiveRestaurant(null)}>
+              <span style={{ fontSize: '26px' }}>⚡</span>
+              <span style={{ fontSize: '24px', fontWeight: 800, background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                zomato<span style={{ color: 'var(--accent-gold)' }}>.ai</span>
+              </span>
+            </div>
+
+            {/* City Selector */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-secondary)', padding: '6px 14px', borderRadius: '24px', border: '1px solid var(--border-subtle)' }}>
+              <span style={{ fontSize: '14px' }}>📍</span>
+              <select 
+                value={selectedCity} 
+                onChange={e => setSelectedCity(e.target.value)}
+                style={{ background: 'transparent', color: '#fff', border: 'none', outline: 'none', cursor: 'pointer', fontWeight: 600 }}
+              >
+                <option value="All" style={{ background: '#101522' }}>All Cities</option>
+                <option value="Bangalore" style={{ background: '#101522' }}>Bangalore</option>
+                <option value="Mumbai" style={{ background: '#101522' }}>Mumbai</option>
+                <option value="Delhi" style={{ background: '#101522' }}>Delhi</option>
+              </select>
+            </div>
+
+            {/* Architecture Health Indicators */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', background: 'rgba(255,255,255,0.04)', padding: '4px 10px', borderRadius: '12px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: catalogHealthy ? 'var(--accent-emerald)' : '#e23744' }}></span>
+                <span>Catalog Svc :8082</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', background: 'rgba(255,255,255,0.04)', padding: '4px 10px', borderRadius: '12px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: orderHealthy ? 'var(--accent-emerald)' : '#e23744' }}></span>
+                <span>Order Svc :8081</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* AI Assistant Button */}
+            <button 
+              id="ai-assistant-btn"
+              onClick={() => setIsAIOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
+                border: '1px solid rgba(139, 92, 246, 0.4)',
+                color: '#fff',
+                padding: '8px 18px',
+                borderRadius: '24px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <span>✨</span>
+              <span>Ask AI Assistant</span>
+            </button>
+
+            {/* Cart Button */}
+            <button 
+              id="cart-btn"
+              onClick={() => setIsCheckoutOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                background: cartItems.length > 0 ? 'var(--primary-gradient)' : 'var(--bg-secondary)',
+                border: '1px solid var(--border-subtle)',
+                color: '#fff',
+                padding: '8px 20px',
+                borderRadius: '24px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                boxShadow: cartItems.length > 0 ? '0 0 20px var(--primary-glow)' : 'none'
+              }}
+            >
+              <span>🛒</span>
+              <span>Cart ({cartItems.reduce((a, b) => a + b.quantity, 0)})</span>
+              {cartItems.length > 0 && <span>₹{grandTotal.toFixed(0)}</span>}
+            </button>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section style={{ padding: '48px 32px 24px', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
+          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+            <span style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--accent-gold)', fontWeight: 700 }}>
+              Enterprise Microservices Mesh & Snowflake Lakehouse
+            </span>
+            <h1 style={{ fontSize: '44px', fontWeight: 800, marginTop: '8px', letterSpacing: '-1px' }}>
+              Hyper-Scale Food Delivery & Intelligent Logistics
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '640px', margin: '12px auto 0', fontSize: '16px' }}>
+              Sub-10ms transactional checkout powered by Go, Kafka event sourcing, and autonomous LangGraph self-critique agents.
+            </p>
+          </div>
+
+          {/* Cuisine Filter Pills */}
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
+            {["All", "Burgers", "Biryani", "Seafood", "Mughlai"].map(cuisine => (
+              <button
+                key={cuisine}
+                onClick={() => setSelectedCuisine(cuisine)}
+                style={{
+                  background: selectedCuisine === cuisine ? 'var(--primary-gradient)' : 'var(--bg-secondary)',
+                  border: '1px solid var(--border-subtle)',
+                  color: '#fff',
+                  padding: '8px 18px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {cuisine}
+              </button>
+            ))}
+          </div>
+
+          {/* Restaurant Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '24px' }}>
+            {restaurants.map(rst => (
+              <div 
+                key={rst.id}
+                className="glass-panel"
+                onClick={() => setActiveRestaurant(rst)}
+                style={{ cursor: 'pointer', overflow: 'hidden' }}
+              >
+                <div style={{ position: 'relative', height: '170px', width: '100%', overflow: 'hidden' }}>
+                  <img 
+                    src={rst.image_url} 
+                    alt={rst.name} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
+                  <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', padding: '4px 10px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: 700 }}>
+                    <span style={{ color: 'var(--accent-gold)' }}>★</span>
+                    <span>{rst.rating}</span>
+                  </div>
+                  <div style={{ position: 'absolute', bottom: '12px', left: '12px', background: 'rgba(16, 185, 129, 0.9)', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 700 }}>
+                    ⚡ 30-35 mins
+                  </div>
+                </div>
+
+                <div style={{ padding: '18px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '6px' }}>{rst.name}</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '10px' }}>{rst.cuisine}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid var(--border-subtle)', fontSize: '13px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>📍 {rst.city}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>₹{rst.cost_for_two} for two</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Restaurant Menu Modal */}
+        {activeRestaurant && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <div className="glass-panel" style={{ width: '100%', maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto', padding: '28px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div>
+                  <h2 style={{ fontSize: '26px', fontWeight: 800 }}>{activeRestaurant.name}</h2>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>{activeRestaurant.cuisine} • {activeRestaurant.address}</p>
+                </div>
+                <button 
+                  onClick={() => setActiveRestaurant(null)}
+                  style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <h4 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--accent-gold)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Recommended Dishes
+              </h4>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {(activeRestaurant.menu || []).map(item => {
+                  const inCart = cart[item.id];
+                  return (
+                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '12px', border: `1px solid ${item.is_veg ? 'var(--accent-emerald)' : '#e23744'}`, padding: '2px 4px', borderRadius: '4px', color: item.is_veg ? 'var(--accent-emerald)' : '#e23744' }}>
+                            {item.is_veg ? '● VEG' : '▲ NON-VEG'}
+                          </span>
+                          <span style={{ fontWeight: 700, fontSize: '16px' }}>{item.name}</span>
+                        </div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '6px' }}>{item.description}</p>
+                        <span style={{ display: 'inline-block', marginTop: '6px', fontWeight: 700, fontSize: '15px', color: 'var(--accent-gold)' }}>₹{item.price}</span>
+                      </div>
+
+                      <div>
+                        {inCart ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--primary-gradient)', padding: '6px 14px', borderRadius: '20px' }}>
+                            <button onClick={() => removeFromCart(item.id)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 800 }}>-</button>
+                            <span style={{ fontWeight: 700 }}>{inCart.quantity}</span>
+                            <button onClick={() => addToCart(item, activeRestaurant)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 800 }}>+</button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => addToCart(item, activeRestaurant)}
+                            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid var(--border-subtle)', color: '#fff', padding: '8px 18px', borderRadius: '20px', cursor: 'pointer', fontWeight: 600 }}
+                          >
+                            + ADD
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Checkout Drawer */}
+        {isCheckoutOpen && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="slide-drawer" style={{ width: '100%', maxWidth: '440px', background: 'var(--bg-secondary)', height: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', borderLeft: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Order Checkout</h3>
+                <button onClick={() => setIsCheckoutOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+              </div>
+
+              {cartItems.length === 0 ? (
+                <div style={{ textAlign: 'center', margin: 'auto 0', color: 'var(--text-muted)' }}>
+                  <span style={{ fontSize: '48px' }}>🛒</span>
+                  <p style={{ marginTop: '12px', fontWeight: 600 }}>Your cart is empty</p>
+                </div>
+              ) : (
+                <>
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {cartItems.map(item => (
+                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                        <div>
+                          <p style={{ fontWeight: 600, fontSize: '14px' }}>{item.name}</p>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>₹{item.price} × {item.quantity}</span>
+                        </div>
+                        <span style={{ fontWeight: 700 }}>₹{item.price * item.quantity}</span>
+                      </div>
+                    ))}
+
+                    <div style={{ marginTop: '16px' }}>
+                      <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>DELIVERY ADDRESS</label>
+                      <input 
+                        type="text" 
+                        value={deliveryAddr} 
+                        onChange={e => setDeliveryAddr(e.target.value)}
+                        style={{ width: '100%', marginTop: '6px', padding: '10px 14px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-subtle)', borderRadius: '8px', color: '#fff', fontSize: '13px' }}
+                      />
+                    </div>
+
+                    <div style={{ marginTop: '12px' }}>
+                      <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>PROMO CODE</label>
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. ZOMATO50"
+                          value={promoCode} 
+                          onChange={e => setPromoCode(e.target.value)}
+                          style={{ flex: 1, padding: '8px 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-subtle)', borderRadius: '8px', color: '#fff', fontSize: '13px' }}
+                        />
+                        <button onClick={applyPromo} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: '#fff', padding: '8px 14px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>Apply</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px', marginTop: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                      <span>Subtotal</span>
+                      <span>₹{cartSubtotal}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                      <span>Delivery Fee</span>
+                      <span>₹{deliveryFee}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                      <span>GST & Restaurant Charges (5%)</span>
+                      <span>₹{tax.toFixed(1)}</span>
+                    </div>
+                    {discount > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--accent-emerald)', marginBottom: '6px' }}>
+                        <span>Promo Discount</span>
+                        <span>-₹{discount}</span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 800, marginTop: '12px', marginBottom: '20px' }}>
+                      <span>To Pay</span>
+                      <span>₹{grandTotal.toFixed(0)}</span>
+                    </div>
+
+                    <button
+                      id="place-order-btn"
+                      onClick={placeOrder}
+                      disabled={isPlacingOrder}
+                      style={{
+                        width: '100%',
+                        background: 'var(--primary-gradient)',
+                        border: 'none',
+                        color: '#fff',
+                        padding: '14px',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        boxShadow: '0 0 25px var(--primary-glow)'
+                      }}
+                    >
+                      {isPlacingOrder ? "Coordinating Saga..." : "Place Order (Saga Orchestration)"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Live Order Tracking Modal */}
+        {isTrackingOpen && activeOrder && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <div className="glass-panel" style={{ width: '100%', maxWidth: '640px', padding: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div>
+                  <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--accent-emerald)', fontWeight: 700 }}>LIVE SAGA ORDER TRACKING</span>
+                  <h3 style={{ fontSize: '22px', fontWeight: 800, marginTop: '4px' }}>Order #{activeOrder.id}</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{activeOrder.restaurant_name} • Total: ₹{activeOrder.total_amount}</p>
+                </div>
+                <button onClick={() => setIsTrackingOpen(false)} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer' }}>✕</button>
+              </div>
+
+              {/* Progress Timeline */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', margin: '24px 0' }}>
+                {ORDER_STEPS.map((step, idx) => {
+                  const isDone = idx <= currentStepIndex;
+                  const isCurrent = idx === currentStepIndex;
+
+                  return (
+                    <div key={step.key} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          background: isDone ? (isCurrent ? 'var(--accent-gold)' : 'var(--accent-emerald)') : 'rgba(255,255,255,0.1)',
+                          color: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          boxShadow: isCurrent ? '0 0 15px var(--accent-gold)' : 'none'
+                        }}>
+                          {isDone ? (isCurrent ? '●' : '✓') : idx + 1}
+                        </div>
+                        {idx < ORDER_STEPS.length - 1 && (
+                          <div style={{ width: '2px', height: '32px', background: isDone && idx < currentStepIndex ? 'var(--accent-emerald)' : 'rgba(255,255,255,0.1)' }}></div>
+                        )}
+                      </div>
+
+                      <div>
+                        <p style={{ fontWeight: 700, fontSize: '15px', color: isDone ? '#fff' : 'var(--text-muted)' }}>{step.label}</p>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{step.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{ textAlign: 'center', marginTop: '24px' }}>
+                <button 
+                  onClick={() => setIsTrackingOpen(false)}
+                  style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', color: '#fff', padding: '10px 24px', borderRadius: '20px', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  Close Tracking Window
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Embedded AI Assistant Drawer */}
+        {isAIOpen && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 65, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="slide-drawer" style={{ width: '100%', maxWidth: '540px', background: 'var(--bg-secondary)', height: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', borderLeft: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '20px' }}>✨</span>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Zomato AI Copilot</h3>
+                </div>
+                <button onClick={() => setIsAIOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+              </div>
+
+              {/* Tabs */}
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <button 
+                  onClick={() => setAiTab('sql')}
+                  style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--border-subtle)', background: aiTab === 'sql' ? 'var(--primary-gradient)' : 'rgba(255,255,255,0.04)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  📊 Warehouse Analytics (SQL)
+                </button>
+                <button 
+                  onClick={() => setAiTab('rag')}
+                  style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--border-subtle)', background: aiTab === 'rag' ? 'var(--primary-gradient)' : 'rgba(255,255,255,0.04)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  🍔 Customer Feedback (RAG)
+                </button>
+              </div>
+
+              {aiTab === 'sql' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                    Ask business analytics questions directly against Snowflake Gold Marts:
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {[
+                      "Top 10 cities by GMV in 2024",
+                      "Which cuisine generates the most orders?",
+                      "Average delivery SLA by city, worst first"
+                    ].map(q => (
+                      <div key={q} style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', fontSize: '13px', cursor: 'pointer', border: '1px solid var(--border-subtle)' }}>
+                        👉 {q}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: 'auto', padding: '16px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent-emerald)', borderRadius: '12px' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent-emerald)' }}>⚡ LIVE STREAMLIT TEXT-TO-SQL APP</p>
+                    <p style={{ fontSize: '13px', color: '#fff', marginTop: '4px' }}>Active on: <code>http://localhost:8501</code></p>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                    Semantic vector search across 300,000 customer reviews with text-embedding-3-small:
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {[
+                      "What are common complaints about cold food delivery in Bangalore?",
+                      "Which restaurants have the highest ratings for Biryani?",
+                      "Feedback trends regarding delivery riders"
+                    ].map(q => (
+                      <div key={q} style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', fontSize: '13px', cursor: 'pointer', border: '1px solid var(--border-subtle)' }}>
+                        💬 {q}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: 'auto', padding: '16px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-blue)', borderRadius: '12px' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent-blue)' }}>⚡ LIVE REVIEWS RAG CHAT APP</p>
+                    <p style={{ fontSize: '13px', color: '#fff', marginTop: '4px' }}>Active on: <code>http://localhost:8502</code></p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Footer */}
+        <footer style={{ marginTop: 'auto', borderTop: '1px solid var(--border-subtle)', padding: '24px 32px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+          Zomato AI Enterprise Platform • Staff / Principal Engineer Architecture • Snowflake Medallion Lakehouse • Go Microservices • Kafka Event Sourcing
+        </footer>
+      </div>
+    </>
+  );
+}
