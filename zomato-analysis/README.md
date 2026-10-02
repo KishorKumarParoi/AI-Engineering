@@ -75,26 +75,28 @@ A production-grade batch data engineering and AI analytics platform processing f
 ```text
 zomato-analysis/
 |-- Makefile                    # Developer ergonomics CLI (make test, make de, make check, etc.)
-|-- run.sh                      # Master scripts checker and unified command dispatcher
-|-- test_conn.py                # Master test runner (aggregates testing/ suites into executive scorecard)
-|-- test_con.py                 # Compatibility wrapper delegating to test_conn.py
+|-- run.sh                      # Master script runner (default: runs data engineering with full live logs)
+|-- test_connection.py          # Master test runner (streams real-time logs for all test suites)
 |-- main.py                     # Executive CLI entrypoint (python main.py info, test, pipeline)
 |-- Dockerfile                  # Astronomer Airflow container with isolated dbt venv
 |-- airflow_settings.yaml       # Automated Airflow connections (snowflake_default) and variables
 |-- requirements.txt            # Python dependencies for Airflow runtime
 |-- packages.txt                # System packages for container (git, build tools)
 |-- pyproject.toml              # Local uv package specification
-|-- scripts/                    # Production automation scripts
-|   |-- data_engineering.sh     # dbt Medallion orchestrator (debug, snapshot, core, ai marts)
-|   |-- ai_pipeline.sh          # LLM enrichment, embeddings generation & vector caching
-|   |-- orchestration.sh        # Astronomer Airflow lifecycle controller (start, stop, trigger)
-|   |-- serve_apps.sh           # Streamlit application server launcher
-|   `-- setup_env.sh            # Environment doctor and dependency bootstrapper
+|-- scripts/                    # Platform automation scripts
+|   `-- data-engineering/       # Core Data Engineering & Platform Scripts
+|       |-- data_engineering.sh # dbt Medallion orchestrator (debug, snapshot, core, ai marts)
+|       |-- ai_pipeline.sh      # LLM enrichment, embeddings generation & vector caching
+|       |-- orchestration.sh    # Astronomer Airflow lifecycle controller (start, stop, trigger)
+|       |-- serve_apps.sh       # Streamlit application server launcher
+|       `-- setup_env.sh        # Environment doctor and dependency bootstrapper
 |-- testing/                    # Modular verification test suites
-|   |-- __init__.py             # Test package definition
-|   |-- test_data_engineering_part.py # Comprehensive Snowflake Medallion, S3, and SCD2 checks
-|   |-- test_ai_layer.py        # OpenAI embeddings, RAG semantic search, and SQL guardrail tests
-|   `-- test_orchestration.py   # Airflow DAG AST syntax, task graph, and container health tests
+|   `-- data-engineering/       # Data Engineering test suites
+|       |-- __init__.py         # Test package definition
+|       |-- test_snowflake_connection.py  # Snowflake session, credentials, and medallion schemas
+|       |-- test_data_engineering_part.py # Comprehensive Snowflake Medallion, S3, and SCD2 checks
+|       |-- test_ai_layer.py    # OpenAI embeddings, RAG semantic search, and SQL guardrail tests
+|       `-- test_orchestration.py # Airflow DAG AST syntax, task graph, and container health tests
 |-- dags/
 |   `-- zomato_batch.py         # Master Airflow orchestration DAG
 |-- zomato/                     # dbt Medallion Transformations Project
@@ -141,30 +143,33 @@ The master pipeline DAG `zomato_batch` runs on Astronomer Airflow and orchestrat
 ## 5. Developer Workflow & CLI Commands
 
 ### A. One-Click Scripts Checking (`./run.sh check` or `make check`)
-Validates that all automation scripts in `scripts/` exist, have executable permissions (`chmod +x`), and pass bash syntax validation:
+Validates that all automation scripts in `scripts/data-engineering/` exist, have executable permissions (`chmod +x`), and pass bash syntax validation:
 ```bash
 ./run.sh check
 # or
 make check
 ```
 
-### B. Master Test Runner (`./test_conn.py` or `make test`)
-Discovers, executes, and displays an aggregated Senior Staff / Lead Engineer verification scorecard across all modules:
+### B. Master Test Runner (`./test_connection.py` or `make test`)
+Executes all verification suites in `testing/data-engineering/`, streams real-time test logs, and renders an executive verification scorecard matrix:
 ```bash
-./test_conn.py
+./test_connection.py
 # or
 make test
 ```
 *Run individual suites:*
 ```bash
-./test_conn.py --suite de     # Snowflake Medallion, S3 stage, 35M+ rows, SCD2
-./test_conn.py --suite ai     # OpenAI embeddings, RAG search, Text-to-SQL
-./test_conn.py --suite orch   # Airflow DAG AST, task graphs, container status
+./test_connection.py --suite conn    # Snowflake session context & medallion schemas
+./test_connection.py --suite de      # Snowflake Medallion, S3 stage, 35M+ rows, SCD2
+./test_connection.py --suite ai      # OpenAI embeddings, RAG search, Text-to-SQL
+./test_connection.py --suite orch    # Airflow DAG AST, task graphs, container status
 ```
 
-### C. Data Engineering Pipeline (`./scripts/data_engineering.sh` or `make de`)
-Executes the Medallion transformation pipeline:
+### C. Data Engineering Pipeline (`./run.sh` or `make de`)
+Executes the Medallion transformation pipeline and streams full logs:
 ```bash
+./run.sh
+# or
 make de
 # Subcommands:
 make de-debug       # Test Snowflake connectivity
@@ -201,7 +206,7 @@ make doctor
 
 ### Step 2: Run Full Test Verification Matrix
 ```bash
-./test_conn.py
+./test_connection.py
 ```
 
 ### Step 3: Run Full Data Engineering Medallion Build

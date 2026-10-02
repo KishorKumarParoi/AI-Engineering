@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --with openai --with snowflake-connector-python --with python-dotenv python
 # -*- coding: utf-8 -*-
 """
-Test Suite: testing/test_ai_layer.py
+Test Suite: testing/data-engineering/test_ai_layer.py
 Purpose: AI Layer Verification (OpenAI Embedding, RAG, Text-to-SQL & Enrichment)
 Tier: Senior Staff / Lead Data Engineer Standard
 """
@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -53,7 +53,7 @@ def run_tests():
         # 2. Test Text-to-SQL Model prompt
         print(f"{BLUE}[INFO]{NC} Testing Text-to-SQL logic...")
         from ai.text_to_sql import generate_sql, is_safe
-        sql = generate_sql("Top 3 cities by total orders")
+        sql = generate_sql("Top 3 cities by total orders", client=client)
         print(f"{GREEN}[PASS]{NC} Generated SQL: {BOLD}{sql}{NC}")
         assert is_safe(sql), "Generated SQL failed safety check!"
         print(f"{GREEN}[PASS]{NC} Query passed safety and read-only validation")

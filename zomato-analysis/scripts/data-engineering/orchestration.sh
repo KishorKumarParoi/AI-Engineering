@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Script: scripts/orchestration.sh
+# Script: scripts/data-engineering/orchestration.sh
 # Purpose: Astronomer Airflow DAG & Orchestrator Management
 # Tier: Senior Staff / Lead Data Engineer Standard
 # ==============================================================================
@@ -24,7 +24,7 @@ log_warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$PROJECT_ROOT"
 
 check_astro() {
@@ -111,7 +111,7 @@ case "$COMMAND" in
         ;;
     help|--help|-h)
         print_header
-        echo "Usage: ./scripts/orchestration.sh [COMMAND]"
+        echo "Usage: ./scripts/data-engineering/orchestration.sh [COMMAND]"
         echo ""
         echo "Commands:"
         echo "  start     Start local Astronomer Airflow dev environment (astro dev start)"
@@ -124,7 +124,7 @@ case "$COMMAND" in
         ;;
     *)
         log_error "Unknown command: $COMMAND"
-        echo "Run './scripts/orchestration.sh help' for usage instructions."
+        echo "Run './scripts/data-engineering/orchestration.sh help' for usage instructions."
         exit 1
         ;;
 esac

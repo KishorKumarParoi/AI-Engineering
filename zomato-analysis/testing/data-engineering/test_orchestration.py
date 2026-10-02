@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run python
 # -*- coding: utf-8 -*-
 """
-Test Suite: testing/test_orchestration.py
+Test Suite: testing/data-engineering/test_orchestration.py
 Purpose: DAG Integrity, Task Graph & Airflow Orchestration Verification
 Tier: Senior Staff / Lead Data Engineer Standard
 
@@ -20,7 +20,7 @@ import ast
 import subprocess
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 GREEN = "\033[0;32m"
 BLUE = "\033[0;34m"
@@ -96,7 +96,7 @@ def test_astro_status():
             if "running" in line or "NAME" in line:
                 print(f"  {line}")
     else:
-        print(f"{YELLOW}[INFO] Astronomer containers not currently running. Use 'astro dev start' or './scripts/orchestration.sh start'.{NC}")
+        print(f"{YELLOW}[INFO] Astronomer containers not currently running. Use 'astro dev start'.{NC}")
 
     return True
 

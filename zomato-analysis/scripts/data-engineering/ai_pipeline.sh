@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Script: scripts/ai_pipeline.sh
+# Script: scripts/data-engineering/ai_pipeline.sh
 # Purpose: AI & LLM Intelligence Pipeline Orchestrator
 # Tier: Senior Staff / Lead Data Engineer Standard
 # ==============================================================================
@@ -24,7 +24,7 @@ log_warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$PROJECT_ROOT"
 
 ENV_FILE="$PROJECT_ROOT/.env"
@@ -115,7 +115,7 @@ case "$COMMAND" in
         ;;
     help|--help|-h)
         print_header
-        echo "Usage: ./scripts/ai_pipeline.sh [COMMAND]"
+        echo "Usage: ./scripts/data-engineering/ai_pipeline.sh [COMMAND]"
         echo ""
         echo "Commands:"
         echo "  all        Run LLM enrichment -> Embeddings generation -> dbt AI marts [Default]"
@@ -126,7 +126,7 @@ case "$COMMAND" in
         ;;
     *)
         log_error "Unknown command: $COMMAND"
-        echo "Run './scripts/ai_pipeline.sh help' for usage instructions."
+        echo "Run './scripts/data-engineering/ai_pipeline.sh help' for usage instructions."
         exit 1
         ;;
 esac

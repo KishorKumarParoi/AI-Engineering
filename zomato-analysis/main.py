@@ -54,8 +54,9 @@ def cmd_info(args):
     print(f"  Orchestration Engine : Apache Airflow on Astronomer Runtime 3.3-8")
     print("")
     print(f"{BOLD}Quick Execution Commands:{NC}")
+    print("  ./run.sh             - Run Data Engineering pipeline & see full logs")
     print("  ./run.sh check       - Validate platform scripts")
-    print("  ./test_conn.py       - Execute master verification matrix")
+    print("  ./test_connection.py - Execute master verification matrix with live logs")
     print("  make de              - Run full dbt medallion pipeline")
     print("  make ai              - Run LLM enrichment & vector indexing")
     print("  make sql             - Launch Text-to-SQL UI")
@@ -67,16 +68,16 @@ def cmd_check(args):
 
 def cmd_test(args):
     suite_arg = ["--suite", args.suite] if args.suite else []
-    subprocess.run(["./test_conn.py"] + suite_arg, cwd=str(PROJECT_ROOT))
+    subprocess.run(["./test_connection.py"] + suite_arg, cwd=str(PROJECT_ROOT))
 
 def cmd_pipeline(args):
-    subprocess.run(["./scripts/data_engineering.sh", args.target], cwd=str(PROJECT_ROOT))
+    subprocess.run(["./scripts/data-engineering/data_engineering.sh", args.target], cwd=str(PROJECT_ROOT))
 
 def cmd_enrich(args):
-    subprocess.run(["./scripts/ai_pipeline.sh", "all"], cwd=str(PROJECT_ROOT))
+    subprocess.run(["./scripts/data-engineering/ai_pipeline.sh", "all"], cwd=str(PROJECT_ROOT))
 
 def cmd_serve(args):
-    subprocess.run(["./scripts/serve_apps.sh", args.app], cwd=str(PROJECT_ROOT))
+    subprocess.run(["./scripts/data-engineering/serve_apps.sh", args.app], cwd=str(PROJECT_ROOT))
 
 def main():
     parser = argparse.ArgumentParser(

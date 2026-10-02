@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Script: scripts/data_engineering.sh
+# Script: scripts/data-engineering/data_engineering.sh
 # Purpose: Core Data Engineering Pipeline & Medallion Layer Orchestrator
 # Tier: Senior Staff / Lead Data Engineer Standard
 # ==============================================================================
@@ -16,27 +16,20 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 log_info()    { echo -e "${BLUE}[INFO]${NC} $1"; }
 log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 log_warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# -----------------------------
-# Directory Resolution
-# -----------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$PROJECT_ROOT"
 
-# -----------------------------
-# Environment Resolution
-# -----------------------------
 ENV_FILE="$PROJECT_ROOT/.env"
 if [ -f "$ENV_FILE" ]; then
     set -a
-    # shellcheck disable=SC1090
     source <(grep -v '^[[:space:]]*#' "$ENV_FILE" | grep -v '^[[:space:]]*$')
     set +a
 fi
@@ -118,7 +111,7 @@ case "$COMMAND" in
         ;;
     help|--help|-h)
         print_header
-        echo "Usage: ./scripts/data_engineering.sh [COMMAND]"
+        echo "Usage: ./scripts/data-engineering/data_engineering.sh [COMMAND]"
         echo ""
         echo "Commands:"
         echo "  all        Run debug -> snapshot -> core build -> ai marts build [Default]"
@@ -130,7 +123,7 @@ case "$COMMAND" in
         ;;
     *)
         log_error "Unknown command: $COMMAND"
-        echo "Run './scripts/data_engineering.sh help' for usage instructions."
+        echo "Run './scripts/data-engineering/data_engineering.sh help' for usage instructions."
         exit 1
         ;;
 esac

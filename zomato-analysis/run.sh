@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script: run.sh
-# Purpose: Master Platform Scripts Checker & CLI Dispatcher
+# Purpose: Master Platform Runner & Orchestrator
 # Tier: Senior Staff / Lead Engineer Standard
+#
+# Usage:
+#   ./run.sh             # Executes Data Engineering pipeline & streams full logs
+#   ./run.sh check       # Audits all scripts in scripts/data-engineering/
+#   ./run.sh de [cmd]    # Runs data_engineering.sh (all, debug, snapshot, core, ai)
+#   ./run.sh ai [cmd]    # Runs ai_pipeline.sh (all, enrich, embed, marts)
+#   ./run.sh astro [cmd] # Controls Airflow (start, stop, status, trigger)
+#   ./run.sh apps [app]  # Launches Streamlit app (sql or rag)
+#   ./run.sh doctor      # Runs environment setup and dependency verification
+#   ./run.sh test        # Runs master test suite (./test_connection.py)
 # ==============================================================================
 
 set -euo pipefail
@@ -18,40 +28,34 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-log_info()    { echo -e "${BLUE}[INFO]${NC} $1"; }
-log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
-log_warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
-log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
-
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_ROOT"
 
-SCRIPTS_DIR="$PROJECT_ROOT/scripts"
-
-# Expected core platform scripts
-EXPECTED_SCRIPTS=(
-    "data_engineering.sh"
-    "ai_pipeline.sh"
-    "orchestration.sh"
-    "serve_apps.sh"
-    "setup_env.sh"
-)
+DE_SCRIPTS_DIR="$PROJECT_ROOT/scripts/data-engineering"
 
 print_header() {
     echo -e "${CYAN}${BOLD}"
     echo "=========================================================="
-    echo "       ZOMATO AI PLATFORM - SCRIPTS CHECKER & RUNNER      "
+    echo "      ZOMATO AI DATA PLATFORM - MASTER SCRIPT RUNNER      "
     echo "=========================================================="
     echo -e "${NC}"
 }
 
-check_all_scripts() {
+check_scripts() {
     print_header
-    log_info "Auditing and validating platform automation scripts in scripts/..."
+    echo -e "${BLUE}[INFO]${NC} Auditing automation scripts in scripts/data-engineering/..."
     echo ""
 
-    printf "  %-30s | %-12s | %-10s | %-10s\n" "SCRIPT" "PERMISSIONS" "SYNTAX" "STATUS"
-    echo "  -------------------------------+--------------+------------+------------"
+    EXPECTED_SCRIPTS=(
+        "data_engineering.sh"
+        "ai_pipeline.sh"
+        "orchestration.sh"
+        "serve_apps.sh"
+        "setup_env.sh"
+    )
+
+    printf "  %-32s | %-12s | %-10s | %-10s\n" "SCRIPT" "PERMISSIONS" "SYNTAX" "STATUS"
+    echo "  ---------------------------------+--------------+------------+------------"
 
     TOTAL=0
     PASSED=0
@@ -59,21 +63,19 @@ check_all_scripts() {
 
     for script_name in "${EXPECTED_SCRIPTS[@]}"; do
         TOTAL=$((TOTAL + 1))
-        script_path="$SCRIPTS_DIR/$script_name"
+        script_path="$DE_SCRIPTS_DIR/$script_name"
 
         if [ ! -f "$script_path" ]; then
-            printf "  %-30s | %-12s | %-10s | %-10s\n" "$script_name" "MISSING" "N/A" "[FAIL]"
+            printf "  %-32s | %-12s | %-10s | %-10s\n" "$script_name" "MISSING" "N/A" "[FAIL]"
             FAILED=$((FAILED + 1))
             continue
         fi
 
-        # Check / fix execute permission
         if [ ! -x "$script_path" ]; then
             chmod +x "$script_path"
         fi
         perms="$(ls -l "$script_path" | awk '{print $1}')"
 
-        # Check bash syntax
         if bash -n "$script_path" 2>/dev/null; then
             syntax_status="VALID"
             overall_status="[READY]"
@@ -84,17 +86,17 @@ check_all_scripts() {
             FAILED=$((FAILED + 1))
         fi
 
-        printf "  %-30s | %-12s | %-10s | %-10s\n" "scripts/$script_name" "$perms" "$syntax_status" "$overall_status"
+        printf "  %-32s | %-12s | %-10s | %-10s\n" "scripts/data-engineering/$script_name" "$perms" "$syntax_status" "$overall_status"
     done
 
-    echo "  -------------------------------+--------------+------------+------------"
+    echo "  ---------------------------------+--------------+------------+------------"
     echo ""
 
     if [ "$FAILED" -eq 0 ]; then
-        log_success "All $TOTAL scripts validated and operational (100% READY)!"
+        echo -e "${GREEN}[SUCCESS] All $TOTAL scripts validated and operational (100% READY)!${NC}"
         return 0
     else
-        log_error "$FAILED of $TOTAL scripts failed inspection."
+        echo -e "${RED}[ERROR] $FAILED of $TOTAL scripts failed inspection.${NC}"
         return 1
     fi
 }
@@ -103,55 +105,72 @@ show_help() {
     print_header
     echo "Usage: ./run.sh [COMMAND] [ARGS...]"
     echo ""
-    echo "Platform Commands:"
-    echo "  check                Validate all scripts in scripts/ (default)"
-    echo "  de [args...]         Run Data Engineering orchestrator (scripts/data_engineering.sh)"
-    echo "  ai [args...]         Run AI/LLM pipeline orchestrator (scripts/ai_pipeline.sh)"
-    echo "  astro [args...]      Manage Airflow dev environment (scripts/orchestration.sh)"
-    echo "  apps [sql|rag]       Launch Streamlit applications (scripts/serve_apps.sh)"
-    echo "  doctor               Run environment doctor & sync deps (scripts/setup_env.sh)"
-    echo "  test [args...]       Execute master test suite (./test_conn.py)"
+    echo "Commands:"
+    echo "  (no args)            Run Data Engineering pipeline and stream full logs [Default]"
+    echo "  de [args...]         Run scripts/data-engineering/data_engineering.sh"
+    echo "  ai [args...]         Run scripts/data-engineering/ai_pipeline.sh"
+    echo "  astro [args...]      Run scripts/data-engineering/orchestration.sh"
+    echo "  apps [sql|rag]       Run scripts/data-engineering/serve_apps.sh"
+    echo "  doctor               Run scripts/data-engineering/setup_env.sh"
+    echo "  check                Validate script permissions and syntax in scripts/data-engineering/"
+    echo "  test [args...]       Execute master verification suite (./test_connection.py)"
     echo "  help                 Show this help manual"
     echo ""
-    echo "Quick Examples:"
-    echo "  ./run.sh check       # Check all scripts"
-    echo "  ./run.sh de all      # Run complete dbt medallion pipeline"
-    echo "  ./run.sh ai enrich   # Run review enrichment"
-    echo "  ./run.sh apps sql    # Launch Text-to-SQL app on port 8501"
-    echo "  ./run.sh test        # Run comprehensive test scorecard"
+    echo "Examples:"
+    echo "  ./run.sh             # Run full data engineering build with logs"
+    echo "  ./run.sh check       # Audit all scripts"
+    echo "  ./run.sh de debug    # Run dbt debug connectivity test"
+    echo "  ./run.sh ai enrich   # Run customer review LLM enrichment"
+    echo "  ./run.sh apps sql    # Launch Text-to-SQL Streamlit app"
     echo ""
 }
 
-COMMAND="${1:-check}"
-shift || true
+# If no argument provided, default to running data engineering with live logs
+COMMAND="${1:-de}"
+if [ $# -gt 0 ]; then
+    shift
+fi
 
 case "$COMMAND" in
-    check)
-        check_all_scripts
-        ;;
     de|data-engineering|data_engineering)
-        "$SCRIPTS_DIR/data_engineering.sh" "$@"
+        TARGET="${1:-all}"
+        shift || true
+        "$DE_SCRIPTS_DIR/data_engineering.sh" "$TARGET" "$@"
         ;;
     ai|ai-pipeline|ai_pipeline)
-        "$SCRIPTS_DIR/ai_pipeline.sh" "$@"
+        TARGET="${1:-all}"
+        shift || true
+        "$DE_SCRIPTS_DIR/ai_pipeline.sh" "$TARGET" "$@"
         ;;
     astro|airflow|orchestration)
-        "$SCRIPTS_DIR/orchestration.sh" "$@"
+        "$DE_SCRIPTS_DIR/orchestration.sh" "$@"
         ;;
     apps|serve|app)
-        "$SCRIPTS_DIR/serve_apps.sh" "$@"
+        "$DE_SCRIPTS_DIR/serve_apps.sh" "$@"
         ;;
     doctor|setup)
-        "$SCRIPTS_DIR/setup_env.sh" "$@"
+        "$DE_SCRIPTS_DIR/setup_env.sh" "$@"
+        ;;
+    check)
+        check_scripts
         ;;
     test|tests)
-        ./test_conn.py "$@"
+        ./test_connection.py "$@"
+        ;;
+    all)
+        print_header
+        echo -e "${BLUE}[INFO] Running end-to-end platform workflow...${NC}"
+        "$DE_SCRIPTS_DIR/setup_env.sh"
+        echo ""
+        "$DE_SCRIPTS_DIR/data_engineering.sh" all
+        echo ""
+        "$DE_SCRIPTS_DIR/ai_pipeline.sh" all
         ;;
     help|--help|-h)
         show_help
         ;;
     *)
-        log_error "Unknown command: $COMMAND"
+        echo -e "${RED}[ERROR] Unknown command: $COMMAND${NC}"
         echo "Run './run.sh help' for usage instructions."
         exit 1
         ;;

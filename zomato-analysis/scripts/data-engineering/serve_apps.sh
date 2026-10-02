@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Script: scripts/serve_apps.sh
+# Script: scripts/data-engineering/serve_apps.sh
 # Purpose: AI Streamlit Application Server Launcher
 # Tier: Senior Staff / Lead Data Engineer Standard
 # ==============================================================================
@@ -24,7 +24,7 @@ log_warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$PROJECT_ROOT"
 
 print_header() {
@@ -63,20 +63,20 @@ case "$COMMAND" in
         ;;
     help|--help|-h)
         print_header
-        echo "Usage: ./scripts/serve_apps.sh [APP] [PORT]"
+        echo "Usage: ./scripts/data-engineering/serve_apps.sh [APP] [PORT]"
         echo ""
         echo "Applications:"
         echo "  sql        Start Text-to-SQL Analytics Assistant (Default port: 8501)"
         echo "  rag        Start Semantic Reviews RAG Chat (Default port: 8502)"
         echo ""
         echo "Examples:"
-        echo "  ./scripts/serve_apps.sh sql"
-        echo "  ./scripts/serve_apps.sh rag 8505"
+        echo "  ./scripts/data-engineering/serve_apps.sh sql"
+        echo "  ./scripts/data-engineering/serve_apps.sh rag 8505"
         echo ""
         ;;
     *)
         log_error "Unknown application: $COMMAND"
-        echo "Run './scripts/serve_apps.sh help' for usage instructions."
+        echo "Run './scripts/data-engineering/serve_apps.sh help' for usage instructions."
         exit 1
         ;;
 esac

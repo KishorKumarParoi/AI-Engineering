@@ -32,4 +32,4 @@ jobs:
         run: ./run.sh check
 
       - name: Validate Airflow DAG Integrity
-        run: uv run python testing/test_orchestration.py
+        run: uv run python testing/data-engineering/test_orchestration.py

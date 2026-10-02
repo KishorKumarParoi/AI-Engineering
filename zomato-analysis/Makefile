@@ -3,7 +3,7 @@
 # Standard: Senior Staff / Lead Data Engineer Standard
 # ==============================================================================
 
-.PHONY: help check test test-de test-ai test-orch de de-debug de-snapshot de-core de-ai ai ai-enrich ai-embed astro-start astro-stop astro-ps astro-trigger sql rag doctor clean
+.PHONY: help check test test-conn test-de test-ai test-orch de de-debug de-snapshot de-core de-ai ai ai-enrich ai-embed astro-start astro-stop astro-ps astro-trigger sql rag doctor clean
 
 SHELL := /bin/bash
 
@@ -17,8 +17,9 @@ help:
 	@echo "=========================================================="
 	@echo ""
 	@echo "Quality & Testing:"
-	@echo "  make check          Audit and validate all automation scripts in scripts/"
-	@echo "  make test           Execute master test runner (Scorecard across all 3 suites)"
+	@echo "  make check          Audit and validate all automation scripts in scripts/data-engineering/"
+	@echo "  make test           Execute master test runner (Scorecard across all 4 suites)"
+	@echo "  make test-conn      Test Snowflake connection, role, and medallion schemas"
 	@echo "  make test-de        Test Snowflake Medallion layers (Bronze, Silver, Gold, SCD2)"
 	@echo "  make test-ai        Test OpenAI embeddings, RAG search & SQL guardrails"
 	@echo "  make test-orch      Test Airflow DAG syntax, tasks, and container health"
@@ -54,61 +55,64 @@ check:
 	@./run.sh check
 
 test:
-	@./test_conn.py
+	@./test_connection.py
+
+test-conn:
+	@./test_connection.py --suite conn
 
 test-de:
-	@./test_conn.py --suite de
+	@./test_connection.py --suite de
 
 test-ai:
-	@./test_conn.py --suite ai
+	@./test_connection.py --suite ai
 
 test-orch:
-	@./test_conn.py --suite orch
+	@./test_connection.py --suite orch
 
 de:
-	@./scripts/data_engineering.sh all
+	@./scripts/data-engineering/data_engineering.sh all
 
 de-debug:
-	@./scripts/data_engineering.sh debug
+	@./scripts/data-engineering/data_engineering.sh debug
 
 de-snapshot:
-	@./scripts/data_engineering.sh snapshot
+	@./scripts/data-engineering/data_engineering.sh snapshot
 
 de-core:
-	@./scripts/data_engineering.sh core
+	@./scripts/data-engineering/data_engineering.sh core
 
 de-ai:
-	@./scripts/data_engineering.sh ai
+	@./scripts/data-engineering/data_engineering.sh ai
 
 ai:
-	@./scripts/ai_pipeline.sh all
+	@./scripts/data-engineering/ai_pipeline.sh all
 
 ai-enrich:
-	@./scripts/ai_pipeline.sh enrich
+	@./scripts/data-engineering/ai_pipeline.sh enrich
 
 ai-embed:
-	@./scripts/ai_pipeline.sh embed
+	@./scripts/data-engineering/ai_pipeline.sh embed
 
 astro-start:
-	@./scripts/orchestration.sh start
+	@./scripts/data-engineering/orchestration.sh start
 
 astro-stop:
-	@./scripts/orchestration.sh stop
+	@./scripts/data-engineering/orchestration.sh stop
 
 astro-ps:
-	@./scripts/orchestration.sh status
+	@./scripts/data-engineering/orchestration.sh status
 
 astro-trigger:
-	@./scripts/orchestration.sh trigger
+	@./scripts/data-engineering/orchestration.sh trigger
 
 sql:
-	@./scripts/serve_apps.sh sql
+	@./scripts/data-engineering/serve_apps.sh sql
 
 rag:
-	@./scripts/serve_apps.sh rag
+	@./scripts/data-engineering/serve_apps.sh rag
 
 doctor:
-	@./scripts/setup_env.sh
+	@./scripts/data-engineering/setup_env.sh
 
 clean:
 	@echo "Cleaning cache files and build artifacts..."
