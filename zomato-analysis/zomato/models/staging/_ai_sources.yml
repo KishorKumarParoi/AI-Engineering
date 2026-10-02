@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: ai
+    database: ZOMATO
+    schema: AI
+    description: "LLM-enriched tables produced by OpenAI batch processing"
+    tables:
+      - name: review_enriched
+        description: "Per-review sentiment, topic, and key issue extracted by LLM"

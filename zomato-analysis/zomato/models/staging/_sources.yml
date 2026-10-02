@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: raw
+    database: ZOMATO
+    schema: RAW
+    tables:
+      - name: restaurants
+        description: "Raw restaurant directory from Zomato"
+      - name: users
+        description: "Raw user profile data"
+      - name: food
+        description: "Raw food items catalog"
+      - name: menu
+        description: "Raw menu mappings and prices"
+      - name: orders
+        description: "Raw transaction order headers"
+      - name: order_items
+        description: "Raw order item line entries"
+      - name: reviews
+        description: "Raw customer reviews and feedback"

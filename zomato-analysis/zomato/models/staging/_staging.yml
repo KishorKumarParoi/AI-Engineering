@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: stg_restaurants
+    description: "Cleaned restaurant dimension view"
+    columns:
+      - name: restaurant_id
+        tests:
+          - not_null
+
+  - name: stg_users
+    description: "Cleaned customer view"
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+
+  - name: stg_food
+    description: "Cleaned food items view"
+    columns:
+      - name: food_id
+        tests:
+          - not_null
+
+  - name: stg_menu
+    description: "Cleaned restaurant menu mappings"
+    columns:
+      - name: menu_id
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: "Cleaned orders fact view"
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: restaurant_id
+        tests:
+          - not_null
+
+  - name: stg_order_items
+    description: "Cleaned order items view"
+    columns:
+      - name: order_item_id
+        tests:
+          - not_null
+
+  - name: stg_reviews
+    description: "Cleaned reviews view"
+    columns:
+      - name: review_id
+        tests:
+          - not_null
