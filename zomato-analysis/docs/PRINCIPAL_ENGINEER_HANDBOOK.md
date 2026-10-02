@@ -51,6 +51,8 @@ This handbook serves as the **living architectural blueprint** for planning, con
 
 The platform spans **AWS (Primary Computing & Analytics)**, **GCP (Disaster Recovery & Secondary GKE)**, and **Azure (Multi-Cloud Fallback & Cognitive Services)** behind an Anycast edge.
 
+![Detailed End-to-End System Working Flow](design.png)
+
 ```mermaid
 flowchart TB
     subgraph Clients["Global Client Layer"]

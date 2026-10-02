@@ -161,6 +161,7 @@
 <h2>2. High-Level Design (HLD) &amp; C4 Architecture</h2>
 <h3>2.1 C4 Context &amp; Global Multi-Cloud Topology</h3>
 <p>The platform spans <strong>AWS (Primary Computing &amp; Analytics)</strong>, <strong>GCP (Disaster Recovery &amp; Secondary GKE)</strong>, and <strong>Azure (Multi-Cloud Fallback &amp; Cognitive Services)</strong> behind an Anycast edge.</p>
+<p><img alt="Detailed End-to-End System Working Flow" src="design.png" /></p>
 <pre class="mermaid">
 flowchart TB
     subgraph Clients["Global Client Layer"]
