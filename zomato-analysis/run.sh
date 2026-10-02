@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script: run.sh
-# Purpose: Cross-platform (Ubuntu / Debian / macOS) AWS Authentication verification,
-#          CLI installation helper, S3 Bucket creation, and setup.
+# Purpose: Master One-Click Orchestration & Management CLI for Zomato AI Platform
+# Supports: macOS, Linux (Debian, Ubuntu)
 # ==============================================================================
 
 set -euo pipefail
 
 # -----------------------------
-# Color Formatting
+# Color Formatting (Universal ASCII)
 # -----------------------------
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -24,496 +24,222 @@ log_warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
 # -----------------------------
-# OS & Architecture Detection
+# Directory Resolution
 # -----------------------------
-OS="$(uname -s)"
-ARCH="$(uname -m)"
-
-case "$OS" in
-    Darwin*)
-        OS_TYPE="macos"
-        OS_NAME="macOS ($(sw_vers -productVersion 2>/dev/null || echo 'Darwin'))"
-        ;;
-    Linux*)
-        OS_TYPE="linux"
-        if [ -f /etc/os-release ]; then
-            # shellcheck source=/dev/null
-            . /etc/os-release
-            OS_NAME="${PRETTY_NAME:-Linux}"
-        else
-            OS_NAME="Linux"
-        fi
-        ;;
-    *)
-        OS_TYPE="unknown"
-        OS_NAME="Unknown OS ($OS)"
-        ;;
-esac
-
-echo -e "${CYAN}${BOLD}"
-echo "=========================================================="
-echo "      AWS SETUP & S3 BUCKET INITIALIZATION (MULTI-OS)     "
-echo "=========================================================="
-echo -e "${NC}"
-log_info "Detected OS: ${BOLD}${OS_NAME}${NC} (${ARCH})"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$PROJECT_ROOT"
 
 # -----------------------------
 # Load Environment Variables (.env)
 # -----------------------------
-ENV_FILE="$(dirname "$0")/.env"
+ENV_FILE="$PROJECT_ROOT/.env"
 if [ -f "$ENV_FILE" ]; then
-    log_info "Loading environment variables from .env..."
-    while IFS= read -r line || [ -n "$line" ]; do
-        # Ignore comments and empty lines
-        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-        
-        # Check if line contains '='
-        if [[ "$line" == *"="* ]]; then
-            var_name="${line%%=*}"
-            # Trim whitespace from name
-            var_name="$(echo "$var_name" | tr -d '[:space:]')"
-            
-            var_value="${line#*=}"
-            # Trim whitespace from value
-            var_value="$(echo "$var_value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-            # Remove leading/trailing quotes if present
-            var_value="${var_value#\"}"
-            var_value="${var_value%\"}"
-            var_value="${var_value#\'}"
-            var_value="${var_value%\'}"
-            
-            export "${var_name}=${var_value}"
-        fi
-    done < "$ENV_FILE"
+    set -a
+    # shellcheck disable=SC1090
+    source <(grep -v '^[[:space:]]*#' "$ENV_FILE" | grep -v '^[[:space:]]*$')
+    set +a
 fi
 
-# Configuration Defaults (can be overridden via environment or .env)
-AWS_REGION="${AWS_DEFAULT_REGION:-${AWS_REGION:-us-east-1}}"
-BUCKET_NAME="${S3_BUCKET_NAME:-${AWS_BUCKET_NAME:-zomato-dataset-kkp}}"
+# Fallback defaults
+SNOWFLAKE_USER_VAL="${SNOWFLAKE_USER:-${SNOWFLAKE_USERNAME:-kkp007}}"
+SNOWFLAKE_ROLE_VAL="${SNOWFLAKE_ROLE:-DBT_ROLE}"
+SNOWFLAKE_WH_VAL="${SNOWFLAKE_WAREHOUSE:-ZOMATO_WH}"
+SNOWFLAKE_DB_VAL="${SNOWFLAKE_DATABASE:-ZOMATO}"
+BUCKET_NAME="${S3_BUCKET_NAME:-zomato-dataset-kkp}"
+AWS_REGION="${AWS_REGION:-us-east-1}"
 
-# -----------------------------
-# Function: Install AWS CLI
-# -----------------------------
-install_aws_cli() {
-    log_info "Attempting to install AWS CLI for ${OS_NAME}..."
-    
-    if [ "$OS_TYPE" = "macos" ]; then
-        if command -v brew &> /dev/null; then
-            log_info "Installing AWS CLI via Homebrew..."
-            brew install awscli
-        else
-            log_info "Homebrew not found. Downloading official macOS PKG installer..."
-            curl -fsSL "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "/tmp/AWSCLIV2.pkg"
-            sudo installer -pkg /tmp/AWSCLIV2.pkg -target /
-            rm -f /tmp/AWSCLIV2.pkg
-        fi
-    elif [ "$OS_TYPE" = "linux" ]; then
-        log_info "Installing prerequisites (curl, unzip)..."
-        if command -v apt-get &> /dev/null; then
-            sudo apt-get update -y && sudo apt-get install -y curl unzip
-        elif command -v yum &> /dev/null; then
-            sudo yum install -y curl unzip
-        fi
-
-        local arch_zip="awscli-exe-linux-x86_64.zip"
-        if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-            arch_zip="awscli-exe-linux-aarch64.zip"
-        fi
-
-        log_info "Downloading official AWS CLI v2 (${arch_zip})..."
-        curl -fsSL "https://awscli.amazonaws.com/${arch_zip}" -o "/tmp/awscliv2.zip"
-        unzip -q -o /tmp/awscliv2.zip -d /tmp
-        sudo /tmp/aws/install --update
-        rm -rf /tmp/awscliv2.zip /tmp/aws
-    else
-        log_error "Unsupported OS for automatic install. Please install AWS CLI manually."
-        exit 1
-    fi
+print_banner() {
+    echo -e "${CYAN}${BOLD}"
+    echo "=========================================================="
+    echo "        ZOMATO AI DATA ENGINEERING PLATFORM CLI           "
+    echo "  S3 -> Snowflake -> dbt Medallion -> Airflow -> OpenAI   "
+    echo "=========================================================="
+    echo -e "${NC}"
 }
 
 # -----------------------------
-# 1. Check & Install AWS CLI
+# Helper Commands
 # -----------------------------
-log_info "Checking AWS CLI installation..."
-if ! command -v aws &> /dev/null; then
-    log_warn "AWS CLI is not installed."
-    
-    if [ -t 0 ]; then
-        read -rp "Would you like to install AWS CLI automatically now? [y/N]: " choice
-        case "$choice" in
-            [yY][eE][sS]|[yY])
-                install_aws_cli
-                ;;
-            *)
-                log_error "AWS CLI installation skipped. Please install it manually:"
-                if [ "$OS_TYPE" = "macos" ]; then
-                    echo "  brew install awscli"
-                else
-                    echo "  sudo apt-get update && sudo apt-get install -y curl unzip"
-                    echo "  curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip'"
-                    echo "  unzip awscliv2.zip && sudo ./aws/install"
-                fi
-                exit 1
-                ;;
-        esac
-    else
-        install_aws_cli
+run_health_check() {
+    log_info "Running comprehensive Snowflake & platform health check..."
+    uv run ./test_con.py
+}
+
+run_dbt_pipeline() {
+    log_info "Running dbt Medallion pipeline (Silver, Gold, Snapshots)..."
+    cd "$PROJECT_ROOT/zomato"
+    log_info "1. Verifying dbt connection to Snowflake..."
+    uv run dbt debug --profiles-dir .
+    log_info "2. Executing SCD Type 2 dimension snapshots..."
+    uv run dbt snapshot --profiles-dir .
+    log_info "3. Building core staging views, dimensions, and incremental facts..."
+    uv run dbt build --exclude tag:ai --profiles-dir .
+    log_info "4. Building Gold AI Marts..."
+    uv run dbt build --select tag:ai --profiles-dir .
+    cd "$PROJECT_ROOT"
+    log_success "dbt Medallion transformations completed successfully!"
+}
+
+run_ai_enrichment() {
+    log_info "Running OpenAI LLM customer review enrichment..."
+    if [ -z "${OPENAI_API_KEY:-}" ]; then
+        log_warn "OPENAI_API_KEY is not set in environment or .env. Using mock/skip mode."
     fi
-fi
-log_success "AWS CLI is available: $(aws --version)"
+    uv run python ai/enrich_reviews.py
+    log_success "Review enrichment finished!"
+}
 
-# -----------------------------
-# 2. AWS Authentication / Identity Verification
-# -----------------------------
-log_info "Verifying AWS credentials and caller identity..."
-
-if ! CALLER_IDENTITY=$(aws sts get-caller-identity --output json 2>&1); then
-    log_error "AWS authentication failed!"
-    echo "$CALLER_IDENTITY"
-    echo ""
-    log_warn "No valid AWS credentials found."
-    
-    if [ -t 0 ]; then
-        read -rp "Would you like to run 'aws configure' now? [y/N]: " configure_choice
-        case "$configure_choice" in
-            [yY][eE][sS]|[yY])
-                aws configure
-                CALLER_IDENTITY=$(aws sts get-caller-identity --output json)
-                ;;
-            *)
-                log_error "Exiting. Please configure credentials via 'aws configure' or export AWS_ACCESS_KEY_ID & AWS_SECRET_ACCESS_KEY."
-                exit 1
-                ;;
-        esac
+start_astro_airflow() {
+    log_info "Checking Astronomer Airflow local development environment..."
+    if ! command -v astro &>/dev/null; then
+        log_error "Astro CLI is not installed. Run 'brew install astro' first."
+        return 1
+    fi
+    if astro dev ps 2>/dev/null | grep -q "running"; then
+        log_success "Astro Airflow is already running!"
     else
-        log_error "Please run 'aws configure' or set AWS credentials in environment variables."
+        log_info "Starting Astro dev environment..."
+        astro dev start
+    fi
+    echo ""
+    log_success "Airflow Web UI: http://zomato-analysis.localhost:6563 (or http://localhost:8080)"
+}
+
+trigger_dag() {
+    log_info "Triggering master batch pipeline DAG (zomato_batch)..."
+    astro dev run dags trigger zomato_batch
+    log_success "DAG 'zomato_batch' triggered! Monitor progress in Airflow UI."
+}
+
+launch_rag_app() {
+    log_info "Launching Semantic RAG Review Chat application..."
+    echo -e "${GREEN}Opening Streamlit at: http://localhost:8501${NC}"
+    uv run streamlit run ai/rag_chat.py
+}
+
+launch_sql_app() {
+    log_info "Launching Natural Language Text-to-SQL Analytics application..."
+    echo -e "${GREEN}Opening Streamlit at: http://localhost:8501${NC}"
+    uv run streamlit run ai/text_to_sql.py
+}
+
+run_all_end_to_end() {
+    print_banner
+    log_info "STARTING ONE-CLICK COMPLETE END-TO-END EXECUTION..."
+    echo ""
+
+    # 1. Health & Connection check
+    run_health_check
+    echo ""
+
+    # 2. dbt build
+    run_dbt_pipeline
+    echo ""
+
+    # 3. AI Enrichment
+    run_ai_enrichment
+    echo ""
+
+    # 4. Airflow check/start
+    start_astro_airflow || true
+    echo ""
+
+    # 5. Final summary
+    log_success "=========================================================="
+    log_success "  ALL SYSTEMS OPERATIONAL & PIPELINE EXECUTED CLEANLY!    "
+    log_success "=========================================================="
+    echo ""
+    echo -e "  - ${BOLD}Airflow UI:${NC}    http://zomato-analysis.localhost:6563"
+    echo -e "  - ${BOLD}RAG Chat App:${NC}  ./run.sh rag"
+    echo -e "  - ${BOLD}Text-to-SQL:${NC}   ./run.sh sql"
+    echo -e "  - ${BOLD}Health Check:${NC}  ./run.sh health"
+    echo ""
+}
+
+# -----------------------------
+# CLI Dispatcher
+# -----------------------------
+COMMAND="${1:-}"
+
+case "$COMMAND" in
+    all|"")
+        if [ -t 0 ] && [ -z "$COMMAND" ]; then
+            print_banner
+            echo -e "${BOLD}Select an action to run:${NC}"
+            echo "  1) Run Complete Pipeline End-to-End (Health + dbt + AI + Airflow) [Default]"
+            echo "  2) Run Snowflake Database Health Check (test_con.py)"
+            echo "  3) Run dbt Build & Snapshots (Medallion Layers)"
+            echo "  4) Run OpenAI Review Enrichment (ai/enrich_reviews.py)"
+            echo "  5) Start Astronomer Airflow dev server"
+            echo "  6) Trigger 'zomato_batch' DAG in Airflow"
+            echo "  7) Launch Semantic RAG Review Chat (Streamlit)"
+            echo "  8) Launch Text-to-SQL Analytics (Streamlit)"
+            echo "  q) Quit"
+            echo ""
+            read -rp "Enter choice [1-8 or q, default=1]: " choice
+            choice="${choice:-1}"
+            case "$choice" in
+                1) run_all_end_to_end ;;
+                2) run_health_check ;;
+                3) run_dbt_pipeline ;;
+                4) run_ai_enrichment ;;
+                5) start_astro_airflow ;;
+                6) trigger_dag ;;
+                7) launch_rag_app ;;
+                8) launch_sql_app ;;
+                [qQ]) exit 0 ;;
+                *) log_error "Invalid choice: $choice"; exit 1 ;;
+            esac
+        else
+            run_all_end_to_end
+        fi
+        ;;
+    health|check)
+        print_banner
+        run_health_check
+        ;;
+    dbt)
+        print_banner
+        run_dbt_pipeline
+        ;;
+    enrich|ai)
+        print_banner
+        run_ai_enrichment
+        ;;
+    astro|airflow)
+        print_banner
+        start_astro_airflow
+        ;;
+    trigger)
+        print_banner
+        trigger_dag
+        ;;
+    rag)
+        print_banner
+        launch_rag_app
+        ;;
+    sql)
+        print_banner
+        launch_sql_app
+        ;;
+    help|--help|-h)
+        print_banner
+        echo "Usage: ./run.sh [COMMAND]"
+        echo ""
+        echo "Commands:"
+        echo "  all         Execute full pipeline (Health Check -> dbt Build -> AI Enrichment -> Airflow)"
+        echo "  health      Run Snowflake & platform health check (test_con.py)"
+        echo "  dbt         Run dbt debug, snapshots, and full build (Core + AI marts)"
+        echo "  enrich      Run OpenAI LLM customer review enrichment"
+        echo "  airflow     Check and start Astronomer Airflow local server"
+        echo "  trigger     Trigger zomato_batch DAG execution in Airflow"
+        echo "  rag         Launch Streamlit Semantic RAG Review Chat"
+        echo "  sql         Launch Streamlit Natural Language Text-to-SQL"
+        echo ""
+        ;;
+    *)
+        log_error "Unknown command: $COMMAND"
+        echo "Run './run.sh help' for usage instructions."
         exit 1
-    fi
-fi
-
-ACCOUNT_ID=$(echo "$CALLER_IDENTITY" | grep -o '"Account": "[^"]*' | cut -d'"' -f4)
-USER_ARN=$(echo "$CALLER_IDENTITY" | grep -o '"Arn": "[^"]*' | cut -d'"' -f4)
-
-log_success "Authenticated successfully!"
-echo -e "  ${BOLD}Account ID:${NC} ${ACCOUNT_ID}"
-echo -e "  ${BOLD}User ARN:${NC}   ${USER_ARN}"
-echo -e "  ${BOLD}Region:${NC}     ${AWS_REGION}"
-echo ""
-
-# -----------------------------
-# 3. Create S3 Bucket (Idempotent)
-# -----------------------------
-log_info "Target S3 Bucket: ${BOLD}${BUCKET_NAME}${NC} (Region: ${AWS_REGION})"
-
-log_info "Checking if bucket already exists..."
-if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
-    log_success "Bucket '${BUCKET_NAME}' already exists and is accessible."
-else
-    log_info "Creating bucket '${BUCKET_NAME}' in region '${AWS_REGION}'..."
-    
-    if [ "$AWS_REGION" = "us-east-1" ]; then
-        CREATE_OUTPUT=$(aws s3api create-bucket \
-            --bucket "$BUCKET_NAME" \
-            --region "$AWS_REGION" 2>&1)
-    else
-        CREATE_OUTPUT=$(aws s3api create-bucket \
-            --bucket "$BUCKET_NAME" \
-            --region "$AWS_REGION" \
-            --create-bucket-configuration LocationConstraint="$AWS_REGION" 2>&1)
-    fi
-
-    if [ $? -eq 0 ]; then
-        log_success "Successfully created bucket: s3://${BUCKET_NAME}"
-    else
-        log_error "Failed to create bucket '${BUCKET_NAME}':"
-        echo "$CREATE_OUTPUT"
-        exit 1
-    fi
-fi
-
-# -----------------------------
-# 4. Enable Default Encryption (Security Best Practice)
-# -----------------------------
-log_info "Ensuring default server-side encryption (AES256) is enabled..."
-aws s3api put-bucket-encryption \
-    --bucket "$BUCKET_NAME" \
-    --server-side-encryption-configuration '{
-        "Rules": [
-            {
-                "ApplyServerSideEncryptionByDefault": {
-                    "SSEAlgorithm": "AES256"
-                }
-            }
-        ]
-    }' 2>/dev/null || log_warn "Could not set default encryption (check IAM permissions)."
-
-# -----------------------------
-# 5. List S3 Bucket Contents
-# -----------------------------
-echo ""
-log_info "Current contents of s3://${BUCKET_NAME}/:"
-aws s3 ls "s3://${BUCKET_NAME}/" || true
-
-# -----------------------------
-# 6. IAM Policy for Snowflake S3 Read
-# -----------------------------
-echo ""
-IAM_POLICY_NAME="${IAM_POLICY_NAME:-zomato-s3-read-policy}"
-POLICY_ARN="arn:aws:iam::${ACCOUNT_ID}:policy/${IAM_POLICY_NAME}"
-
-log_info "Configuring IAM Policy: ${BOLD}${IAM_POLICY_NAME}${NC}..."
-if aws iam get-policy --policy-arn "$POLICY_ARN" &>/dev/null; then
-    log_success "IAM Policy '${IAM_POLICY_NAME}' already exists."
-else
-    log_info "Creating IAM policy '${IAM_POLICY_NAME}'..."
-    aws iam create-policy \
-        --policy-name "$IAM_POLICY_NAME" \
-        --description "Read-only access to ${BUCKET_NAME} for Snowflake" \
-        --policy-document "{
-            \"Version\": \"2012-10-17\",
-            \"Statement\": [
-                {
-                    \"Effect\": \"Allow\",
-                    \"Action\": [
-                        \"s3:GetObject\",
-                        \"s3:GetObjectVersion\"
-                    ],
-                    \"Resource\": \"arn:aws:s3:::${BUCKET_NAME}/*\"
-                },
-                {
-                    \"Effect\": \"Allow\",
-                    \"Action\": [
-                        \"s3:ListBucket\",
-                        \"s3:GetBucketLocation\"
-                    ],
-                    \"Resource\": \"arn:aws:s3:::${BUCKET_NAME}\"
-                }
-            ]
-        }" >/dev/null
-    log_success "Created IAM policy: ${POLICY_ARN}"
-fi
-
-# -----------------------------
-# 7. IAM Role for Snowflake
-# -----------------------------
-echo ""
-IAM_ROLE_NAME="${IAM_ROLE_NAME:-snowflake-s3-role}"
-ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${IAM_ROLE_NAME}"
-
-log_info "Configuring IAM Role: ${BOLD}${IAM_ROLE_NAME}${NC}..."
-if aws iam get-role --role-name "$IAM_ROLE_NAME" &>/dev/null; then
-    log_success "IAM Role '${IAM_ROLE_NAME}' already exists."
-else
-    log_info "Creating IAM role '${IAM_ROLE_NAME}'..."
-    aws iam create-role \
-        --role-name "$IAM_ROLE_NAME" \
-        --description "Role assumed by Snowflake to access S3" \
-        --assume-role-policy-document "{
-            \"Version\": \"2012-10-17\",
-            \"Statement\": [
-                {
-                    \"Effect\": \"Allow\",
-                    \"Principal\": {
-                        \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\"
-                    },
-                    \"Action\": \"sts:AssumeRole\"
-                }
-            ]
-        }" >/dev/null
-    log_success "Created IAM role: ${ROLE_ARN}"
-fi
-
-# -----------------------------
-# 8. Attach Policy to Role
-# -----------------------------
-echo ""
-log_info "Attaching policy '${IAM_POLICY_NAME}' to role '${IAM_ROLE_NAME}'..."
-aws iam attach-role-policy \
-    --role-name "$IAM_ROLE_NAME" \
-    --policy-arn "$POLICY_ARN" 2>/dev/null || true
-log_success "Policy '${IAM_POLICY_NAME}' attached to role '${IAM_ROLE_NAME}'."
-
-# -----------------------------
-# 9. Update Assume-Role Trust Policy (Snowflake Integration)
-# -----------------------------
-echo ""
-if [ -n "${STORAGE_AWS_IAM_USER_ARN:-}" ] && [ -n "${STORAGE_AWS_EXTERNAL_ID:-}" ]; then
-    log_info "Updating trust policy with Snowflake credentials from .env..."
-    log_info "  Snowflake IAM User ARN: ${STORAGE_AWS_IAM_USER_ARN}"
-    log_info "  Snowflake External ID:  ${STORAGE_AWS_EXTERNAL_ID}"
-    
-    aws iam update-assume-role-policy \
-        --role-name "$IAM_ROLE_NAME" \
-        --policy-document "{
-            \"Version\": \"2012-10-17\",
-            \"Statement\": [
-                {
-                    \"Effect\": \"Allow\",
-                    \"Principal\": {
-                        \"AWS\": \"${STORAGE_AWS_IAM_USER_ARN}\"
-                    },
-                    \"Action\": \"sts:AssumeRole\",
-                    \"Condition\": {
-                        \"StringEquals\": {
-                            \"sts:ExternalId\": \"${STORAGE_AWS_EXTERNAL_ID}\"
-                        }
-                    }
-                }
-            ]
-        }"
-    log_success "Trust policy updated successfully for Snowflake!"
-else
-    log_warn "STORAGE_AWS_IAM_USER_ARN or STORAGE_AWS_EXTERNAL_ID not found in .env."
-    log_warn "To complete the Snowflake handshake, run in Snowflake:"
-    echo "    DESC INTEGRATION ZOMATO_S3_INT;"
-    echo "  Then add STORAGE_AWS_IAM_USER_ARN and STORAGE_AWS_EXTERNAL_ID to .env and re-run this script."
-fi
-
-# -----------------------------
-# 10. Snowflake Connection & Stage Setup
-# -----------------------------
-echo ""
-echo -e "${CYAN}${BOLD}"
-echo "=========================================================="
-echo "          SNOWFLAKE CONNECTION & S3 INTEGRATION           "
-echo "=========================================================="
-echo -e "${NC}"
-
-# Synchronize SQL templates if snowflake directory exists
-if [ -d "snowflake" ]; then
-    log_info "Synchronizing Snowflake SQL templates with current S3 and IAM parameters..."
-    sed -i.bak \
-        -e "s|STORAGE_AWS_ROLE_ARN = '.*'|STORAGE_AWS_ROLE_ARN = '${ROLE_ARN}'|g" \
-        -e "s|STORAGE_ALLOWED_LOCATIONS = ('s3://.*')|STORAGE_ALLOWED_LOCATIONS = ('s3://${BUCKET_NAME}/')|g" \
-        snowflake/02_storage_integration.sql 2>/dev/null && rm -f snowflake/02_storage_integration.sql.bak || true
-
-    sed -i.bak \
-        -e "s|URL = 's3://.*/'|URL = 's3://${BUCKET_NAME}/raw-data/'|g" \
-        snowflake/03_stage_and_formats.sql 2>/dev/null && rm -f snowflake/03_stage_and_formats.sql.bak || true
-    log_success "Updated snowflake/02_storage_integration.sql & snowflake/03_stage_and_formats.sql"
-fi
-
-# Check for SNOWFLAKE credentials in .env
-SNOWFLAKE_ACCOUNT_VAL="${SNOWFLAKE_ACCOUNT:-}"
-SNOWFLAKE_USER_VAL="${SNOWFLAKE_USER:-${SNOWFLAKE_USERNAME:-}}"
-SNOWFLAKE_PASS_VAL="${SNOWFLAKE_PASS:-${SNOWFLAKE_PASSWORD:-}}"
-SNOWFLAKE_ROLE_VAL="${SNOWFLAKE_ROLE:-ACCOUNTADMIN}"
-
-if [ -n "$SNOWFLAKE_ACCOUNT_VAL" ] && [ -n "$SNOWFLAKE_USER_VAL" ] && [ -n "$SNOWFLAKE_PASS_VAL" ]; then
-    log_info "Connecting to Snowflake account: ${BOLD}${SNOWFLAKE_ACCOUNT_VAL}${NC} as ${BOLD}${SNOWFLAKE_USER_VAL}${NC}..."
-    
-    if command -v uv &>/dev/null; then
-        uv run --with snowflake-connector-python --with python-dotenv python - <<EOF
-import sys
-import snowflake.connector
-
-account = "${SNOWFLAKE_ACCOUNT_VAL}"
-user = "${SNOWFLAKE_USER_VAL}"
-password = "${SNOWFLAKE_PASS_VAL}"
-role = "${SNOWFLAKE_ROLE_VAL}"
-role_arn = "${ROLE_ARN}"
-bucket = "${BUCKET_NAME}"
-
-print("[INFO] Authenticating with Snowflake...")
-try:
-    conn = snowflake.connector.connect(
-        user=user,
-        password=password,
-        account=account,
-        role=role,
-        login_timeout=15
-    )
-    cursor = conn.cursor()
-    cursor.execute("SELECT CURRENT_VERSION(), CURRENT_ROLE(), CURRENT_WAREHOUSE();")
-    ver, r, wh = cursor.fetchone()
-    print(f"[SUCCESS] Connected to Snowflake! Version: {ver} | Role: {r}")
-
-    cursor.execute("SHOW STORAGE INTEGRATIONS LIKE 'ZOMATO_S3_INT';")
-    existing_ints = cursor.fetchall()
-    if not existing_ints:
-        print("[INFO] Creating STORAGE INTEGRATION ZOMATO_S3_INT in Snowflake...")
-        cursor.execute(f"""
-            CREATE STORAGE INTEGRATION ZOMATO_S3_INT
-              TYPE = EXTERNAL_STAGE
-              STORAGE_PROVIDER = 'S3'
-              ENABLED = TRUE
-              STORAGE_AWS_ROLE_ARN = '{role_arn}'
-              STORAGE_ALLOWED_LOCATIONS = ('s3://{bucket}/');
-        """)
-        cursor.execute("GRANT USAGE ON INTEGRATION ZOMATO_S3_INT TO ROLE ACCOUNTADMIN;")
-        cursor.execute("GRANT USAGE ON INTEGRATION ZOMATO_S3_INT TO ROLE DBT_ROLE;")
-    else:
-        print("[INFO] STORAGE INTEGRATION ZOMATO_S3_INT exists.")
-
-    # Retrieve current active External ID from Snowflake
-    cursor.execute("DESC INTEGRATION ZOMATO_S3_INT;")
-    active_ext_id = None
-    active_user_arn = None
-    for row in cursor.fetchall():
-        if row[0] == 'STORAGE_AWS_EXTERNAL_ID':
-            active_ext_id = row[2]
-        elif row[0] == 'STORAGE_AWS_IAM_USER_ARN':
-            active_user_arn = row[2]
-
-    # Auto-sync AWS IAM trust policy if needed
-    if active_ext_id and active_user_arn:
-        import subprocess, json
-        trust_doc = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Principal": {"AWS": active_user_arn},
-                    "Action": "sts:AssumeRole",
-                    "Condition": {"StringEquals": {"sts:ExternalId": active_ext_id}}
-                }
-            ]
-        }
-        cmd = [
-            "aws", "iam", "update-assume-role-policy",
-            "--role-name", "snowflake-s3-role",
-            "--policy-document", json.dumps(trust_doc)
-        ]
-        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        import time; time.sleep(2)
-    
-    cursor.execute("CREATE DATABASE IF NOT EXISTS ZOMATO;")
-    cursor.execute("CREATE SCHEMA IF NOT EXISTS ZOMATO.RAW;")
-    
-    print(f"[INFO] Ensuring External Stage ZOMATO.RAW.ZOMATO_RAW_STAGE exists...")
-    cursor.execute(f"""
-        CREATE STAGE IF NOT EXISTS ZOMATO.RAW.ZOMATO_RAW_STAGE
-          STORAGE_INTEGRATION = ZOMATO_S3_INT
-          URL = 's3://{bucket}/raw-data/';
-    """)
-
-    print("[INFO] Listing S3 files via Snowflake Stage:")
-    cursor.execute("LIST @ZOMATO.RAW.ZOMATO_RAW_STAGE;")
-    files = cursor.fetchall()
-    for f in files:
-        print(f"  - {f[0]} ({f[1]} bytes)")
-    
-    print(f"[SUCCESS] Successfully verified {len(files)} files in Snowflake from S3!")
-    cursor.close()
-    conn.close()
-except Exception as e:
-    print(f"[ERROR] Snowflake connection failed: {e}", file=sys.stderr)
-EOF
-    else
-        log_warn "uv is not installed; skipping automated Python connection to Snowflake."
-    fi
-else
-    log_info "Snowflake Direct Connection Setup:"
-    echo -e "  To allow this script to run queries directly in Snowflake, add your account identifier to .env:"
-    echo -e "    ${BOLD}SNOWFLAKE_ACCOUNT=\"<YOUR_ORG>-<YOUR_ACCOUNT>\"${NC}"
-    echo ""
-    echo -e "  You can find your account identifier by running this in Snowsight:"
-    echo -e "    ${CYAN}SELECT CURRENT_ORGANIZATION_NAME() || '-' || CURRENT_ACCOUNT_NAME();${NC}"
-    echo ""
-    echo -e "  Or execute the updated SQL script directly in Snowsight:"
-    echo -e "    ${CYAN}snowflake/02_storage_integration.sql${NC}"
-    echo -e "    ${CYAN}snowflake/03_stage_and_formats.sql${NC}"
-fi
-
-echo ""
-echo -e "${GREEN}${BOLD}Setup completed successfully on ${OS_NAME}!${NC}"
+        ;;
+esac
