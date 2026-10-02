@@ -31,7 +31,10 @@ elif os.path.exists(f"{AIRFLOW_HOME}/dbt_venv/bin/dbt"):
 else:
     DBT = "dbt"
 
-AI_SCRIPT = os.path.join(AIRFLOW_HOME, "ai", "enrich_reviews.py")
+if os.path.exists(os.path.join(AIRFLOW_HOME, "include", "ai", "enrich_reviews.py")):
+    AI_SCRIPT = os.path.join(AIRFLOW_HOME, "include", "ai", "enrich_reviews.py")
+else:
+    AI_SCRIPT = os.path.join(AIRFLOW_HOME, "ai", "enrich_reviews.py")
 
 COPY_RAW = [
     "USE WAREHOUSE ZOMATO_WH;",
