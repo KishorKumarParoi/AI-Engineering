@@ -91,7 +91,9 @@ select
 from orders o
 left join restaurants r
     on o.restaurant_id = r.restaurant_id
+    and r.is_current = true
 left join customers c
     on o.customer_id = c.customer_id
+    and c.is_current = true
 left join reviews rev
     on o.order_id = rev.order_id
