@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import PowerBiDashboard from '../components/PowerBiDashboard';
 
 interface MenuItem {
   id: string;
@@ -129,6 +130,7 @@ export default function Home() {
   const [discount, setDiscount] = useState(0);
   const [deliveryAddr, setDeliveryAddr] = useState("Indiranagar 100ft Road, Bangalore");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [viewMode, setViewMode] = useState<'storefront' | 'powerbi'>('storefront');
   
   // Status check for microservices & Streamlit AI apps
   const [catalogHealthy, setCatalogHealthy] = useState(false);
@@ -431,6 +433,58 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* View Mode Switcher: Storefront vs Power BI Telemetry */}
+            <div style={{
+              display: 'flex',
+              background: 'rgba(255, 255, 255, 0.06)',
+              padding: '3px',
+              borderRadius: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.12)'
+            }}>
+              <button
+                onClick={() => setViewMode('storefront')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: viewMode === 'storefront' ? 'var(--primary-gradient)' : 'transparent',
+                  color: '#fff',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span>🛍️</span>
+                <span>Storefront</span>
+              </button>
+
+              <button
+                onClick={() => setViewMode('powerbi')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: viewMode === 'powerbi' ? 'linear-gradient(135deg, #F2C811 0%, #DDAA00 100%)' : 'transparent',
+                  color: viewMode === 'powerbi' ? '#000' : '#fff',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: viewMode === 'powerbi' ? '0 0 12px rgba(242, 200, 17, 0.4)' : 'none'
+                }}
+              >
+                <span>📊</span>
+                <span>Power BI Telemetry</span>
+              </button>
+            </div>
+
             {/* AI Assistant Button */}
             <button 
               id="ai-assistant-btn"
@@ -478,8 +532,9 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Hero Section */}
-        <section style={{ padding: '48px 32px 24px', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
+        {viewMode === 'storefront' ? (
+          /* Hero Section & Storefront */
+          <section style={{ padding: '48px 32px 24px', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: '36px' }}>
             <span style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--accent-gold)', fontWeight: 700 }}>
               Enterprise Microservices Mesh & Snowflake Lakehouse
@@ -769,6 +824,12 @@ export default function Home() {
             ))}
           </div>
         </section>
+        ) : (
+          /* Power BI Executive Telemetry Suite */
+          <main style={{ padding: '36px 32px', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
+            <PowerBiDashboard />
+          </main>
+        )}
 
         {/* Restaurant Menu Modal */}
         {activeRestaurant && (
