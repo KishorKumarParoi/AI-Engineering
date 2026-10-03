@@ -1,0 +1,9 @@
+{
+    "dbt.dbtPythonPathOverride": "/Users/kishorkumarparoi/Desktop/Maven - The AI Engineering Bootcamp /Resources/AIE5-main/zomato-analysis/.venv/bin/python3",
+    "dbt.dbtProjectRoot": "zomato-analysis/zomato",
+    "dbt.dbtProjects": [
+        "zomato-analysis/zomato"
+    ],
+    "dbt.profilesDir": "/Users/kishorkumarparoi/Desktop/Maven - The AI Engineering Bootcamp /Resources/AIE5-main/zomato-analysis/zomato",
+    "dbt.perspectiveTheme": "Pro Dark"
+}
