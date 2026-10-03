@@ -8,7 +8,8 @@
 with orders as (
     select * from {{ ref('stg_orders') }}
     {% if is_incremental() %}
-      where order_timestamp > (select coalesce(max(order_timestamp), '1900-01-01'::timestamp) from {{ this }})
+      -- 3-day lookback buffer catches offline/delayed syncs while unique_key='order_id' prevents duplicate rows
+      where order_timestamp > (select coalesce(dateadd('day', -3, max(order_timestamp)), '1900-01-01'::timestamp) from {{ this }})
     {% endif %}
 )
 

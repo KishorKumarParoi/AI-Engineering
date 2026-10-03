@@ -31,7 +31,8 @@ joined as (
     inner join orders o
         on oi.order_id = o.order_id
     {% if is_incremental() %}
-      where o.order_timestamp > (select coalesce(max(order_ts), '1900-01-01'::timestamp) from {{ this }})
+      -- 3-day lookback buffer to prevent missing delayed line items
+      where o.order_timestamp > (select coalesce(dateadd('day', -3, max(order_ts)), '1900-01-01'::timestamp) from {{ this }})
     {% endif %}
 )
 
