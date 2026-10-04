@@ -1,0 +1,6 @@
+cancellation_reason_id,reason_code,responsible_party,is_full_refund_eligible,description
+1,CUSTOMER_CHANGED_MIND,CUSTOMER,false,Customer cancelled after kitchen preparation started
+2,RESTAURANT_OUT_OF_STOCK,RESTAURANT,true,Key ingredients or dish unavailable at restaurant
+3,RIDER_UNAVAILABLE,LOGISTICS,true,No delivery partner available within acceptable radius
+4,WEATHER_SEVERE_DISRUPTION,FORCE_MAJEURE,true,Heavy monsoon rainfall or storm preventing travel
+5,PAYMENT_GATEWAY_TIMEOUT,PAYMENT_PROVIDER,true,Bank settlement or UPI gateway timeout

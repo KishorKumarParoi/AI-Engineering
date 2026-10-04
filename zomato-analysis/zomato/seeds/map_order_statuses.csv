@@ -1,0 +1,7 @@
+status_id,status_code,status_name,is_terminal_state,sla_target_mins,description
+1,PLACED,Order Received,false,5,Order submitted and awaiting restaurant confirmation
+2,ACCEPTED,Kitchen Confirmed,false,10,Restaurant acknowledged order and sent to kitchen
+3,PREPARING,Cooking in Progress,false,20,Food preparation underway
+4,PICKED_UP,Out for Delivery,false,15,Rider collected food and en route to customer
+5,DELIVERED,Delivered Successfully,true,0,Order delivered to customer
+6,CANCELLED,Order Cancelled,true,0,Order terminated prior to delivery

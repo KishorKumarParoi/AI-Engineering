@@ -1,0 +1,7 @@
+payment_method_id,payment_code,payment_category,requires_otp,instant_settlement
+1,UPI,DIGITAL_PAYMENT,true,true
+2,CREDIT_CARD,CARD,true,true
+3,DEBIT_CARD,CARD,true,true
+4,NET_BANKING,BANK_TRANSFER,true,true
+5,CASH_ON_DELIVERY,CASH,false,false
+6,ZOMATO_PAY,CLOSED_WALLET,false,true

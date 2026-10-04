@@ -34,6 +34,14 @@ reviews as (
         comment as review_comment,
         review_date
     from {{ ref('stg_reviews') }}
+),
+
+status_map as (
+    select * from {{ ref('map_order_statuses') }}
+),
+
+payment_map as (
+    select * from {{ ref('map_payment_methods') }}
 )
 
 select
@@ -42,8 +50,13 @@ select
     o.order_timestamp,
     o.order_date,
     o.order_status,
+    coalesce(sm.status_name, o.order_status) as order_status_name,
+    coalesce(sm.sla_target_mins, 30) as sla_target_mins,
+    coalesce(sm.is_terminal_state, false) as is_terminal_state,
     o.is_delivered,
     o.payment_method,
+    coalesce(pm.payment_category, 'DIGITAL') as payment_category,
+    coalesce(pm.instant_settlement, true) as is_instant_settlement,
     o.currency,
     o.delivery_time_min,
     
@@ -97,3 +110,7 @@ left join customers c
     and c.is_current = true
 left join reviews rev
     on o.order_id = rev.order_id
+left join status_map sm
+    on o.order_status = sm.status_code
+left join payment_map pm
+    on o.payment_method = pm.payment_code
