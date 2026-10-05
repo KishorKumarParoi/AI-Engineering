@@ -35,12 +35,34 @@ print_header() {
     echo -e "${NC}"
 }
 
+get_streamlit_cmd() {
+    if [ -f "$PROJECT_ROOT/.venv/bin/streamlit" ]; then
+        echo "$PROJECT_ROOT/.venv/bin/streamlit"
+    elif command -v uv >/dev/null 2>&1; then
+        echo "uv run streamlit"
+    else
+        echo "streamlit"
+    fi
+}
+
+run_portal_app() {
+    print_header
+    PORT="${1:-8501}"
+    log_info "Launching Unified Zomato AI & Analytics Portal on port $PORT..."
+    log_info "URL: http://localhost:$PORT"
+    HEADLESS="${HEADLESS:-true}"
+    CMD="$(get_streamlit_cmd)"
+    $CMD run streamlit_app.py --server.port "$PORT" --server.headless "$HEADLESS"
+}
+
 run_sql_app() {
     print_header
     PORT="${1:-8501}"
     log_info "Launching Text-to-SQL Analytics Assistant on port $PORT..."
     log_info "URL: http://localhost:$PORT"
-    uv run streamlit run ai/text_to_sql.py --server.port "$PORT" --server.headless false
+    HEADLESS="${HEADLESS:-true}"
+    CMD="$(get_streamlit_cmd)"
+    $CMD run ai/text_to_sql.py --server.port "$PORT" --server.headless "$HEADLESS"
 }
 
 run_rag_app() {
@@ -48,13 +70,18 @@ run_rag_app() {
     PORT="${1:-8502}"
     log_info "Launching Semantic Reviews RAG Chat on port $PORT..."
     log_info "URL: http://localhost:$PORT"
-    uv run streamlit run ai/rag_chat.py --server.port "$PORT" --server.headless false
+    HEADLESS="${HEADLESS:-true}"
+    CMD="$(get_streamlit_cmd)"
+    $CMD run ai/rag_chat.py --server.port "$PORT" --server.headless "$HEADLESS"
 }
 
-COMMAND="${1:-sql}"
+COMMAND="${1:-portal}"
 PORT="${2:-}"
 
 case "$COMMAND" in
+    portal|all|app)
+        run_portal_app "${PORT:-8501}"
+        ;;
     sql|text_to_sql)
         run_sql_app "${PORT:-8501}"
         ;;
@@ -66,12 +93,14 @@ case "$COMMAND" in
         echo "Usage: ./scripts/data-engineering/serve_apps.sh [APP] [PORT]"
         echo ""
         echo "Applications:"
+        echo "  portal     Start Unified AI & Analytics Portal (Default port: 8501)"
         echo "  sql        Start Text-to-SQL Analytics Assistant (Default port: 8501)"
         echo "  rag        Start Semantic Reviews RAG Chat (Default port: 8502)"
         echo ""
         echo "Examples:"
-        echo "  ./scripts/data-engineering/serve_apps.sh sql"
-        echo "  ./scripts/data-engineering/serve_apps.sh rag 8505"
+        echo "  ./scripts/data-engineering/serve_apps.sh portal"
+        echo "  ./scripts/data-engineering/serve_apps.sh sql 8501"
+        echo "  ./scripts/data-engineering/serve_apps.sh rag 8502"
         echo ""
         ;;
     *)

@@ -6,20 +6,24 @@ import snowflake.connector
 from openai import OpenAI
 from dotenv import load_dotenv
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 load_dotenv()
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 CHAT_MODEL = "gpt-4o-mini"
 DEFAULT_SAMPLE_REVIEWS = 500
 TOP_K = 5
-CACHE_FILE = "review_embeddings.parquet"
+CACHE_FILE = os.path.join(PROJECT_ROOT, "review_embeddings.parquet") if os.path.exists(os.path.join(PROJECT_ROOT, "review_embeddings.parquet")) else "review_embeddings.parquet"
 
+@st.cache_resource
 def get_openai_client(api_key: str | None = None) -> OpenAI:
     key = api_key or os.getenv("OPENAI_API_KEY")
     if not key:
         raise ValueError("OPENAI_API_KEY not found in environment or arguments.")
     return OpenAI(api_key=key)
 
+@st.cache_resource
 def get_snowflake_connection():
     user = os.getenv("SNOWFLAKE_USER") or os.getenv("SNOWFLAKE_USERNAME")
     return snowflake.connector.connect(
@@ -49,8 +53,6 @@ def read_reviews_from_snowflake(limit=DEFAULT_SAMPLE_REVIEWS):
             LIMIT {limit}
         """
         df = conn.cursor().execute(query).fetch_pandas_all()
-    finally:
-        conn.close()
 
     df.columns = [col.lower() for col in df.columns]
     return df
@@ -98,6 +100,20 @@ def ask_llm(question, top_reviews, client: OpenAI | None = None):
     )
     return response.choices[0].message.content
 
+@st.cache_data(show_spinner="Loading and embedding reviews...")
+def load_cached_reviews():
+    if os.path.exists(CACHE_FILE):
+        return pd.read_parquet(CACHE_FILE)
+    try:
+        client = get_openai_client()
+        df = read_reviews_from_snowflake()
+        df["embedding"] = embed(df["comment"].tolist(), client=client)
+        df.to_parquet(CACHE_FILE)
+        return df
+    except Exception as e:
+        st.error(f"Failed to load reviews from Snowflake: {e}")
+        return pd.DataFrame()
+
 def render_ui():
     st.set_page_config(page_title="Zomato Reviews RAG Chat", page_icon="🍔", layout="wide")
     st.title("Chat with your Zomato Reviews")
@@ -112,21 +128,7 @@ def render_ui():
         st.stop()
 
     client = OpenAI(api_key=openai_key)
-
-    @st.cache_data(show_spinner="Loading and embedding reviews...")
-    def load_reviews():
-        if os.path.exists(CACHE_FILE):
-            return pd.read_parquet(CACHE_FILE)
-        try:
-            df = read_reviews_from_snowflake()
-            df["embedding"] = embed(df["comment"].tolist(), client=client)
-            df.to_parquet(CACHE_FILE)
-            return df
-        except Exception as e:
-            st.error(f"Failed to load reviews from Snowflake: {e}")
-            return pd.DataFrame()
-
-    review_df = load_reviews()
+    review_df = load_cached_reviews()
 
     if review_df.empty:
         st.warning("No reviews loaded. Ensure Snowflake has data in ZOMATO.STAGING.STG_REVIEWS.")
@@ -138,12 +140,22 @@ def render_ui():
             st.cache_data.clear()
             st.rerun()
 
-        question = st.text_input(
-            "Ask a question about your reviews:",
-            placeholder="e.g. What are the most common complaints about delivery in Bangalore?"
-        )
+        example_questions = [
+            "What are the most common complaints about delivery in Bangalore?",
+            "How do customers describe packaging and food temperature?",
+            "What do customers say about restaurant portion sizes?"
+        ]
+        selected_example = st.selectbox("Choose an executive prompt template:", ["-- Custom Query --"] + example_questions)
 
-        if question:
+        with st.form("rag_form"):
+            question = st.text_input(
+                "Ask a question about your reviews:",
+                value="" if selected_example == "-- Custom Query --" else selected_example,
+                placeholder="e.g. What are the most common complaints about delivery in Bangalore?"
+            )
+            submitted = st.form_submit_button("Search & Reason", type="primary")
+
+        if (submitted or question) and question:
             with st.spinner("Finding relevant reviews and answering..."):
                 top_reviews = find_similar_reviews(question, review_df, client=client)
                 answer = ask_llm(question, top_reviews, client=client)

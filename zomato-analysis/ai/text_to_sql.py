@@ -46,9 +46,13 @@ MART_DELIVERY_SLA(city, order_hour, total_delivered_orders, p50_delivery_time_mi
 MART_REVIEW_INSIGHTS(city, topic, sentiment_label, reviews, avg_sentiment_score, avg_star_rating, flagged_issues)
 
 Note:
+- CRITICAL: FCT_ORDERS does NOT have restaurant_name. To query restaurant names with revenue or orders, either query MART_RESTAURANT_PERFORMANCE directly or JOIN DIM_RESTAURANTS ON FCT_ORDERS.restaurant_id = DIM_RESTAURANTS.restaurant_id.
+- CRITICAL: FCT_ORDERS does NOT have customer_name. JOIN DIM_CUSTOMERS ON FCT_ORDERS.customer_id = DIM_CUSTOMERS.customer_id.
+- For restaurant rankings by revenue or orders, prefer querying MART_RESTAURANT_PERFORMANCE.
+- For city revenue and cancel metrics, prefer querying MART_DAILY_CITY_REVENUE.
+- For delivery speed and SLA metrics, prefer querying MART_DELIVERY_SLA.
 - Use exact column names from the schemas above (e.g. use TOTAL_ORDERS instead of orders, TOTAL_REVENUE instead of revenue).
 - GMV means delivered revenue (or sales_amount when is_delivered = true).
-- If querying for order volume by cuisine, you can use FCT_ORDERS (e.g. COUNT(*) by cuisine) or MART_RESTAURANT_PERFORMANCE (e.g. SUM(total_orders) by cuisine).
 """
 
 SYSTEM_PROMPT = f"""
@@ -56,8 +60,9 @@ You are a Snowflake SQL expert. Write ONE SELECT query that answers the question
 
 Rules:
 - SELECT queries only, never modify data.
-- Use bare table names (e.g. FCT_ORDERS, MART_DAILY_CITY_REVENUE).
+- Use bare table names (e.g. FCT_ORDERS, MART_DAILY_CITY_REVENUE, MART_RESTAURANT_PERFORMANCE).
 - Use exact column names from the schema provided below.
+- Remember FCT_ORDERS has restaurant_id, NOT restaurant_name. To get restaurant names, query MART_RESTAURANT_PERFORMANCE or join DIM_RESTAURANTS.
 - In Snowflake SQL, for conditional aggregation use COUNT_IF(condition) or SUM(IFF(condition, 1, 0)). NEVER use PostgreSQL 'FILTER (WHERE ...)' syntax.
 - Add a LIMIT of 100 or less, unless the question asks for a single aggregated scalar.
 - Reply as JSON in this exact format: {{"sql": "your query here"}}
@@ -165,14 +170,57 @@ def render_ui():
                 with st.spinner("Running query against Snowflake..."):
                     df = run_query(sql)
                 st.success(f"Returned {len(df)} rows")
-                st.dataframe(df, use_container_width=True, hide_index=True)
+                st.dataframe(df, hide_index=True)
 
                 if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[:, 1]):
                     col_x, col_y = df.columns[0], df.columns[1]
                     st.subheader("Visualization")
                     st.bar_chart(df.set_index(col_x)[col_y])
             except Exception as e:
-                st.error(f"Error running Snowflake query: {e}")
+                err_msg = str(e)
+                st.warning(f"Initial query compilation error: {err_msg}. Triggering self-healing repair...")
+                try:
+                    fix_prompt = f"""
+The previous Snowflake SQL failed with this error:
+{err_msg}
+
+Failed SQL:
+{sql}
+
+CRITICAL RULES:
+- FCT_ORDERS does NOT have restaurant_name. To query restaurant names with revenue or orders, either query MART_RESTAURANT_PERFORMANCE directly or JOIN DIM_RESTAURANTS ON FCT_ORDERS.restaurant_id = DIM_RESTAURANTS.restaurant_id.
+- FCT_ORDERS does NOT have customer_name. JOIN DIM_CUSTOMERS ON FCT_ORDERS.customer_id = DIM_CUSTOMERS.customer_id.
+- Use exact column names from the schema definition.
+
+Reply strictly as JSON: {{"sql": "corrected query"}}
+{SCHEMA}
+"""
+                    fix_res = client.chat.completions.create(
+                        model=MODEL,
+                        temperature=0,
+                        response_format={"type": "json_object"},
+                        messages=[
+                            {"role": "system", "content": fix_prompt},
+                            {"role": "user", "content": f"Fix the query for: {question}"}
+                        ]
+                    )
+                    corrected_sql = json.loads(fix_res.choices[0].message.content)["sql"].strip().rstrip(";")
+                    st.markdown("#### Repaired Snowflake SQL")
+                    st.code(corrected_sql, language="sql")
+
+                    if is_safe(corrected_sql):
+                        df = run_query(corrected_sql)
+                        st.success(f"Self-healed execution complete • Returned {len(df)} rows")
+                        st.dataframe(df, hide_index=True)
+
+                        if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[:, 1]):
+                            col_x, col_y = df.columns[0], df.columns[1]
+                            st.subheader("Visualization")
+                            st.bar_chart(df.set_index(col_x)[col_y])
+                    else:
+                        st.error("Repaired query failed AST safety guardrails.")
+                except Exception as repair_err:
+                    st.error(f"Error running Snowflake query: {e} (Self-repair failed: {repair_err})")
 
 if __name__ == "__main__":
     render_ui()
