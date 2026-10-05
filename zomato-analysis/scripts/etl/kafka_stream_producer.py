@@ -35,6 +35,46 @@ try:
 except ImportError:
     HAS_KAFKA = False
 
+try:
+    from azure.eventhub import EventHubProducerClient, EventData
+    HAS_AZURE_EVENTHUB = True
+except ImportError:
+    HAS_AZURE_EVENTHUB = False
+
+class EventHubProducerAdapter:
+    """Kafka-compatible interface wrapping Azure EventHubProducerClient (AMQP 1.0)"""
+    def __init__(self, connection_string, eventhub_name="zomato"):
+        self.client = EventHubProducerClient.from_connection_string(connection_string, eventhub_name=eventhub_name)
+        self.eventhub_name = eventhub_name
+        self.buffer = []
+
+    def send(self, topic, key=None, value=None):
+        if value is None and key is not None:
+            value = key
+        payload = json.dumps(value) if isinstance(value, dict) else str(value)
+        self.buffer.append(EventData(payload))
+        if len(self.buffer) >= 25:
+            self.flush()
+
+    def flush(self, timeout=None):
+        if not self.buffer:
+            return
+        batch = self.client.create_batch()
+        for item in self.buffer:
+            try:
+                batch.add(item)
+            except ValueError:
+                self.client.send_batch(batch)
+                batch = self.client.create_batch()
+                batch.add(item)
+        if len(batch) > 0:
+            self.client.send_batch(batch)
+        self.buffer.clear()
+
+    def close(self):
+        self.flush()
+        self.client.close()
+
 # Geographic coordinates for authentic delivery hub simulation
 CITIES = {
     "Bangalore": {"lat": 12.9716, "lng": 77.5946},
@@ -64,16 +104,26 @@ PAYMENT_METHODS = ["UPI", "CREDIT_CARD", "ZOMATO_PAY", "CASH"]
 
 def get_kafka_producer(bootstrap_servers=None):
     """
-    Attempts to initialize KafkaProducer.
-    Supports both:
-      1. Standard Apache Kafka (localhost:9092)
+    Attempts to initialize producer.
+    Supports:
+      1. Azure Event Hubs via native azure-eventhub SDK (AMQP 1.0)
       2. Azure Event Hubs via Kafka-compatible endpoint (port 9093 with SASL_SSL)
+      3. Standard Apache Kafka (localhost:9092)
     """
+    eh_conn_str = os.getenv("EVENTHUB_CONNECTION_STRING") or os.getenv("CONNECTION_STRING")
+    eh_name = os.getenv("EVENT_HUBNAME", "zomato")
+
+    # Mode 1: Azure Event Hubs Native SDK (most reliable, sub-second AMQP)
+    if eh_conn_str and HAS_AZURE_EVENTHUB:
+        try:
+            return EventHubProducerAdapter(eh_conn_str, eventhub_name=eh_name)
+        except Exception as e:
+            print(f"[Warning] Failed to initialize Azure EventHub client: {e}")
+
     if not HAS_KAFKA:
         return None
-        
+
     import re
-    eh_conn_str = os.getenv("EVENTHUB_CONNECTION_STRING") or os.getenv("CONNECTION_STRING")
     eh_namespace = os.getenv("EVENTHUB_NAMESPACE")
     if eh_conn_str and not eh_namespace:
         m = re.search(r'sb://([^.]+)\.servicebus\.windows\.net', eh_conn_str)
@@ -81,8 +131,8 @@ def get_kafka_producer(bootstrap_servers=None):
             eh_namespace = m.group(1)
 
     bootstrap = bootstrap_servers or os.getenv("KAFKA_BOOTSTRAP_SERVERS")
-    
-    # Mode 1: Azure Event Hubs (Kafka 1.0+ compatible over SASL_SSL)
+
+    # Mode 2: Azure Event Hubs via Kafka 1.0+ compatible endpoint
     if eh_conn_str and eh_namespace:
         try:
             hub_endpoint = f"{eh_namespace}.servicebus.windows.net:9093"
@@ -102,9 +152,8 @@ def get_kafka_producer(bootstrap_servers=None):
             return producer
         except Exception as e:
             print(f"[Warning] Failed to connect to Azure Event Hubs ({eh_namespace}): {e}")
-            return None
 
-    # Mode 2: Standard Kafka Broker (Local / Cloud)
+    # Mode 3: Standard Kafka Broker (Local / Cloud)
     target_servers = bootstrap or "localhost:9092"
     try:
         producer = KafkaProducer(

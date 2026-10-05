@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs';
 import path from 'path';
+import { EventHubProducerClient } from '@azure/event-hubs';
 import { AUTHENTIC_DATABASE_RESTAURANTS } from '../../data/database_catalog';
 
 export interface OrderEventPayload {
@@ -30,24 +31,53 @@ export interface OrderEventPayload {
 const ORDER_STATUSES: OrderEventPayload['order_status'][] = ['PLACED', 'ACCEPTED', 'PREPARING', 'PICKED_UP', 'DELIVERED'];
 const PAYMENT_METHODS = ['UPI', 'CREDIT_CARD', 'ZOMATO_PAY', 'CASH'];
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<{ success: boolean; data: OrderEventPayload; message: string }>
-) {
-  const { cuisine, city } = req.query;
+// Singleton EventHubProducerClient
+let cachedProducer: EventHubProducerClient | null = null;
 
-  // Filter authentic restaurants
+function getProducer(): { client: EventHubProducerClient | null; hubName: string } {
+  let hubName = process.env.EVENT_HUBNAME || 'zomato';
+  if (cachedProducer) return { client: cachedProducer, hubName };
+
+  try {
+    const rootDir = path.resolve(process.cwd(), '..');
+    const envPath = path.join(rootDir, '.env');
+    let connStr = process.env.CONNECTION_STRING;
+
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
+      content.split('\n').forEach(line => {
+        const m = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+        if (m) {
+          let v = m[2] || '';
+          if (v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1);
+          if (m[1] === 'CONNECTION_STRING' && !connStr) connStr = v;
+          if (m[1] === 'EVENT_HUBNAME') hubName = v;
+        }
+      });
+    }
+
+    if (connStr) {
+      cachedProducer = new EventHubProducerClient(connStr, hubName);
+      return { client: cachedProducer, hubName };
+    }
+  } catch (e) {
+    console.error('Error initializing EventHubProducerClient:', e);
+  }
+  return { client: null, hubName };
+}
+
+function generateSinglePayload(cuisine?: string, city?: string, targetTopic: string = 'zomato'): OrderEventPayload {
   let candidates = AUTHENTIC_DATABASE_RESTAURANTS;
-  if (cuisine && typeof cuisine === 'string' && cuisine.toLowerCase() !== 'all') {
+  if (cuisine && cuisine.toLowerCase() !== 'all') {
     const q = cuisine.toLowerCase();
-    const filtered = candidates.filter(r => 
-      r.cuisine.toLowerCase().includes(q) || 
+    const filtered = candidates.filter(r =>
+      r.cuisine.toLowerCase().includes(q) ||
       (r.menu && r.menu.some(m => m.category.toLowerCase().includes(q)))
     );
     if (filtered.length > 0) candidates = filtered;
   }
 
-  if (city && typeof city === 'string' && city.toLowerCase() !== 'all') {
+  if (city && city.toLowerCase() !== 'all') {
     const q = city.toLowerCase();
     const filtered = candidates.filter(r => r.city.toLowerCase() === q);
     if (filtered.length > 0) candidates = filtered;
@@ -70,7 +100,7 @@ export default async function handler(
   // Databricks MLflow GBT ETA Formula
   const predictedEta = parseFloat((12.0 + distanceKm * 3.2 + (itemCount > 2 ? 5.5 : 1.8)).toFixed(1));
 
-  const payload: OrderEventPayload = {
+  return {
     order_id: orderId,
     customer_id: `CUST-${Math.floor(Math.random() * 9000) + 1000}`,
     restaurant_id: rest.id,
@@ -91,22 +121,72 @@ export default async function handler(
     eta_confidence_band: [parseFloat((predictedEta - 3.5).toFixed(1)), parseFloat((predictedEta + 3.5).toFixed(1))],
     event_timestamp: new Date().toISOString(),
     published_to_kafka: true,
-    target_topic: 'zomato.order_events',
+    target_topic: targetTopic,
   };
+}
 
-  // Buffer event to shared data sink for Airflow micro-batch cronjob
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<{
+    success: boolean;
+    data?: OrderEventPayload | OrderEventPayload[];
+    events?: OrderEventPayload[];
+    message: string;
+    target_topic?: string;
+  }>
+) {
+  const { cuisine, city, count } = req.query;
+  const numEvents = Math.min(Math.max(parseInt(count as string) || 1, 1), 50);
+
+  const { client: producer, hubName } = getProducer();
+  const generatedEvents: OrderEventPayload[] = [];
+
+  for (let i = 0; i < numEvents; i++) {
+    generatedEvents.push(
+      generateSinglePayload(
+        typeof cuisine === 'string' ? cuisine : undefined,
+        typeof city === 'string' ? city : undefined,
+        hubName
+      )
+    );
+  }
+
+  // 1. Dispatch directly to Azure Event Hubs instance "zomato"
+  let publishedToEventHub = false;
+  if (producer) {
+    try {
+      const batch = await producer.createBatch();
+      for (const ev of generatedEvents) {
+        batch.tryAdd({ body: ev });
+      }
+      await producer.sendBatch(batch);
+      publishedToEventHub = true;
+      console.log(`[✓] Dispatched ${generatedEvents.length} event(s) directly to Azure Event Hub: "${hubName}"`);
+    } catch (ehErr) {
+      console.warn('[!] Failed to send batch to Azure Event Hubs:', ehErr);
+    }
+  }
+
+  // 2. Buffer events to shared data sink for Airflow micro-batch cronjob
   try {
     const rootDir = path.resolve(process.cwd(), '..');
     const bufferPath = path.join(rootDir, 'data', 'kafka_order_events.jsonl');
     fs.mkdirSync(path.dirname(bufferPath), { recursive: true });
-    fs.appendFileSync(bufferPath, JSON.stringify(payload) + '\n', 'utf-8');
+    const lines = generatedEvents.map(e => JSON.stringify(e)).join('\n') + '\n';
+    fs.appendFileSync(bufferPath, lines, 'utf-8');
   } catch (err) {
     // Non-blocking fallback
   }
 
+  const message = publishedToEventHub
+    ? `Streamed ${numEvents} event(s) directly into Azure Event Hub [${hubName}] & Lakehouse buffer.`
+    : `Buffered ${numEvents} event(s) to Lakehouse buffer.`;
+
   return res.status(200).json({
     success: true,
-    data: payload,
-    message: `Order ${orderId} (${dish.name} @ ${rest.name}) successfully streamed into Kafka topic [zomato.order_events]`
+    data: numEvents === 1 ? generatedEvents[0] : generatedEvents,
+    events: generatedEvents,
+    target_topic: hubName,
+    message
   });
 }

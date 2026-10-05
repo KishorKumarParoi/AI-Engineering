@@ -103,19 +103,20 @@ export default function KafkaStreamHub() {
   const handleDispatchBatch = async () => {
     setIsDispatching(true);
     try {
-      const burstEvents: KafkaOrderEvent[] = [];
-      for (let i = 0; i < Math.min(batchCount, 15); i++) {
-        const queryParams = new URLSearchParams();
-        if (selectedCuisine !== "All") queryParams.append("cuisine", selectedCuisine);
-        if (selectedCity !== "All Cities") queryParams.append("city", selectedCity);
-        const url = `/api/order-stream?${queryParams.toString()}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.success && data.data) {
-          burstEvents.push(data.data);
+      const queryParams = new URLSearchParams();
+      if (selectedCuisine !== "All") queryParams.append("cuisine", selectedCuisine);
+      if (selectedCity !== "All Cities") queryParams.append("city", selectedCity);
+      queryParams.append("count", String(batchCount));
+      const url = `/api/order-stream?${queryParams.toString()}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        const newEvents: KafkaOrderEvent[] = data.events || (Array.isArray(data.data) ? data.data : [data.data]);
+        if (newEvents && newEvents.length > 0) {
+          setEvents(prev => [...newEvents, ...prev].slice(0, 50));
+          setInspectedEvent(newEvents[0]);
         }
       }
-      setEvents(prev => [...burstEvents, ...prev].slice(0, 50));
       setVelocity(batchRate * 4);
     } catch (err) {
       console.error("Batch dispatch error", err);
