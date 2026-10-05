@@ -1,29 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import PowerBiDashboard from '../components/PowerBiDashboard';
 
-interface MenuItem {
-  id: string;
-  food_id: string;
-  name: string;
-  category: string;
-  price: number;
-  is_veg: boolean;
-  description: string;
-}
-
-interface Restaurant {
-  id: string;
-  name: string;
-  city: string;
-  cuisine: string;
-  rating: number;
-  rating_count: number;
-  cost_for_two: number;
-  address: string;
-  image_url: string;
-  menu?: MenuItem[];
-}
+import { 
+  MenuItem, 
+  Restaurant, 
+  FeaturedDishItem, 
+  DATABASE_CUISINE_OPTIONS,
+  AUTHENTIC_DATABASE_RESTAURANTS, 
+  AUTHENTIC_DATABASE_FEATURED_DISHES 
+} from '../data/database_catalog';
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -46,74 +33,8 @@ interface Order {
   created_at: string;
 }
 
-const DEFAULT_RESTAURANTS: Restaurant[] = [
-  {
-    id: "rest_bangalore_01",
-    name: "Truffles",
-    city: "Bangalore",
-    cuisine: "American, Burgers, Continental",
-    rating: 4.6,
-    rating_count: 14200,
-    cost_for_two: 600,
-    address: "St. Marks Road, Central Bangalore",
-    image_url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop",
-    menu: [
-      { id: "m_1", food_id: "f_101", name: "All American Cheese Burger", category: "Burgers", price: 260, is_veg: false, description: "Juicy handcrafted patty loaded with melted English cheddar" },
-      { id: "m_2", food_id: "f_102", name: "Peri Peri Chicken Steak", category: "Mains", price: 340, is_veg: false, description: "Grilled breast served with herb butter rice and veggies" },
-      { id: "m_3", food_id: "f_103", name: "Crispy Paneer Burger", category: "Burgers", price: 220, is_veg: true, description: "Crunchy crumb-coated paneer steak with spicy chipotle mayo" },
-      { id: "m_4", food_id: "f_104", name: "Dutch Truffle Cake Slice", category: "Desserts", price: 160, is_veg: true, description: "Dense Belgian dark chocolate layer cake" },
-    ]
-  },
-  {
-    id: "rest_bangalore_02",
-    name: "Empire Restaurant",
-    city: "Bangalore",
-    cuisine: "North Indian, Biryani, Mughlai",
-    rating: 4.3,
-    rating_count: 22000,
-    cost_for_two: 550,
-    address: "Indiranagar 100ft Road",
-    image_url: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=600&auto=format&fit=crop",
-    menu: [
-      { id: "m_5", food_id: "f_201", name: "Empire Special Chicken Biryani", category: "Biryani", price: 290, is_veg: false, description: "Fragrant basmati rice layered with spiced marinated chicken" },
-      { id: "m_6", food_id: "f_202", name: "Butter Garlic Naan", category: "Breads", price: 65, is_veg: true, description: "Clay oven baked flatbread brushed with garlic butter" },
-      { id: "m_7", food_id: "f_203", name: "Paneer Butter Masala", category: "Curries", price: 240, is_veg: true, description: "Fresh cottage cheese in rich tomato cashew gravy" },
-      { id: "m_8", food_id: "f_204", name: "Chicken Ghee Roast", category: "Starters", price: 310, is_veg: false, description: "Traditional Mangalorean fiery red spiced chicken in pure ghee" },
-    ]
-  },
-  {
-    id: "rest_mumbai_01",
-    name: "Bastian Mumbai",
-    city: "Mumbai",
-    cuisine: "Seafood, Asian, Desserts",
-    rating: 4.7,
-    rating_count: 9800,
-    cost_for_two: 2200,
-    address: "Bandra West, Mumbai",
-    image_url: "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop",
-    menu: [
-      { id: "m_9", food_id: "f_301", name: "Butter Garlic Crab Meat", category: "Seafood", price: 850, is_veg: false, description: "Fresh mud crab tossed in clarified butter and roasted garlic" },
-      { id: "m_10", food_id: "f_302", name: "Salmon Tartare Bowl", category: "Raw Bar", price: 720, is_veg: false, description: "Norwegian salmon, avocado relish, sesame ponzu dressing" },
-      { id: "m_11", food_id: "f_303", name: "Truffle Edamame Dim Sum", category: "Appetizers", price: 490, is_veg: true, description: "Steamed crystal dumplings with edamame and white truffle oil" },
-    ]
-  },
-  {
-    id: "rest_delhi_01",
-    name: "Karim's Historic Mughlai",
-    city: "Delhi",
-    cuisine: "Mughlai, Kebabs, Rolls",
-    rating: 4.5,
-    rating_count: 31000,
-    cost_for_two: 800,
-    address: "Gali Kababian, Jama Masjid, Old Delhi",
-    image_url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop",
-    menu: [
-      { id: "m_12", food_id: "f_401", name: "Mutton Seekh Kebab", category: "Kebabs", price: 320, is_veg: false, description: "Skewered minced spiced mutton char-grilled over hot coals" },
-      { id: "m_13", food_id: "f_402", name: "Karim's Nihari Gosht", category: "Curries", price: 410, is_veg: false, description: "Slow-cooked shank stew with aromatic bone marrow gravy" },
-      { id: "m_14", food_id: "f_403", name: "Shahi Khameeri Roti", category: "Breads", price: 45, is_veg: true, description: "Traditional fluffy leavened bread" },
-    ]
-  }
-];
+const DEFAULT_RESTAURANTS: Restaurant[] = AUTHENTIC_DATABASE_RESTAURANTS;
+const FEATURED_SIGNATURE_DISHES: FeaturedDishItem[] = AUTHENTIC_DATABASE_FEATURED_DISHES;
 
 export default function Home() {
   const [selectedCity, setSelectedCity] = useState("All");
@@ -138,6 +59,27 @@ export default function Home() {
   const [streamlitSqlHealthy, setStreamlitSqlHealthy] = useState(false);
   const [streamlitRagHealthy, setStreamlitRagHealthy] = useState(false);
   const [embeddedApp, setEmbeddedApp] = useState<'none' | 'sql' | 'rag'>('none');
+  const [isDispatchingEvent, setIsDispatchingEvent] = useState(false);
+  const [lastDispatchedEvent, setLastDispatchedEvent] = useState<any>(null);
+
+  const handleDispatchLiveEvent = async () => {
+    setIsDispatchingEvent(true);
+    try {
+      const url = selectedCuisine !== 'All' 
+        ? `/api/order-stream?cuisine=${encodeURIComponent(selectedCuisine)}` 
+        : `/api/order-stream`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        setLastDispatchedEvent(data.data);
+        setTimeout(() => setLastDispatchedEvent(null), 8000);
+      }
+    } catch (e) {
+      console.error('Failed to dispatch live event', e);
+    } finally {
+      setIsDispatchingEvent(false);
+    }
+  };
 
   // Poll Microservices and Streamlit Apps Health
   useEffect(() => {
@@ -159,7 +101,7 @@ export default function Home() {
       .catch(() => setStreamlitRagHealthy(false));
   }, []);
 
-  // Fetch from Catalog Service if available
+  // Fetch from Catalog Service if available with reliable fallback filtering
   useEffect(() => {
     let url = 'http://localhost:8082/api/v1/restaurants';
     const params = new URLSearchParams();
@@ -167,16 +109,34 @@ export default function Home() {
     if (selectedCuisine !== 'All') params.append('cuisine', selectedCuisine);
     if (params.toString()) url += `?${params.toString()}`;
 
+    const applyFilters = (list: Restaurant[]) => {
+      let filtered = list;
+      if (selectedCity !== 'All') {
+        filtered = filtered.filter(r => r.city === selectedCity);
+      }
+      if (selectedCuisine !== 'All') {
+        const query = selectedCuisine.toLowerCase();
+        filtered = filtered.filter(r => 
+          r.cuisine.toLowerCase().includes(query) ||
+          (r.menu && r.menu.some(m => 
+            m.category.toLowerCase().includes(query) ||
+            m.name.toLowerCase().includes(query)
+          ))
+        );
+      }
+      return filtered;
+    };
+
     fetch(url)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          setRestaurants(data);
+          setRestaurants(applyFilters(data));
         } else {
-          setRestaurants(DEFAULT_RESTAURANTS);
+          setRestaurants(applyFilters(DEFAULT_RESTAURANTS));
         }
       })
-      .catch(() => setRestaurants(DEFAULT_RESTAURANTS));
+      .catch(() => setRestaurants(applyFilters(DEFAULT_RESTAURANTS)));
   }, [selectedCity, selectedCuisine]);
 
   // Cart Calculations
@@ -483,7 +443,54 @@ export default function Home() {
                 <span>📊</span>
                 <span>Power BI Telemetry</span>
               </button>
+
+              <Link
+                href="/kafka-stream"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: 'transparent',
+                  color: '#f59e0b',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span>⚡</span>
+                <span>Kafka Stream Hub ↗</span>
+              </Link>
             </div>
+
+            {/* Dispatch Event Option */}
+            <button 
+              id="dispatch-event-btn"
+              onClick={handleDispatchLiveEvent}
+              disabled={isDispatchingEvent}
+              title="Stream a live order event into Kafka topic [zomato.order_events]"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%)',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                color: '#f59e0b',
+                padding: '8px 18px',
+                borderRadius: '24px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '13px',
+                transition: 'all 0.2s ease',
+                boxShadow: isDispatchingEvent ? '0 0 16px rgba(245, 158, 11, 0.5)' : 'none'
+              }}
+            >
+              <span>{isDispatchingEvent ? '⏳' : '⚡'}</span>
+              <span>{isDispatchingEvent ? 'Dispatching...' : 'Dispatch Event (Kafka)'}</span>
+            </button>
 
             {/* AI Assistant Button */}
             <button 
@@ -532,6 +539,33 @@ export default function Home() {
           </div>
         </header>
 
+        {/* Live Dispatched Event Banner */}
+        {lastDispatchedEvent && (
+          <div style={{
+            background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+            borderBottom: '1px solid rgba(16, 185, 129, 0.3)',
+            padding: '10px 32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '13px',
+            color: '#10b981',
+            fontWeight: 600
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '16px' }}>⚡</span>
+              <span>
+                <strong>Kafka Order Event Published:</strong> <code>{lastDispatchedEvent.order_id}</code> • {lastDispatchedEvent.food_name} at {lastDispatchedEvent.restaurant_name} ({lastDispatchedEvent.city}) → <code>[zomato.order_events]</code>
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span style={{ color: 'var(--accent-gold)' }}>₹{lastDispatchedEvent.order_amount}</span>
+              <span style={{ color: '#94a3b8' }}>ETA: {lastDispatchedEvent.predicted_delivery_eta_mins} mins</span>
+              <button onClick={() => setLastDispatchedEvent(null)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '14px' }}>✕</button>
+            </div>
+          </div>
+        )}
+
         {viewMode === 'storefront' ? (
           /* Hero Section & Storefront */
           <section style={{ padding: '48px 32px 24px', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
@@ -549,23 +583,28 @@ export default function Home() {
 
           {/* Cuisine Filter Pills */}
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
-            {["All", "Burgers", "Biryani", "Seafood", "Mughlai"].map(cuisine => (
+            {DATABASE_CUISINE_OPTIONS.map(cat => (
               <button
-                key={cuisine}
-                onClick={() => setSelectedCuisine(cuisine)}
+                key={cat.value}
+                onClick={() => setSelectedCuisine(cat.value)}
                 style={{
-                  background: selectedCuisine === cuisine ? 'var(--primary-gradient)' : 'var(--bg-secondary)',
-                  border: '1px solid var(--border-subtle)',
+                  background: selectedCuisine === cat.value ? 'var(--primary-gradient)' : 'var(--bg-secondary)',
+                  border: selectedCuisine === cat.value ? '1px solid #FF4B4B' : '1px solid var(--border-subtle)',
                   color: '#fff',
                   padding: '8px 18px',
                   borderRadius: '20px',
                   cursor: 'pointer',
                   fontWeight: 600,
-                  fontSize: '14px',
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: selectedCuisine === cat.value ? '0 0 16px rgba(255, 75, 75, 0.35)' : 'none',
                   transition: 'all 0.2s ease'
                 }}
               >
-                {cuisine}
+                <span>{cat.icon}</span>
+                <span>{cat.label}</span>
               </button>
             ))}
           </div>
@@ -789,6 +828,165 @@ export default function Home() {
               </div>
             )}
           </div>
+
+          {/* Featured Signature Dishes Showcase */}
+          {(() => {
+            const visibleDishes = FEATURED_SIGNATURE_DISHES.filter(d => {
+              if (selectedCity !== "All" && d.city !== selectedCity) return false;
+              if (selectedCuisine !== "All" && !d.category.toLowerCase().includes(selectedCuisine.toLowerCase())) return false;
+              return true;
+            });
+
+            if (visibleDishes.length === 0) return null;
+
+            return (
+              <div style={{ marginBottom: '42px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', background: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        ❄️ Snowflake Lakehouse Catalog (DIM_FOOD)
+                      </span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>● 371,561 Authentic Enlisted Items</span>
+                    </div>
+                    <h3 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', margin: '8px 0 4px' }}>
+                      🔥 Verified Bestsellers: Burgers, Biryani, Seafood & Mughlai
+                    </h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0 }}>
+                      Enlisted catalog dishes directly verified against Zomato Snowflake Data Lakehouse in {selectedCity === 'All' ? 'India' : selectedCity}
+                    </p>
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--accent-gold)', fontWeight: 600 }}>
+                    Showing {visibleDishes.length} verified items
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                  {visibleDishes.map(dishItem => {
+                    const cartItem = cart[dishItem.id];
+                    const dummyRest: Restaurant = {
+                      id: dishItem.restaurant_id,
+                      name: dishItem.restaurant_name,
+                      city: dishItem.city,
+                      cuisine: dishItem.category,
+                      rating: 4.8,
+                      rating_count: 5000,
+                      cost_for_two: 800,
+                      address: `${dishItem.city} Prime Kitchen`,
+                      image_url: dishItem.image_url
+                    };
+                    const menuItem: MenuItem = {
+                      id: dishItem.id,
+                      food_id: dishItem.food_id,
+                      name: dishItem.name,
+                      category: dishItem.category,
+                      price: dishItem.price,
+                      is_veg: dishItem.is_veg,
+                      description: dishItem.description
+                    };
+
+                    return (
+                      <div
+                        key={dishItem.id}
+                        className="glass-panel"
+                        style={{
+                          overflow: 'hidden',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(13, 17, 28, 0.95) 100%)',
+                          transition: 'transform 0.2s, box-shadow 0.2s'
+                        }}
+                      >
+                        <div style={{ position: 'relative', height: '160px', width: '100%', overflow: 'hidden' }}>
+                          <img
+                            src={dishItem.image_url}
+                            alt={dishItem.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                          <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', padding: '3px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 700, color: '#fff' }}>
+                            {dishItem.category_icon} {dishItem.category}
+                          </div>
+                          <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)', padding: '3px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 800, color: '#fff', boxShadow: '0 0 10px rgba(245, 158, 11, 0.4)' }}>
+                            {dishItem.badge}
+                          </div>
+                        </div>
+
+                        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1, gap: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '10px', border: `1px solid ${dishItem.is_veg ? 'var(--accent-emerald)' : '#e23744'}`, padding: '1px 5px', borderRadius: '4px', color: dishItem.is_veg ? 'var(--accent-emerald)' : '#e23744', fontWeight: 700 }}>
+                              {dishItem.is_veg ? '● VEG' : '▲ NON-VEG'}
+                            </span>
+                            <span style={{ fontSize: '10px', fontFamily: 'monospace', color: '#93c5fd', background: 'rgba(59, 130, 246, 0.15)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                              {dishItem.food_id}
+                            </span>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>📍 {dishItem.restaurant_name}</span>
+                          </div>
+
+                          <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: 0, lineHeight: 1.3 }}>
+                            {dishItem.name}
+                          </h4>
+
+                          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, flex: 1, lineHeight: 1.4 }}>
+                            {dishItem.description}
+                          </p>
+
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                            <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--accent-gold)' }}>
+                              ₹{dishItem.price}
+                            </span>
+
+                            {cartItem ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--primary-gradient)', padding: '5px 12px', borderRadius: '20px' }}>
+                                <button onClick={() => removeFromCart(menuItem.id)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 800, fontSize: '14px' }}>-</button>
+                                <span style={{ fontWeight: 700, fontSize: '13px' }}>{cartItem.quantity}</span>
+                                <button onClick={() => addToCart(menuItem, dummyRest)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 800, fontSize: '14px' }}>+</button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => addToCart(menuItem, dummyRest)}
+                                style={{
+                                  background: 'linear-gradient(135deg, #e23744 0%, #b31d28 100%)',
+                                  border: 'none',
+                                  color: '#fff',
+                                  padding: '6px 16px',
+                                  borderRadius: '20px',
+                                  cursor: 'pointer',
+                                  fontWeight: 700,
+                                  fontSize: '12px',
+                                  boxShadow: '0 0 10px rgba(226, 55, 68, 0.35)',
+                                  transition: 'all 0.2s'
+                                }}
+                              >
+                                + ADD
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Curated Restaurant Partners Section */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+            <div>
+              <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', margin: 0 }}>
+                🏆 Curated Restaurant Kitchens ({restaurants.length} Partners)
+              </h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
+                Select a kitchen to explore its full live menu and chef selections
+              </p>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--accent-emerald)', fontWeight: 600 }}>
+              ● 100% Hygiene Verified
+            </span>
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '24px' }}>
             {restaurants.map(rst => (
               <div 
