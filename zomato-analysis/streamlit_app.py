@@ -82,8 +82,7 @@ def get_openai_client(api_key: str | None = None) -> OpenAI:
         st.stop()
     return OpenAI(api_key=key)
 
-@st.cache_resource
-def get_snowflake_connection():
+def create_snowflake_connection():
     user = os.getenv("SNOWFLAKE_USER") or os.getenv("SNOWFLAKE_USERNAME")
     return snowflake.connector.connect(
         account=os.getenv("SNOWFLAKE_ACCOUNT"),
@@ -93,7 +92,12 @@ def get_snowflake_connection():
         database=os.getenv("SNOWFLAKE_DATABASE", "ZOMATO"),
         schema=os.getenv("SNOWFLAKE_SCHEMA", "MARTS"),
         role=os.getenv("SNOWFLAKE_ROLE", "DBT_ROLE"),
+        client_session_keep_alive=True,
     )
+
+@st.cache_resource
+def get_snowflake_connection():
+    return create_snowflake_connection()
 
 @st.cache_resource
 def get_kafka_producer():
@@ -113,18 +117,40 @@ def load_review_embeddings():
         return pd.read_parquet(CACHE_PARQUET_FILE)
     return pd.DataFrame()
 
+def run_snowflake_query(sql: str, max_retries: int = 2):
+    """
+    Executes SQL against Snowflake with auto-reconnect on session/token expiration.
+    Resilient to Snowflake error 390114 (token expired) and 08001 by clearing cache.
+    """
+    last_err = None
+    for attempt in range(max_retries):
+        try:
+            conn = get_snowflake_connection()
+            if conn.is_closed():
+                get_snowflake_connection.clear()
+                conn = get_snowflake_connection()
+            cursor = conn.cursor()
+            cursor.execute("USE SCHEMA ZOMATO.MARTS")
+            return cursor.execute(sql).fetch_pandas_all()
+        except Exception as e:
+            last_err = e
+            err_str = str(e).lower()
+            if any(term in err_str for term in ["390114", "token has expired", "08001", "session does not exist", "closed", "connection"]):
+                get_snowflake_connection.clear()
+                continue
+            raise e
+    raise last_err
+
 @st.cache_data(ttl=300, show_spinner=False)
 def get_lakehouse_table_stats():
     try:
-        conn = get_snowflake_connection()
         query = """
             SELECT TABLE_SCHEMA, TABLE_NAME, ROW_COUNT, BYTES 
             FROM ZOMATO.INFORMATION_SCHEMA.TABLES 
             WHERE TABLE_SCHEMA IN ('RAW', 'STAGING', 'MARTS', 'SNAPSHOTS')
             ORDER BY TABLE_SCHEMA, TABLE_NAME
         """
-        df = conn.cursor().execute(query).fetch_pandas_all()
-        return df
+        return run_snowflake_query(query)
     except Exception:
         return None
 
@@ -136,12 +162,6 @@ def is_safe_query(sql: str) -> bool:
         if f" {word} " in f" {lowered} ":
             return False
     return True
-
-def run_snowflake_query(sql: str):
-    conn = get_snowflake_connection()
-    cursor = conn.cursor()
-    cursor.execute("USE SCHEMA ZOMATO.MARTS")
-    return cursor.execute(sql).fetch_pandas_all()
 
 def cosine_similarity(vec_a, vec_b):
     return np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
@@ -240,8 +260,13 @@ if app_mode == "Text-to-SQL Analytics":
                             st.bar_chart(chart_df)
                     except Exception as e:
                         err_msg = str(e)
-                        st.warning(f"Initial query compilation error: {err_msg}. Triggering self-healing repair...")
-                        try:
+                        is_auth_error = any(term in err_msg.lower() for term in ["390114", "token has expired", "08001", "authentication", "session does not exist"])
+                        if is_auth_error:
+                            get_snowflake_connection.clear()
+                            st.error(f"Snowflake Session Refreshed: {err_msg}. Please re-submit your query.")
+                        else:
+                            st.warning(f"Initial query compilation error: {err_msg}. Triggering self-healing repair...")
+                            try:
                             fix_prompt = f"""
 The previous Snowflake SQL failed with this error:
 {err_msg}

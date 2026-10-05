@@ -86,6 +86,7 @@ def get_connection():
         database=os.getenv("SNOWFLAKE_DATABASE", "ZOMATO"),
         schema="MARTS",
         role=os.getenv("SNOWFLAKE_ROLE", "DBT_ROLE"),
+        client_session_keep_alive=True,
     )
 
 def generate_sql(question: str, client: OpenAI | None = None) -> str:
@@ -114,18 +115,32 @@ def is_safe(sql: str) -> bool:
             return False
     return True
 
-def run_query(sql: str, conn=None):
-    close_conn = False
-    if conn is None:
-        conn = get_connection()
-        close_conn = True
-    try:
-        cursor = conn.cursor()
-        cursor.execute("USE SCHEMA ZOMATO.MARTS")
-        return cursor.execute(sql).fetch_pandas_all()
-    finally:
-        if close_conn:
-            conn.close()
+def run_query(sql: str, conn=None, max_retries: int = 2):
+    last_err = None
+    for attempt in range(max_retries):
+        close_conn = False
+        active_conn = conn
+        if active_conn is None or getattr(active_conn, "is_closed", lambda: False)():
+            active_conn = get_connection()
+            close_conn = True
+        try:
+            cursor = active_conn.cursor()
+            cursor.execute("USE SCHEMA ZOMATO.MARTS")
+            return cursor.execute(sql).fetch_pandas_all()
+        except Exception as e:
+            last_err = e
+            err_str = str(e).lower()
+            if any(term in err_str for term in ["390114", "token has expired", "08001", "session does not exist", "closed", "connection"]):
+                conn = None
+                continue
+            raise e
+        finally:
+            if close_conn and active_conn:
+                try:
+                    active_conn.close()
+                except Exception:
+                    pass
+    raise last_err
 
 def render_ui():
     st.set_page_config(page_title="Zomato Text-to-SQL Analytics", page_icon="📊", layout="wide")
@@ -178,8 +193,12 @@ def render_ui():
                     st.bar_chart(df.set_index(col_x)[col_y])
             except Exception as e:
                 err_msg = str(e)
-                st.warning(f"Initial query compilation error: {err_msg}. Triggering self-healing repair...")
-                try:
+                is_auth_error = any(term in err_msg.lower() for term in ["390114", "token has expired", "08001", "authentication", "session does not exist"])
+                if is_auth_error:
+                    st.error(f"Snowflake Session Refreshed: {err_msg}. Please re-submit your query.")
+                else:
+                    st.warning(f"Initial query compilation error: {err_msg}. Triggering self-healing repair...")
+                    try:
                     fix_prompt = f"""
 The previous Snowflake SQL failed with this error:
 {err_msg}
