@@ -1,6 +1,20 @@
+# Core Airflow Providers
 apache-airflow-providers-snowflake
 apache-airflow-providers-common-sql
-openai
+
+# Data Warehouse & Lakehouse
 snowflake-connector-python
 python-dotenv
 pandas
+numpy
+pyarrow
+
+# MLOps, MLflow & Kubeflow
+mlflow>=3.0.0
+scikit-learn>=1.4.0
+lightgbm>=4.0.0
+pyyaml>=6.0
+
+# AI, LLM & Applications
+openai>=1.0.0
+streamlit>=1.35.0

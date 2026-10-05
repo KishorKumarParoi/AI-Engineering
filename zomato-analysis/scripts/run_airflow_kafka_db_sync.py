@@ -26,7 +26,13 @@ try:
 except ImportError:
     HAS_SNOWFLAKE = False
 
-BUFFER_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "kafka_order_events.jsonl")
+candidate_buffers = [
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "kafka_order_events.jsonl")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "kafka_order_events.jsonl")),
+    "/app/data/kafka_order_events.jsonl",
+    "/usr/local/airflow/data/kafka_order_events.jsonl"
+]
+BUFFER_FILE = next((p for p in candidate_buffers if os.path.exists(p)), candidate_buffers[0])
 
 def get_snowflake_connection():
     if not HAS_SNOWFLAKE:
