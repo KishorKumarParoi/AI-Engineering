@@ -199,7 +199,7 @@ def render_ui():
                 else:
                     st.warning(f"Initial query compilation error: {err_msg}. Triggering self-healing repair...")
                     try:
-                    fix_prompt = f"""
+                        fix_prompt = f"""
 The previous Snowflake SQL failed with this error:
 {err_msg}
 
@@ -214,32 +214,32 @@ CRITICAL RULES:
 Reply strictly as JSON: {{"sql": "corrected query"}}
 {SCHEMA}
 """
-                    fix_res = client.chat.completions.create(
-                        model=MODEL,
-                        temperature=0,
-                        response_format={"type": "json_object"},
-                        messages=[
-                            {"role": "system", "content": fix_prompt},
-                            {"role": "user", "content": f"Fix the query for: {question}"}
-                        ]
-                    )
-                    corrected_sql = json.loads(fix_res.choices[0].message.content)["sql"].strip().rstrip(";")
-                    st.markdown("#### Repaired Snowflake SQL")
-                    st.code(corrected_sql, language="sql")
+                        fix_res = client.chat.completions.create(
+                            model=MODEL,
+                            temperature=0,
+                            response_format={"type": "json_object"},
+                            messages=[
+                                {"role": "system", "content": fix_prompt},
+                                {"role": "user", "content": f"Fix the query for: {question}"}
+                            ]
+                        )
+                        corrected_sql = json.loads(fix_res.choices[0].message.content)["sql"].strip().rstrip(";")
+                        st.markdown("#### Repaired Snowflake SQL")
+                        st.code(corrected_sql, language="sql")
 
-                    if is_safe(corrected_sql):
-                        df = run_query(corrected_sql)
-                        st.success(f"Self-healed execution complete • Returned {len(df)} rows")
-                        st.dataframe(df, hide_index=True)
+                        if is_safe(corrected_sql):
+                            df = run_query(corrected_sql)
+                            st.success(f"Self-healed execution complete • Returned {len(df)} rows")
+                            st.dataframe(df, hide_index=True)
 
-                        if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[:, 1]):
-                            col_x, col_y = df.columns[0], df.columns[1]
-                            st.subheader("Visualization")
-                            st.bar_chart(df.set_index(col_x)[col_y])
-                    else:
-                        st.error("Repaired query failed AST safety guardrails.")
-                except Exception as repair_err:
-                    st.error(f"Error running Snowflake query: {e} (Self-repair failed: {repair_err})")
+                            if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[:, 1]):
+                                col_x, col_y = df.columns[0], df.columns[1]
+                                st.subheader("Visualization")
+                                st.bar_chart(df.set_index(col_x)[col_y])
+                        else:
+                            st.error("Repaired query failed AST safety guardrails.")
+                    except Exception as repair_err:
+                        st.error(f"Error running Snowflake query: {e} (Self-repair failed: {repair_err})")
 
 if __name__ == "__main__":
     render_ui()
