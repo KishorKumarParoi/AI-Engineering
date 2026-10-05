@@ -3,7 +3,7 @@
 # Standard: Senior Staff / Lead Data Engineer Standard
 # ==============================================================================
 
-.PHONY: help check test test-conn test-de test-ai test-orch de de-debug de-snapshot de-core de-ai ai ai-enrich ai-embed astro-start astro-stop astro-ps astro-trigger sql rag doctor clean
+.PHONY: help check test test-conn test-de test-ai test-orch de de-debug de-snapshot de-core de-ai ai ai-enrich ai-embed astro-start astro-stop astro-ps astro-trigger portal apps sql rag doctor clean
 
 SHELL := /bin/bash
 
@@ -43,6 +43,8 @@ help:
 	@echo "  make astro-trigger  Trigger execution of the 'zomato_batch' DAG"
 	@echo ""
 	@echo "Application Serving:"
+	@echo "  make portal         Launch Unified AI & Lakehouse Portal (Streamlit on :8501)"
+	@echo "  make apps           Alias for make portal"
 	@echo "  make sql            Launch Text-to-SQL Analytics Assistant (Streamlit on :8501)"
 	@echo "  make rag            Launch Semantic Reviews RAG Chat (Streamlit on :8502)"
 	@echo ""
@@ -104,6 +106,12 @@ astro-ps:
 
 astro-trigger:
 	@./scripts/data-engineering/orchestration.sh trigger
+
+portal:
+	@./scripts/data-engineering/serve_apps.sh portal
+
+apps:
+	@./scripts/data-engineering/serve_apps.sh portal
 
 sql:
 	@./scripts/data-engineering/serve_apps.sh sql
