@@ -29,13 +29,19 @@ from pyspark.sql.types import (
 import mlflow
 
 # ==============================================================================
-# 1. Configuration & Secrets
+# 1. Configuration, Event Hubs & Azure Storage (ADLS Gen2)
 # ==============================================================================
 # In Azure Databricks, retrieve credentials from secret scope:
 # EH_CONN_STR = dbutils.secrets.get(scope="zomato-scope", key="eventhub-connection-string")
+# STORAGE_KEY = dbutils.secrets.get(scope="zomato-scope", key="storage-account-key")
 EH_NAMESPACE = "eventhub-kkp007"
 EH_TOPIC = "zomato.order_events"  # or "ubertopic"
 EH_BOOTSTRAP = f"{EH_NAMESPACE}.servicebus.windows.net:9093"
+
+AZURE_STORAGE_ACCOUNT = "kkpteststorage"
+CONTAINER_SILVER = "silver"
+CONTAINER_CHECKPOINTS = "checkpoints"
+CONTAINER_BRONZE = "bronze"
 
 # ==============================================================================
 # 2. Schema Definition for 22-Field Streaming Order Event
@@ -63,7 +69,13 @@ ORDER_EVENT_SCHEMA = StructType([
     StructField("event_timestamp", StringType(), True)
 ])
 
-def create_streaming_ml_pipeline(spark: SparkSession, eh_conn_str: str, s3_export_path: str = None):
+def create_streaming_ml_pipeline(
+    spark: SparkSession,
+    eh_conn_str: str,
+    storage_key: str = None,
+    storage_account: str = AZURE_STORAGE_ACCOUNT,
+    s3_export_path: str = None
+):
     """
     Constructs and returns the end-to-end Spark Structured Streaming pipeline.
     """
@@ -131,13 +143,34 @@ def create_streaming_ml_pipeline(spark: SparkSession, eh_conn_str: str, s3_expor
         .withColumn("eta_model_version", lit("v2.4.0-gbt-prod")) \
         .withColumn("_scored_at", current_timestamp())
 
-    # Step 5: Dual Sink Writing
+    # Step 5: Medallion Sink Writing (Azure ADLS Gen2: kkpteststorage)
+    # Checkpoint and Table Locations
+    if storage_key:
+        print(f"[*] Authenticating with ADLS Gen2 storage account: {AZURE_STORAGE_ACCOUNT}")
+        spark.conf.set(
+            f"fs.azure.account.key.{AZURE_STORAGE_ACCOUNT}.dfs.core.windows.net",
+            storage_key
+        )
+        checkpoint_location = f"abfss://{CONTAINER_CHECKPOINTS}@{AZURE_STORAGE_ACCOUNT}.dfs.core.windows.net/zomato_order_eta"
+        silver_table_path = f"abfss://{CONTAINER_SILVER}@{AZURE_STORAGE_ACCOUNT}.dfs.core.windows.net/zomato_silver_order_eta"
+        print(f"[*] ADLS Gen2 Checkpoint: {checkpoint_location}")
+        print(f"[*] ADLS Gen2 Delta Sink: {silver_table_path}")
+    else:
+        # Fallback to Databricks DBFS root storage
+        checkpoint_location = "/tmp/checkpoints/zomato_order_eta_delta"
+        silver_table_path = None
+        print(f"[*] Storage key not provided: using workspace DBFS checkpoint ({checkpoint_location})")
+
     # Sink 1: Write to Delta Lake Silver Table (ACID Medallion)
-    delta_query = scored_stream.writeStream \
+    writer = scored_stream.writeStream \
         .format("delta") \
         .outputMode("append") \
-        .option("checkpointLocation", "/tmp/checkpoints/zomato_order_eta_delta") \
-        .table("zomato_silver_order_eta")
+        .option("checkpointLocation", checkpoint_location)
+
+    if silver_table_path:
+        writer = writer.option("path", silver_table_path)
+
+    delta_query = writer.table("zomato_silver_order_eta")
 
     print("[✓] Databricks Structured Streaming ML pipeline active.")
     return delta_query
@@ -146,5 +179,7 @@ if __name__ == "__main__":
     print("Databricks ML Streaming Pipeline Module initialized.")
     print("To execute in Azure Databricks notebook:")
     print("  spark = SparkSession.builder.appName('ZomatoETAInference').getOrCreate()")
-    print("  query = create_streaming_ml_pipeline(spark, eh_conn_str='...')")
+    print("  eh_conn = dbutils.secrets.get(scope='zomato-scope', key='eventhub-connection-string')")
+    print("  storage_key = dbutils.secrets.get(scope='zomato-scope', key='storage-account-key')")
+    print("  query = create_streaming_ml_pipeline(spark, eh_conn_str=eh_conn, storage_key=storage_key)")
     print("  query.awaitTermination()")

@@ -129,8 +129,30 @@ token = {token}
         if put_res.status_code == 200:
             print("[✓] Stored Event Hub connection string in Databricks scope: 'zomato-scope' -> 'eventhub-connection-string'")
 
+    storage_account = os.getenv("AZURE_STORAGE_ACCOUNT", "kkpteststorage")
+    storage_key = os.getenv("AZURE_STORAGE_KEY", "")
+    if storage_account:
+        requests.post(f"{host}/api/2.0/secrets/put", headers=headers, json={
+            "scope": "zomato-scope",
+            "key": "storage-account-name",
+            "string_value": storage_account
+        })
+        print(f"[✓] Stored Storage Account name in Databricks scope: 'zomato-scope' -> 'storage-account-name' ({storage_account})")
+
+    if storage_key:
+        requests.post(f"{host}/api/2.0/secrets/put", headers=headers, json={
+            "scope": "zomato-scope",
+            "key": "storage-account-key",
+            "string_value": storage_key
+        })
+        print(f"[✓] Stored Storage Account key in Databricks scope: 'zomato-scope' -> 'storage-account-key'")
+
     # Step 5: Upload Streaming ML Pipeline to Databricks Workspace
-    ml_script_path = os.path.join(os.path.dirname(__file__), "..", "ai", "databricks_eventhub_ml_stream.py")
+    candidate_ml_paths = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ai", "databricks_eventhub_ml_stream.py")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ai", "databricks_eventhub_ml_stream.py")),
+    ]
+    ml_script_path = next((p for p in candidate_ml_paths if os.path.exists(p)), candidate_ml_paths[0])
     if os.path.exists(ml_script_path):
         import base64
         with open(ml_script_path, "rb") as f:
