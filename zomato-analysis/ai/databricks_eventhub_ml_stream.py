@@ -35,7 +35,7 @@ import mlflow
 # EH_CONN_STR = dbutils.secrets.get(scope="zomato-scope", key="eventhub-connection-string")
 # STORAGE_KEY = dbutils.secrets.get(scope="zomato-scope", key="storage-account-key")
 EH_NAMESPACE = "eventhub-kkp007"
-EH_TOPIC = "zomato.order_events"  # or "ubertopic"
+EH_TOPIC = "zomato"
 EH_BOOTSTRAP = f"{EH_NAMESPACE}.servicebus.windows.net:9093"
 
 AZURE_STORAGE_ACCOUNT = "kkpteststorage"
