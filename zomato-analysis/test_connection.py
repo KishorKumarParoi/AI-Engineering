@@ -30,6 +30,11 @@ RED = "\033[0;31m"
 BOLD = "\033[1m"
 NC = "\033[0m"
 
+# Enforce Java 17 for PySpark Delta compatibility on macOS
+temurin_17 = "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home"
+if os.path.isdir(temurin_17):
+    os.environ["JAVA_HOME"] = temurin_17
+
 SUITES = [
     {
         "id": "conn",
@@ -54,6 +59,18 @@ SUITES = [
         "name": "Airflow Orchestration",
         "file": "test_orchestration.py",
         "scope": "DAG AST / Pipeline Graph / Astro"
+    },
+    {
+        "id": "azure",
+        "name": "Azure Event Hubs Streaming",
+        "file": "test_azure_eventhub.py",
+        "scope": "Azure AMQP / Real-Time Buffers"
+    },
+    {
+        "id": "pyspark",
+        "name": "Metadata PySpark & Delta SCD",
+        "file": "test_pyspark_scd.py",
+        "scope": "Delta Lake / SCD 1 & 2 / DQ"
     }
 ]
 
@@ -62,6 +79,12 @@ def print_banner():
     print("      ZOMATO AI PLATFORM - MASTER TEST RUNNER")
     print("      Executing all suites in testing/data-engineering/   ")
     print(f"=========================================================={NC}")
+
+def get_python_interpreter() -> str:
+    venv_py = PROJECT_ROOT / ".venv" / "bin" / "python"
+    if venv_py.exists():
+        return str(venv_py)
+    return sys.executable
 
 def run_suite(suite_info: dict) -> tuple[bool, float]:
     suite_file = TEST_DIR / suite_info["file"]
@@ -72,12 +95,21 @@ def run_suite(suite_info: dict) -> tuple[bool, float]:
     print(f"\n{BLUE}[START SUITE]{NC} {BOLD}{suite_info['name']}{NC} ({suite_file.name})")
     start_time = time.time()
 
-    cmd = ["uv", "run", "python", str(suite_file)]
+    py_bin = get_python_interpreter()
+    cmd = [py_bin, str(suite_file)]
     
+    child_env = os.environ.copy()
+    child_env["PYTHONPATH"] = str(PROJECT_ROOT)
+    child_env["PYSPARK_PYTHON"] = py_bin
+    child_env["PYSPARK_DRIVER_PYTHON"] = py_bin
+    if os.path.isdir(temurin_17):
+        child_env["JAVA_HOME"] = temurin_17
+
     # Run and stream output directly to stdout in real-time
     process = subprocess.Popen(
         cmd,
         cwd=str(PROJECT_ROOT),
+        env=child_env,
         stdout=sys.stdout,
         stderr=sys.stderr
     )
@@ -93,7 +125,7 @@ def main():
     parser = argparse.ArgumentParser(description="Master Platform Test Runner for Zomato AI")
     parser.add_argument(
         "--suite",
-        choices=["all", "conn", "de", "ai", "orch"],
+        choices=["all", "conn", "de", "ai", "orch", "azure", "pyspark"],
         default="all",
         help="Specify which test suite to run (default: all)"
     )

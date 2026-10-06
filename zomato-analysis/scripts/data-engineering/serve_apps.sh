@@ -35,13 +35,16 @@ print_header() {
     echo -e "${NC}"
 }
 
-get_streamlit_cmd() {
+run_streamlit() {
+    local script="$1"
+    local port="$2"
+    local headless="${HEADLESS:-true}"
     if [ -f "$PROJECT_ROOT/.venv/bin/streamlit" ]; then
-        echo "$PROJECT_ROOT/.venv/bin/streamlit"
+        "$PROJECT_ROOT/.venv/bin/streamlit" run "$script" --server.port "$port" --server.headless "$headless"
     elif command -v uv >/dev/null 2>&1; then
-        echo "uv run streamlit"
+        uv run streamlit run "$script" --server.port "$port" --server.headless "$headless"
     else
-        echo "streamlit"
+        streamlit run "$script" --server.port "$port" --server.headless "$headless"
     fi
 }
 
@@ -50,9 +53,7 @@ run_portal_app() {
     PORT="${1:-8501}"
     log_info "Launching Unified Zomato AI & Analytics Portal on port $PORT..."
     log_info "URL: http://localhost:$PORT"
-    HEADLESS="${HEADLESS:-true}"
-    CMD="$(get_streamlit_cmd)"
-    $CMD run streamlit_app.py --server.port "$PORT" --server.headless "$HEADLESS"
+    run_streamlit streamlit_app.py "$PORT"
 }
 
 run_sql_app() {
@@ -60,9 +61,7 @@ run_sql_app() {
     PORT="${1:-8501}"
     log_info "Launching Text-to-SQL Analytics Assistant on port $PORT..."
     log_info "URL: http://localhost:$PORT"
-    HEADLESS="${HEADLESS:-true}"
-    CMD="$(get_streamlit_cmd)"
-    $CMD run ai/text_to_sql.py --server.port "$PORT" --server.headless "$HEADLESS"
+    run_streamlit ai/text_to_sql.py "$PORT"
 }
 
 run_rag_app() {
@@ -70,9 +69,7 @@ run_rag_app() {
     PORT="${1:-8502}"
     log_info "Launching Semantic Reviews RAG Chat on port $PORT..."
     log_info "URL: http://localhost:$PORT"
-    HEADLESS="${HEADLESS:-true}"
-    CMD="$(get_streamlit_cmd)"
-    $CMD run ai/rag_chat.py --server.port "$PORT" --server.headless "$HEADLESS"
+    run_streamlit ai/rag_chat.py "$PORT"
 }
 
 COMMAND="${1:-portal}"
