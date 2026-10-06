@@ -1,0 +1,163 @@
+version: "2.0"
+lakehouse_name: "zomato_enterprise_lakehouse"
+storage:
+  default_format: "delta"
+  local_root: "data/lakehouse"
+  cloud_adls_root: "abfss://lakehouse@kkpteststorage.dfs.core.windows.net"
+  quarantine_folder: "quarantine"
+
+entities:
+  - entity_id: "dim_restaurants"
+    description: "Restaurant Master Dimension with full historical change tracking"
+    source:
+      format: "parquet"
+      default_path: "data/lakehouse/bronze/dim_restaurants"
+      schema_mode: "infer_or_evolve"
+    target:
+      layer: "silver"
+      table_name: "dim_restaurants_scd2"
+      format: "delta"
+      path: "data/lakehouse/silver/dim_restaurants_scd2"
+      partition_by: ["city"]
+    scd_config:
+      scd_type: "SCD_TYPE_2"
+      primary_keys: ["restaurant_id"]
+      tracked_columns:
+        - "restaurant_name"
+        - "rating"
+        - "rating_count"
+        - "cost_for_two"
+        - "cuisine"
+        - "address"
+      surrogate_key: "restaurant_sk"
+      effective_from_col: "valid_from"
+      effective_to_col: "valid_to"
+      is_current_col: "is_current"
+      hash_col: "row_hash"
+      future_date_literal: "9999-12-31 23:59:59"
+    data_quality:
+      enabled: true
+      on_violation: "QUARANTINE"  # Options: QUARANTINE, DROP, FAIL
+      rules:
+        - column: "restaurant_id"
+          check: "NOT_NULL"
+          description: "Primary key cannot be null"
+        - column: "restaurant_name"
+          check: "NOT_NULL"
+          description: "Restaurant name is required"
+        - column: "cost_for_two"
+          check: "GREATER_THAN"
+          value: 0
+          description: "Cost for two must be strictly positive"
+        - column: "rating"
+          check: "BETWEEN"
+          min: 0.0
+          max: 5.0
+          description: "Rating must be between 0.0 and 5.0"
+
+  - entity_id: "dim_customers"
+    description: "Customer Demographic Dimension tracking segment and cohort changes"
+    source:
+      format: "parquet"
+      default_path: "data/lakehouse/bronze/dim_customers"
+      schema_mode: "infer_or_evolve"
+    target:
+      layer: "silver"
+      table_name: "dim_customers_scd2"
+      format: "delta"
+      path: "data/lakehouse/silver/dim_customers_scd2"
+      partition_by: ["generation_cohort"]
+    scd_config:
+      scd_type: "SCD_TYPE_2"
+      primary_keys: ["customer_id"]
+      tracked_columns:
+        - "income_band"
+        - "occupation"
+        - "marital_status"
+        - "family_size"
+        - "generation_cohort"
+        - "age_segment"
+      surrogate_key: "customer_sk"
+      effective_from_col: "valid_from"
+      effective_to_col: "valid_to"
+      is_current_col: "is_current"
+      hash_col: "row_hash"
+      future_date_literal: "9999-12-31 23:59:59"
+    data_quality:
+      enabled: true
+      on_violation: "QUARANTINE"
+      rules:
+        - column: "customer_id"
+          check: "NOT_NULL"
+          description: "Customer ID cannot be null"
+        - column: "age"
+          check: "BETWEEN"
+          min: 12
+          max: 120
+          description: "Age must be valid customer range"
+
+  - entity_id: "dim_food"
+    description: "Menu & Item Dimension with Fast In-Place Type 1 Overwrites"
+    source:
+      format: "parquet"
+      default_path: "data/lakehouse/bronze/dim_food"
+      schema_mode: "infer_or_evolve"
+    target:
+      layer: "silver"
+      table_name: "dim_food_scd1"
+      format: "delta"
+      path: "data/lakehouse/silver/dim_food_scd1"
+      partition_by: ["veg_or_non_veg"]
+    scd_config:
+      scd_type: "SCD_TYPE_1"
+      primary_keys: ["food_id"]
+      tracked_columns:
+        - "food_name"
+        - "price"
+        - "category"
+        - "veg_or_non_veg"
+      effective_from_col: "last_updated_at"
+      hash_col: "row_hash"
+    data_quality:
+      enabled: true
+      on_violation: "DROP"
+      rules:
+        - column: "food_id"
+          check: "NOT_NULL"
+        - column: "price"
+          check: "GREATER_THAN"
+          value: 0
+
+  - entity_id: "fct_orders_stream"
+    description: "Live Order Fulfillment State Machine with SCD Type 1 Status Evolution"
+    source:
+      format: "jsonl"
+      default_path: "data/kafka_order_events.jsonl"
+      schema_mode: "infer_or_evolve"
+    target:
+      layer: "silver"
+      table_name: "fct_orders_silver"
+      format: "delta"
+      path: "data/lakehouse/silver/fct_orders_silver"
+      partition_by: ["city"]
+    scd_config:
+      scd_type: "SCD_TYPE_1"
+      primary_keys: ["order_id"]
+      tracked_columns:
+        - "order_status"
+        - "order_amount"
+        - "delivery_fee"
+        - "delivery_distance_km"
+        - "predicted_delivery_eta_mins"
+        - "payment_method"
+      effective_from_col: "last_event_timestamp"
+      hash_col: "row_hash"
+    data_quality:
+      enabled: true
+      on_violation: "QUARANTINE"
+      rules:
+        - column: "order_id"
+          check: "NOT_NULL"
+        - column: "order_amount"
+          check: "GREATER_THAN"
+          value: 0
