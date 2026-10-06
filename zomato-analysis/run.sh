@@ -392,6 +392,7 @@ show_help() {
     echo "  dagshub [args...]    Configure & test remote DagsHub MLflow & DVC tracking"
     echo "  ml [args...]         Train Dynamic ETA regression model with MLflow tracking"
     echo "  dvc [args...]        Manage DVC data tracking with DagsHub (push, pull, status, add)"
+    echo "  sync [msg]           Synchronize changes across both GitHub repos (AI-Engineering & zomato-analysis)"
     echo ""
     echo "Data, AI & Real-time Pipelines:"
     echo "  scd                  Run Metadata-Driven PySpark Delta Lake SCD Type 1 & 2 Demo"
@@ -445,6 +446,9 @@ case "$COMMAND" in
         ;;
     dvc)
         "${DVC_CMD[@]}" "$@"
+        ;;
+    sync)
+        "$PROJECT_ROOT/scripts/sync_dual_repos.sh" "$@"
         ;;
     test|tests)
         SUITE_ARG="${1:-all}"
