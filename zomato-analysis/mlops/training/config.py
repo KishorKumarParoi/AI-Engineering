@@ -11,11 +11,30 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB_PATH = PROJECT_ROOT / "mlops" / "mlflow.db"
 
 
+def resolve_tracking_uri() -> str:
+    """
+    Resolves the MLflow tracking URI with automatic DagsHub cloud detection.
+    Precedence:
+      1. Explicit MLFLOW_TRACKING_URI env var
+      2. DagsHub cloud URI if DAGSHUB_USER_NAME & DAGSHUB_REPO_NAME are set
+      3. Fallback to local SQLite database
+    """
+    if os.getenv("MLFLOW_TRACKING_URI"):
+        return os.environ["MLFLOW_TRACKING_URI"]
+    
+    user = os.getenv("DAGSHUB_USER_NAME")
+    repo = os.getenv("DAGSHUB_REPO_NAME")
+    if user and repo:
+        return f"https://dagshub.com/{user}/{repo}.mlflow"
+
+    return f"sqlite:///{DEFAULT_DB_PATH}"
+
+
 @dataclass
 class TrainingConfig:
     experiment_name: str = os.getenv("MLFLOW_EXPERIMENT_NAME", "zomato-delivery-eta-prediction")
     model_name: str = os.getenv("MLFLOW_MODEL_NAME", "zomato_eta_champion")
-    tracking_uri: str = os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{DEFAULT_DB_PATH}")
+    tracking_uri: str = resolve_tracking_uri()
     artifact_location: str = os.getenv("MLFLOW_ARTIFACT_URI", str(PROJECT_ROOT / "mlops" / "artifacts"))
     test_size: float = 0.2
     random_state: int = 42

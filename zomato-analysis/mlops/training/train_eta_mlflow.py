@@ -114,16 +114,36 @@ def train_model(config: TrainingConfig = None, use_snowflake: bool = False):
     if config is None:
         config = TrainingConfig()
 
+    # Initialize DagsHub remote tracking if configured
+    user = os.getenv("DAGSHUB_USER_NAME")
+    repo = os.getenv("DAGSHUB_REPO_NAME")
+    token = os.getenv("DAGSHUB_TOKEN")
+    if token:
+        os.environ["MLFLOW_TRACKING_USERNAME"] = user or os.getenv("MLFLOW_TRACKING_USERNAME", "")
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = token
+
+    if user and repo:
+        try:
+            import dagshub
+            dagshub.init(repo_owner=user, repo_name=repo, mlflow=True)
+            print(f"[✓] Connected to DagsHub remote tracking: https://dagshub.com/{user}/{repo}")
+        except Exception as de:
+            pass
+
     # Set MLflow Tracking URI and ensure experiment
     mlflow.set_tracking_uri(config.tracking_uri)
-    Path(config.artifact_location).mkdir(parents=True, exist_ok=True)
     
     exp = mlflow.get_experiment_by_name(config.experiment_name)
     if exp is None:
-        mlflow.create_experiment(
-            name=config.experiment_name,
-            artifact_location=f"file://{config.artifact_location}"
-        )
+        if config.tracking_uri.startswith("http"):
+            # Remote server (e.g. DagsHub) handles its own artifact location
+            mlflow.create_experiment(name=config.experiment_name)
+        else:
+            Path(config.artifact_location).mkdir(parents=True, exist_ok=True)
+            mlflow.create_experiment(
+                name=config.experiment_name,
+                artifact_location=f"file://{config.artifact_location}"
+            )
     mlflow.set_experiment(config.experiment_name)
 
     print(f"\n========================================================")

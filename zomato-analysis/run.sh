@@ -286,6 +286,13 @@ status_platform() {
         printf "  %-30s | %-12s | %-12s\n" "Snowflake Medallion Lakehouse" "Cloud WH" "[NO CREDENTIALS]"
     fi
 
+    # DagsHub MLflow
+    if [ -n "${DAGSHUB_REPO_NAME:-}" ] || [[ "${MLFLOW_TRACKING_URI:-}" == *"dagshub.com"* ]]; then
+        printf "  %-30s | %-12s | %-12s\n" "DagsHub MLflow (Cloud)" "MLflow REST" "[CONFIGURED]"
+    else
+        printf "  %-30s | %-12s | %-12s\n" "DagsHub MLflow (Cloud)" "MLflow REST" "[LOCAL SQLITE]"
+    fi
+
     echo "  -------------------------------+--------------+-------------"
     echo ""
 }
@@ -371,6 +378,10 @@ show_help() {
     echo "  check                Validate permissions and syntax for all shell scripts"
     echo "  doctor               Run environment verification and dependency sync"
     echo ""
+    echo "MLOps & Cloud Tracking:"
+    echo "  dagshub [args...]    Configure & test remote DagsHub MLflow & DVC tracking"
+    echo "  ml [args...]         Train Dynamic ETA regression model with MLflow tracking"
+    echo ""
     echo "Data, AI & Real-time Pipelines:"
     echo "  scd                  Run Metadata-Driven PySpark Delta Lake SCD Type 1 & 2 Demo"
     echo "  eventhub             Query live Azure Event Hubs cloud telemetry & partition counts"
@@ -384,6 +395,8 @@ show_help() {
     echo "  ./run.sh             # Launch entire platform in one click"
     echo "  ./run.sh test        # Run all 6 master test suites"
     echo "  ./run.sh test pyspark # Run Metadata PySpark & Delta SCD verification"
+    echo "  ./run.sh dagshub     # Configure DagsHub remote MLflow connection"
+    echo "  ./run.sh ml          # Train ETA model & log to MLflow / DagsHub"
     echo "  ./run.sh scd         # Execute PySpark SCD-2 simulation"
     echo "  ./run.sh stream 50   # Stream 50 order events to Azure Event Hub"
     echo "  ./run.sh stop        # Shut down all services"
@@ -411,6 +424,12 @@ case "$COMMAND" in
         ;;
     status|ps)
         status_platform
+        ;;
+    dagshub)
+        "${PYTHON_CMD[@]}" "$PROJECT_ROOT/scripts/setup_dagshub.py" "$@"
+        ;;
+    ml|mlflow|train)
+        "${PYTHON_CMD[@]}" "$PROJECT_ROOT/mlops/training/train_eta_mlflow.py" "$@"
         ;;
     test|tests)
         SUITE_ARG="${1:-all}"
