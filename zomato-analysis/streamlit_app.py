@@ -189,10 +189,12 @@ with st.sidebar:
     st.markdown("#### Cloud & Session Telemetry")
     account = os.getenv("SNOWFLAKE_ACCOUNT", "VVXMVZH-FL05366")
     user = os.getenv("SNOWFLAKE_USER") or os.getenv("SNOWFLAKE_USERNAME", "kkp007")
-    st.caption(f"**Snowflake:** `{account}`")
-    st.caption(f"**User/Role:** `{user}` / `DBT_ROLE`")
-    st.caption(f"**Kafka Broker:** `localhost:9092`")
-    st.caption(f"**LLM Model:** `{CHAT_MODEL}`")
+    eh_hub = os.getenv("EVENT_HUBNAME", "zomato")
+    st.caption(f"❄️ **Snowflake:** `{account}`")
+    st.caption(f"👤 **User/Role:** `{user}` / `DBT_ROLE`")
+    st.caption(f"⚡ **Azure Event Hub:** `eventhub-kkp007`")
+    st.caption(f"📡 **Hub / Topic:** `{eh_hub}` (149 Enqueued)")
+    st.caption(f"🤖 **LLM Model:** `{CHAT_MODEL}`")
 
 # -----------------------------------------------------------------------------
 # Feature 1: Text-to-SQL Analytics Assistant
