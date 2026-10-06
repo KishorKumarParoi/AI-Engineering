@@ -62,12 +62,15 @@ CATALOG_DIR="$PROJECT_ROOT/services/catalog-service"
 if [ -f "$PROJECT_ROOT/.venv/bin/python" ]; then
     PYTHON_CMD=("$PROJECT_ROOT/.venv/bin/python")
     STREAMLIT_CMD=("$PROJECT_ROOT/.venv/bin/streamlit")
+    DVC_CMD=("$PROJECT_ROOT/.venv/bin/dvc")
 elif command -v uv >/dev/null 2>&1; then
     PYTHON_CMD=(uv run python)
     STREAMLIT_CMD=(uv run streamlit)
+    DVC_CMD=(uv run dvc)
 else
     PYTHON_CMD=(python3)
     STREAMLIT_CMD=(streamlit)
+    DVC_CMD=(dvc)
 fi
 
 export PYSPARK_PYTHON="${PROJECT_ROOT}/.venv/bin/python"
@@ -293,6 +296,13 @@ status_platform() {
         printf "  %-30s | %-12s | %-12s\n" "DagsHub MLflow (Cloud)" "MLflow REST" "[LOCAL SQLITE]"
     fi
 
+    # DVC Data Remote
+    if [ -d "$PROJECT_ROOT/.dvc" ]; then
+        printf "  %-30s | %-12s | %-12s\n" "DVC Data Storage (DagsHub)" "HTTP Remote" "[CONFIGURED]"
+    else
+        printf "  %-30s | %-12s | %-12s\n" "DVC Data Storage (DagsHub)" "HTTP Remote" "[UNINITIALIZED]"
+    fi
+
     echo "  -------------------------------+--------------+-------------"
     echo ""
 }
@@ -381,6 +391,7 @@ show_help() {
     echo "MLOps & Cloud Tracking:"
     echo "  dagshub [args...]    Configure & test remote DagsHub MLflow & DVC tracking"
     echo "  ml [args...]         Train Dynamic ETA regression model with MLflow tracking"
+    echo "  dvc [args...]        Manage DVC data tracking with DagsHub (push, pull, status, add)"
     echo ""
     echo "Data, AI & Real-time Pipelines:"
     echo "  scd                  Run Metadata-Driven PySpark Delta Lake SCD Type 1 & 2 Demo"
@@ -397,6 +408,7 @@ show_help() {
     echo "  ./run.sh test pyspark # Run Metadata PySpark & Delta SCD verification"
     echo "  ./run.sh dagshub     # Configure DagsHub remote MLflow connection"
     echo "  ./run.sh ml          # Train ETA model & log to MLflow / DagsHub"
+    echo "  ./run.sh dvc push    # Push DVC datasets to DagsHub remote storage"
     echo "  ./run.sh scd         # Execute PySpark SCD-2 simulation"
     echo "  ./run.sh stream 50   # Stream 50 order events to Azure Event Hub"
     echo "  ./run.sh stop        # Shut down all services"
@@ -430,6 +442,9 @@ case "$COMMAND" in
         ;;
     ml|mlflow|train)
         "${PYTHON_CMD[@]}" "$PROJECT_ROOT/mlops/training/train_eta_mlflow.py" "$@"
+        ;;
+    dvc)
+        "${DVC_CMD[@]}" "$@"
         ;;
     test|tests)
         SUITE_ARG="${1:-all}"

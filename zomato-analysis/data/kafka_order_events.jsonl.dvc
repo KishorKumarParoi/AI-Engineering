@@ -1,0 +1,5 @@
+outs:
+- md5: 52d24015a1fe75e8318b507037a04358
+  size: 154635
+  hash: md5
+  path: kafka_order_events.jsonl
