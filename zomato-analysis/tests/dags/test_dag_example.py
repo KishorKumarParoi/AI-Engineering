@@ -4,7 +4,9 @@ import os
 import logging
 from contextlib import contextmanager
 import pytest
+pytest.importorskip("airflow")
 from airflow.models import DagBag
+
 
 
 @contextmanager
