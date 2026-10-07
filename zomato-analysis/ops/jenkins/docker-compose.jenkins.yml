@@ -1,0 +1,37 @@
+version: '3.8'
+
+# ==============================================================================
+# Docker Compose: Production/Local Jenkins LTS Controller Runner
+# Pre-configured with Docker-out-of-Docker socket for CI container builds
+# ==============================================================================
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: zomato-jenkins-controller
+    restart: unless-stopped
+    user: root # Allows accessing host docker socket without permission denial
+    ports:
+      - "8080:8080"   # Jenkins UI & Webhooks
+      - "50000:50000" # Jenkins Inbound JNLP Agent Port
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Xmx2048m
+      - JENKINS_OPTS=--prefix=/jenkins
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker:ro
+      - ../../:/workspace/zomato-ai-platform
+    networks:
+      - cicd_network
+
+volumes:
+  jenkins_home:
+    name: zomato_jenkins_data
+    driver: local
+
+networks:
+  cicd_network:
+    name: zomato_cicd_net
+    driver: bridge

@@ -1,0 +1,70 @@
+# ==============================================================================
+# ArgoCD AppProject: Multi-Cloud Production Security Perimeter
+# Restricts source repositories, destinations, and cluster-level capabilities
+# ==============================================================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: zomato-ai-platform
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "Enterprise Multi-Cloud AI Workloads (AWS Primary & GCP DR Failover)"
+
+  # Source repositories permitted for deployment
+  sourceRepos:
+    - "https://github.com/KishorKumarParoi/AI-Engineering.git"
+    - "git@github.com:KishorKumarParoi/zomato-analysis.git"
+    - "https://github.com/KishorKumarParoi/zomato-analysis.git"
+
+  # Destination clusters permitted
+  destinations:
+    # 1. AWS EKS Primary Cluster (Local In-Cluster)
+    - namespace: "zomato-prod"
+      server: "https://kubernetes.default.svc"
+    - namespace: "zomato-prod"
+      name: "in-cluster"
+    # 2. GCP GKE Failover DR Cluster (External Multi-Cloud Target)
+    - namespace: "zomato-dr"
+      server: "https://gke-failover-cluster-api.us-central1.gke.goog"
+    - namespace: "zomato-dr"
+      name: "gcp-dr-cluster"
+
+  # Cluster-scoped resources allowed
+  clusterResourceWhitelist:
+    - group: ""
+      kind: "Namespace"
+    - group: "networking.k8s.io"
+      kind: "IngressClass"
+
+  # Namespace-scoped resources permitted
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: "ConfigMap"
+    - group: ""
+      kind: "Secret"
+    - group: ""
+      kind: "PersistentVolumeClaim"
+    - group: ""
+      kind: "Service"
+    - group: "apps"
+      kind: "Deployment"
+    - group: "apps"
+      kind: "StatefulSet"
+    - group: "networking.k8s.io"
+      kind: "Ingress"
+    - group: "autoscaling"
+      kind: "HorizontalPodAutoscaler"
+    - group: "policy"
+      kind: "PodDisruptionBudget"
+
+  # Roles & RBAC for CI/CD Automation (Jenkins Pipeline Access)
+  roles:
+    - name: jenkins-ci-cd-sync
+      description: "Permission for Jenkins to trigger synchronizations and queries"
+      policies:
+        - "p, proj:zomato-ai-platform:jenkins-ci-cd-sync, applications, get, zomato-ai-platform/*, allow"
+        - "p, proj:zomato-ai-platform:jenkins-ci-cd-sync, applications, sync, zomato-ai-platform/*, allow"
+        - "p, proj:zomato-ai-platform:jenkins-ci-cd-sync, applications, action/*, zomato-ai-platform/*, allow"

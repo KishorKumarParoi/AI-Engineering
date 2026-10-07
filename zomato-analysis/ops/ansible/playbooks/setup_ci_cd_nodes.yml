@@ -1,0 +1,165 @@
+---
+# ==============================================================================
+# Playbook: Provision Enterprise CI/CD Build Agents & Controller Nodes
+# Installs: Docker Engine, Containerd, OpenJDK 17, Kubectl, Helm, ArgoCD CLI, Trivy
+# ==============================================================================
+
+- name: Provision CI/CD Infrastructure Nodes
+  hosts: cicd
+  become: true
+  vars:
+    docker_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    base_tools:
+      - curl
+      - wget
+      - git
+      - jq
+      - unzip
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - build-essential
+      - python3-pip
+      - python3-venv
+
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install system base tools
+      apt:
+        name: "{{ base_tools }}"
+        state: present
+
+    # --- 1. Docker Engine Setup ---
+    - name: Create apt keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add Docker official GPG key
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+        force: no
+
+    - name: Add Docker official APT repository
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+
+    - name: Install Docker CE and tools
+      apt:
+        name: "{{ docker_packages }}"
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker service is running and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    # --- 2. Jenkins & User Group Configuration ---
+    - name: Create jenkins system group
+      group:
+        name: jenkins
+        state: present
+
+    - name: Create jenkins service user
+      user:
+        name: jenkins
+        group: jenkins
+        groups: docker
+        append: yes
+        shell: /bin/bash
+        home: /var/lib/jenkins
+        create_home: yes
+
+    - name: Allow ubuntu and jenkins users to execute docker without sudo
+      user:
+        name: "{{ item }}"
+        groups: docker
+        append: yes
+      loop:
+        - ubuntu
+        - jenkins
+
+    - name: Ensure docker socket has correct permissions
+      file:
+        path: /var/run/docker.sock
+        mode: '0660'
+        owner: root
+        group: docker
+
+    # --- 3. Java Runtime for Jenkins ---
+    - name: Install OpenJDK 17
+      apt:
+        name: openjdk-17-jre-headless
+        state: present
+
+    # --- 4. Kubectl CLI Installation ---
+    - name: Download kubectl binary
+      get_url:
+        url: "https://dl.k8s.io/release/v{{ k8s_version }}/bin/linux/amd64/kubectl"
+        dest: /usr/local/bin/kubectl
+        mode: '0755'
+
+    # --- 5. Helm CLI Installation ---
+    - name: Download and install Helm 3
+      shell: |
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      args:
+        creates: /usr/local/bin/helm
+
+    # --- 6. ArgoCD CLI Installation ---
+    - name: Download ArgoCD CLI
+      get_url:
+        url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/argocd-linux-amd64"
+        dest: /usr/local/bin/argocd
+        mode: '0755'
+
+    # --- 7. Trivy Security Scanner Installation ---
+    - name: Download Trivy scanner deb package
+      get_url:
+        url: "https://github.com/aquasecurity/trivy/releases/download/v{{ trivy_version }}/trivy_{{ trivy_version }}_Linux-64bit.deb"
+        dest: /tmp/trivy.deb
+        mode: '0644'
+
+    - name: Install Trivy deb package
+      apt:
+        deb: /tmp/trivy.deb
+        state: present
+
+    # --- 8. Verification Tasks ---
+    - name: Verify Docker installation
+      command: docker --version
+      register: docker_ver
+      changed_when: false
+
+    - name: Verify Kubectl installation
+      command: kubectl version --client
+      register: kubectl_ver
+      changed_when: false
+
+    - name: Verify ArgoCD CLI installation
+      command: argocd version --client
+      register: argocd_ver
+      changed_when: false
+
+    - name: Display installed toolchain versions
+      debug:
+        msg:
+          - "Docker: {{ docker_ver.stdout }}"
+          - "Kubectl: {{ kubectl_ver.stdout }}"
+          - "ArgoCD: {{ argocd_ver.stdout }}"

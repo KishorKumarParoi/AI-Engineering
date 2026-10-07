@@ -1,0 +1,48 @@
+# ==============================================================================
+# ArgoCD Child Application: AWS EKS Primary Production Deployment
+# Deploys: Zomato Multi-Modal AI & Operations Suite to AWS EKS
+# ==============================================================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: zomato-prod-aws
+  namespace: argocd
+  labels:
+    tier: primary
+    cloud: aws
+    region: us-east-1
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: zomato-ai-platform
+
+  source:
+    repoURL: "https://github.com/KishorKumarParoi/AI-Engineering.git"
+    targetRevision: HEAD
+    path: "zomato-analysis/ops/kubernetes"
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: zomato-prod
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 2m
+
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas # Allows HPA to manage dynamic replica sizing without sync drift

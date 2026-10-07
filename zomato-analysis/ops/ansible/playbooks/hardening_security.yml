@@ -1,0 +1,114 @@
+---
+# ==============================================================================
+# Playbook: Enterprise Security & Linux Kernel Hardening (CIS Benchmark)
+# Enforces: Sysctl security, UFW firewall, Fail2ban, File limits, SSH lock-down
+# ==============================================================================
+
+- name: Apply Enterprise Hardening & Security Baselines
+  hosts: all
+  become: true
+
+  tasks:
+    # --- 1. Kernel Parameter Hardening ---
+    - name: Configure secure sysctl network parameters
+      sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        state: present
+        reload: yes
+        sysctl_set: yes
+      loop:
+        - { key: 'net.ipv4.ip_forward', value: '1' }                      # Required for k8s pod network
+        - { key: 'net.ipv4.tcp_syncookies', value: '1' }                  # Defend against SYN floods
+        - { key: 'net.ipv4.conf.all.accept_source_route', value: '0' }    # Drop source-routed packets
+        - { key: 'net.ipv4.conf.default.accept_source_route', value: '0' }
+        - { key: 'net.ipv4.conf.all.rp_filter', value: '1' }              # Reverse path filtering (anti-spoofing)
+        - { key: 'net.ipv4.conf.default.rp_filter', value: '1' }
+        - { key: 'net.ipv4.icmp_echo_ignore_broadcasts', value: '1' }     # Ignore ICMP broadcast
+        - { key: 'fs.file-max', value: '2097152' }                        # Increased file handles
+        - { key: 'vm.max_map_count', value: '262144' }                    # Required for Elasticsearch/Vector DBs
+
+    # --- 2. Resource Limits Hardening ---
+    - name: Configure high-performance PAM limits in /etc/security/limits.conf
+      pam_limits:
+        domain: "{{ item.domain }}"
+        limit_type: "{{ item.limit_type }}"
+        limit_item: "{{ item.limit_item }}"
+        value: "{{ item.value }}"
+      loop:
+        - { domain: '*', limit_type: 'soft', limit_item: 'nofile', value: '65535' }
+        - { domain: '*', limit_type: 'hard', limit_item: 'nofile', value: '65535' }
+        - { domain: '*', limit_type: 'soft', limit_item: 'nproc', value: '32768' }
+        - { domain: '*', limit_type: 'hard', limit_item: 'nproc', value: '32768' }
+
+    # --- 3. Host Firewall (UFW) Configuration ---
+    - name: Install UFW and Fail2ban
+      apt:
+        name:
+          - ufw
+          - fail2ban
+        state: present
+        update_cache: yes
+
+    - name: Set UFW default policies
+      ufw:
+        direction: "{{ item.direction }}"
+        policy: "{{ item.policy }}"
+      loop:
+        - { direction: 'incoming', policy: 'deny' }
+        - { direction: 'outgoing', policy: 'allow' }
+
+    - name: Allow SSH port through firewall
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+
+    - name: Allow HTTP / HTTPS traffic
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - '80'
+        - '443'
+
+    - name: Allow Jenkins Web & Agent ports for CI/CD subnet
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - '8080'
+        - '50000'
+
+    - name: Enable UFW service
+      ufw:
+        state: enabled
+
+    # --- 4. Fail2ban Intrusion Prevention ---
+    - name: Ensure Fail2ban is enabled and active
+      systemd:
+        name: fail2ban
+        state: started
+        enabled: yes
+
+    # --- 5. SSH Configuration Lock-down ---
+    - name: Enforce secure SSH parameters
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        validate: '/usr/sbin/sshd -t -f %s'
+      loop:
+        - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin prohibit-password' }
+        - { regexp: '^#?MaxAuthTries', line: 'MaxAuthTries 4' }
+        - { regexp: '^#?ClientAliveInterval', line: 'ClientAliveInterval 300' }
+      notify: Restart SSH Daemon
+
+  handlers:
+    - name: Restart SSH Daemon
+      systemd:
+        name: sshd
+        state: restarted

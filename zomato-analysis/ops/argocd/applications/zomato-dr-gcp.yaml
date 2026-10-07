@@ -1,0 +1,41 @@
+# ==============================================================================
+# ArgoCD Child Application: GCP GKE Disaster Recovery Standby Cluster
+# Deploys: Zomato Multi-Modal AI & Operations Suite to GCP GKE
+# ==============================================================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: zomato-dr-gcp
+  namespace: argocd
+  labels:
+    tier: disaster-recovery
+    cloud: gcp
+    region: us-central1
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: zomato-ai-platform
+
+  source:
+    repoURL: "https://github.com/KishorKumarParoi/AI-Engineering.git"
+    targetRevision: HEAD
+    path: "zomato-analysis/ops/kubernetes"
+
+  destination:
+    server: "https://gke-failover-cluster-api.us-central1.gke.goog"
+    namespace: zomato-dr
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 2m
