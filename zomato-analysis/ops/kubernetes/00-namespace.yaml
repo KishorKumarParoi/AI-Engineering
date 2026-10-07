@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mlops-system
+  labels:
+    app.kubernetes.io/name: mlops-system
+    app.kubernetes.io/part-of: ai-engineering
+    environment: production

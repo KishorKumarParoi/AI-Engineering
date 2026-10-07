@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlops-artifacts-pvc
+  namespace: mlops-system
+  labels:
+    app: colorectal-cancer-app
+    tier: production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

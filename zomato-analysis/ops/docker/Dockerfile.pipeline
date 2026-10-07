@@ -1,0 +1,31 @@
+# ==============================================================================
+# Dockerfile.pipeline: Kubeflow Pipeline Execution Runner Image
+# Purpose: Container image executing KFP preprocessing, training & evaluation steps
+# ==============================================================================
+
+FROM python:3.12-slim
+
+WORKDIR /pipeline
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    pandas \
+    numpy \
+    scikit-learn \
+    joblib \
+    mlflow \
+    kfp \
+    dagshub \
+    dvc
+
+# Set default working directories
+RUN mkdir -p /pipeline/data /pipeline/artifacts/processed /pipeline/artifacts/models /pipeline/logs
+
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "--version"]

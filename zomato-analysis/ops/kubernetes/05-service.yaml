@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: colorectal-cancer-service
+  namespace: mlops-system
+  labels:
+    app: colorectal-cancer-app
+    tier: serving
+spec:
+  type: LoadBalancer
+  selector:
+    app: colorectal-cancer-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: colorectal-cancer-clusterip
+  namespace: mlops-system
+  labels:
+    app: colorectal-cancer-app
+    tier: internal
+spec:
+  type: ClusterIP
+  selector:
+    app: colorectal-cancer-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
