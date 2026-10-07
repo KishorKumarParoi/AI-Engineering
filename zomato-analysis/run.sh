@@ -402,6 +402,7 @@ show_help() {
     echo "  de [cmd]             Run Snowflake Medallion pipeline (all, debug, snapshot, core, ai)"
     echo "  ai [cmd]             Run AI enrichment & embedding pipeline (all, enrich, embed, marts)"
     echo "  astro [cmd]          Manage Astronomer Airflow (start, stop, status, trigger)"
+    echo "  vision [img]         Execute Computer Vision & Receipt OCR dispute arbitration"
     echo "  apps [portal|sql|rag] Launch specific Streamlit application in foreground"
     echo ""
     echo "Examples:"
@@ -450,6 +451,20 @@ case "$COMMAND" in
         ;;
     ops)
         "$PROJECT_ROOT/ops/ops.sh" "$@"
+        ;;
+    vision|cv|ocr)
+        IMG_ARG="${1:-vision/test_samples/sample_receipt.png}"
+        print_header
+        echo -e "${BLUE}[INFO] Running Multimodal Computer Vision & Receipt OCR Dispute Engine on: $IMG_ARG...${NC}\n"
+        "${PYTHON_CMD[@]}" -c "
+import sys, json
+from vision.dispute_engine import DisputeArbitrationEngine
+img = sys.argv[1]
+engine = DisputeArbitrationEngine()
+order = {'order_id': 'ORD-2026-9842', 'customer_id': 'CUST-4109', 'food_name': 'Paneer Butter Masala', 'order_amount': 31.50, 'delivery_fee': 3.00, 'cuisine': 'Indian'}
+res = engine.arbitrate_order_dispute(img, order, claim_type='WRONG_ITEM')
+print(json.dumps(res, indent=2))
+" "$IMG_ARG"
         ;;
     sync)
         "$PROJECT_ROOT/scripts/sync_dual_repos.sh" "$@"

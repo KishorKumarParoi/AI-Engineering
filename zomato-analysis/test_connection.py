@@ -71,6 +71,12 @@ SUITES = [
         "name": "Metadata PySpark & Delta SCD",
         "file": "test_pyspark_scd.py",
         "scope": "Delta Lake / SCD 1 & 2 / DQ"
+    },
+    {
+        "id": "vision",
+        "name": "Computer Vision & OCR Arbitration",
+        "file": "test_vision_ocr.py",
+        "scope": "CV / OCR / Fraud / Spillage"
     }
 ]
 
@@ -125,7 +131,7 @@ def main():
     parser = argparse.ArgumentParser(description="Master Platform Test Runner for Zomato AI")
     parser.add_argument(
         "--suite",
-        choices=["all", "conn", "de", "ai", "orch", "azure", "pyspark"],
+        choices=["all", "conn", "de", "ai", "orch", "azure", "pyspark", "vision"],
         default="all",
         help="Specify which test suite to run (default: all)"
     )

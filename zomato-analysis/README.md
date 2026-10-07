@@ -49,6 +49,7 @@ A production-grade batch data engineering and AI analytics platform processing f
 |  [ Interactive Applications (Streamlit) ]                                                     |
 |      1. Semantic RAG Review Chat (ai/rag_chat.py)                                             |
 |      2. Natural Language Text-to-SQL Analytics (ai/text_to_sql.py)                            |
+|      3. Multimodal CV & Receipt OCR Dispute Engine (vision/dispute_engine.py)                 |
 |                                                                                               |
 +-----------------------------------------------------------------------------------------------+
 ```
@@ -229,4 +230,17 @@ make astro-trigger
 - **Data Volume**: 35,098,217 rows in Bronze, 35M+ in Silver, and Gold analytical marts fully populated.
 - **SCD Type 2**: `ZOMATO.SNAPSHOTS.SNAP_RESTAURANTS` active with 148,541 versioned dimension records.
 - **Vector Search**: 1536-dimensional embeddings cached and validated for sub-second semantic retrieval.
+- **Computer Vision & OCR**: 100% PASS on `test_vision_ocr.py` (Blur Laplacian audit, dHash fraud detection, KOT receipt parsing, and dispute arbitration).
+
+---
+
+## 8. Autonomous Computer Vision & Receipt OCR Dispute Engine (`vision/`)
+
+An enterprise multimodal AI system resolving customer order discrepancies, damaged food claims, and refund fraud in **sub-2 seconds**:
+
+- **Image Quality & Blur Guard**: 2D Laplacian convolution detects steam-fogged lenses (`blur_score < 120.0`), prompting automated customer re-take requests.
+- **Perceptual Hash Fraud Defense**: 64-bit difference hash (`dHash`) ledger prevents cross-user photo recycling and repeated refund abuse.
+- **KOT Receipt OCR & Item Alignment**: Vision-LLM extracts stapled bag receipt details, computing fuzzy Levenshtein distance matches against live Snowflake order items.
+- **Spillage Defect Segmentation**: Fluid mask analysis in HSV color space differentiates between kitchen packaging failures and rider transit mishandling.
+- **Automated Arbitration Policy**: Issues instant credit decisions, assigns financial liability (Kitchen vs. Transit), and logs complete audit trails.
 
