@@ -1,0 +1,32 @@
+aws:
+  region: "us-east-1"
+  s3_bucket: "sagemaker-mobile-price-classification-mlops"
+  s3_prefix: "sagemaker/mobile_price_classification"
+  role_arn: ""  # Can be overridden via env SAGEMAKER_ROLE_ARN or CLI
+
+pipeline:
+  name: "MobilePriceClassificationPipeline"
+  base_job_prefix: "mobile-price-pipe"
+  model_package_group_name: "MobilePriceClassificationModelPackageGroup"
+  model_approval_status: "PendingManualApproval"  # or 'Approved'
+
+compute:
+  processing_instance_type: "ml.m5.large"
+  processing_instance_count: 1
+  training_instance_type: "ml.m5.large"
+  training_instance_count: 1
+  inference_instance_type: "ml.m5.large"
+  inference_instance_count: 1
+  use_spot_instances: true
+  max_run_seconds: 3600
+  max_wait_seconds: 7200  # Required if use_spot_instances is True
+
+serverless_inference:
+  enabled: false
+  memory_size_in_mb: 2048
+  max_concurrency: 5
+
+data_capture:
+  enabled: true
+  sampling_percentage: 100
+  destination_s3_prefix: "datacapture"
