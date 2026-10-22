@@ -20,7 +20,8 @@ def initialize_rails() -> None:
     guard_llm = ChatGroq(
         api_key=settings.GROQ_API_KEY,
         model=settings.GROQ_MODEL,
-        temperature=0
+        temperature=0,
+        max_tokens=150
     )
 
     config = RailsConfig.from_content(
@@ -30,9 +31,6 @@ def initialize_rails() -> None:
 
     _rails = LLMRails(config, llm=guard_llm)
     logfire.info(f"🛡️ NeMo Guardrails initialised ({settings.GROQ_MODEL}).")
-
-    
-    
 
 
 def guard(message: str) -> tuple[bool, str | None]:
@@ -48,19 +46,23 @@ def guard(message: str) -> tuple[bool, str | None]:
         logfire.warning("⚠️ Guardrails not initialised — skipping gate.")
         return False, None
 
-    with logfire.span("🛡️ Guardrails Check"):
-        result = _rails.generate(messages=[{"role": "user", "content": message}])
+    try:
+        with logfire.span("🛡️ Guardrails Check"):
+            result = _rails.generate(messages=[{"role": "user", "content": message}])
 
-        # NeMo returns {'role': 'assistant', 'content': '...'} — extract text
-        raw_content = result.get("content", "") if isinstance(result, dict) else str(result)
-        content = clean_guardrail_content(raw_content)
+            # NeMo returns {'role': 'assistant', 'content': '...'} — extract text
+            raw_content = result.get("content", "") if isinstance(result, dict) else str(result)
+            content = clean_guardrail_content(raw_content)
 
-        fired = any(indicator.lower() in content.lower() for indicator in RAIL_INDICATORS)
+            fired = any(indicator.lower() in content.lower() for indicator in RAIL_INDICATORS)
 
-        if fired:
-            logfire.info(f"🛡️ Guardrails fired | query='{message[:80]}'")
-            return True, content
+            if fired:
+                logfire.info(f"🛡️ Guardrails fired | query='{message[:80]}'")
+                return True, content
 
-        logfire.info("✅ Guardrails passed.")
+            logfire.info("✅ Guardrails passed.")
+            return False, None
+    except Exception as e:
+        logfire.warning(f"⚠️ Guardrails check bypassed due to transient LLM rate limit: {e}")
         return False, None
 

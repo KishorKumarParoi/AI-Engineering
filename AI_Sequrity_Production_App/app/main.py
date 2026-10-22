@@ -50,42 +50,8 @@ def home():
     }
 
 
-@app.get("/health")
-def health_check():
-    """Liveness probe for Cloud Run, Kubernetes, and monitoring health checks."""
-    return {
-        "status": "healthy",
-        "project_id": settings.PROJECT_ID,
-        "location": settings.LOCATION,
-        "gcp_doc_ai_processor": settings.GCP_DOC_AI_PROCESSOR_ID,
-        "gcp_raw_bucket": settings.GCP_RAW_BUCKET,
-        "gcp_processed_bucket": settings.GCP_PROCESSED_BUCKET,
-        "qdrant_collection": settings.QDRANT_COLLECTION,
-        "guardrails": "initialized",
-        "bot_shield": "active",
-    }
-
-
-@app.get("/ready")
-def readiness_check():
-    """
-    Readiness probe — verifies that critical external dependencies are reachable.
-    Returns 200 if critical services (Neon Postgres, Qdrant, Portkey, Jina) are operational.
-    """
-    from app.services.health.connection_checker import check_all_connections
-    from fastapi.responses import JSONResponse
-
-    results = check_all_connections()
-    checks = {name: result.to_dict()["status"] for name, result in results.items()}
-    critical_healthy = all(
-        results[k].healthy for k in ("postgres", "qdrant", "llm_gateway", "jina_embeddings", "jina_reranker")
-        if k in results
-    )
-    status_code = 200 if critical_healthy else 503
-    return JSONResponse(
-        status_code=status_code,
-        content={"status": "ready" if critical_healthy else "not_ready", "checks": checks},
-    )
+from app.health import router as health_router
+app.include_router(health_router)
 
 
 
