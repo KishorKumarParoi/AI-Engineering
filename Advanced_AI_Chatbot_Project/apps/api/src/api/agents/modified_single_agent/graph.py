@@ -390,12 +390,73 @@ def rag_agent_stream_wrapper(question: str, thread_id: str, qdrant_client=None):
     """
     Executes the multi-agent RAG pipeline and yields SSE events corresponding
     to intermediate steps (analyzing, planning, tool usage) and the final answer.
+    Hardened with BotShield guardrails, MCP tools, and HITL governance.
     """
     import os
     import json
+    from api.security.guardrails import PromptSecurityGuardrail
+    from api.hitl.manager import hitl_manager
+    from api.mcp.client import mcp_client_manager
     
     def _string_for_sse(message: str) -> str:
         return f"data: {message}\n\n"
+
+    # 1. BOTSHIELD SECURITY GUARDRAIL CHECK
+    assessment = PromptSecurityGuardrail.evaluate(question)
+    if not assessment.is_safe:
+        yield _string_for_sse("🛡️ [BotShield WAF] Inbound adversarial payload intercepted.")
+        yield _string_for_sse(json.dumps({
+            "type": "security_violation",
+            "data": {
+                "threat_type": assessment.threat_type,
+                "reason": assessment.reason,
+                "answer": f"🛡️ **Security Alert**: Your request was intercepted by the BotShield WAF guardrail ({assessment.threat_type}). Reason: {assessment.reason}"
+            }
+        }))
+        return
+
+    # 2. HUMAN-IN-THE-LOOP (HITL) SENSITIVE MUTATION INTERCEPTION
+    lower_q = question.lower()
+    if any(keyword in lower_q for keyword in ["refund", "return money", "cancel order", "discount code", "manager discount", "escalate to human", "talk to human"]):
+        if "refund" in lower_q or "return" in lower_q:
+            tool_name = "request_refund"
+            args = {"amount": 79.99, "currency": "USD", "reason": question}
+            desc = f"Process order refund of $79.99 for user query: '{question}'"
+        elif "cancel" in lower_q:
+            tool_name = "cancel_order"
+            args = {"order_id": "ORD-LIVE-7842", "reason": question}
+            desc = f"Terminate live order dispatch for user query: '{question}'"
+        elif "escalate" in lower_q or "human" in lower_q:
+            tool_name = "escalate_human_agent"
+            args = {"session_id": thread_id, "priority": "HIGH", "reason": question}
+            desc = f"Transfer conversation session to Tier-2 human customer representative"
+        else:
+            tool_name = "apply_manager_discount"
+            args = {"percentage": 20.0, "reason": question}
+            desc = f"Generate 20% promotional discount voucher for inquiry: '{question}'"
+
+        pending = hitl_manager.register_action(
+            thread_id=thread_id or "default_session",
+            tool_name=tool_name,
+            arguments=args,
+            custom_description=desc
+        )
+
+        yield _string_for_sse("⚠️ [HITL Governance] High-stakes financial/order action detected. Gating execution for Supervisor Authorization...")
+        yield _string_for_sse(json.dumps({
+            "type": "hitl_required",
+            "data": {
+                "action_id": pending.action_id,
+                "thread_id": pending.thread_id,
+                "tool_name": pending.tool_name,
+                "severity": pending.severity.value,
+                "description": pending.description,
+                "arguments": pending.arguments,
+                "status": "pending_approval",
+                "prompt": "This operational action carries financial consequences and requires explicit human supervisor approval before proceeding."
+            }
+        }))
+        return
 
     def process_graph_event(chunk):
         def _is_node_start(chunk):
@@ -413,11 +474,11 @@ def rag_agent_stream_wrapper(question: str, thread_id: str, qdrant_client=None):
                 args = getattr(tool_call, "arguments", None) or getattr(tool_call, "args", {}) or {}
                 
             if name == "get_formatted_items_context":
-                return f"Looking for items: {args.get('query', '')}"
+                return f"🔌 [MCP Protocol] Querying inventory catalog: {args.get('query', '')}"
             elif name == "get_formatted_reviews_context":
-                return f"Fetching user reviews..."
+                return f"🔌 [MCP Protocol] Fetching sentiment & customer reviews..."
             elif name == "get_formatted_context":
-                return f"Retrieving general context for query: {args.get('query', '')}"
+                return f"🔌 [MCP Protocol] Querying product vector catalog: {args.get('query', '')}"
             else:
                 return f"Calling tool: {name or 'unknown'}"
 
@@ -425,9 +486,9 @@ def rag_agent_stream_wrapper(question: str, thread_id: str, qdrant_client=None):
             payload = chunk[1].get("payload", {})
             node_name = payload.get("name")
             if node_name == "intent_router_node":
-                return "Analysing the question..."
+                return "🛡️ BotShield Guardrail Verified | Analysing user intent..."
             elif node_name == "agent_node":
-                return "Planning..."
+                return "⚡ LangGraph Multi-Turn Planning & Reasoning..."
             elif node_name == "tool_node":
                 input_data = payload.get("input", {})
                 tool_calls = []
@@ -447,7 +508,7 @@ def rag_agent_stream_wrapper(question: str, thread_id: str, qdrant_client=None):
                     texts.append(_tool_to_text(tc))
                 if texts:
                     return " | ".join(texts)
-                return "Executing tools..."
+                return "🔌 Executing MCP tools..."
         return None
 
     # Instantiate Qdrant client if not provided

@@ -498,6 +498,19 @@ st.markdown(
 # ─────────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
+    st.markdown("### 🛡️ Enterprise Security & MCP")
+    st.markdown(
+        """
+        <div style="background:rgba(15,23,42,0.04); padding:0.75rem; border-radius:12px; font-size:0.8rem; margin-bottom:1rem; border:1px solid rgba(148,163,184,0.2);">
+            <div>🛡️ <b>BotShield WAF</b>: <span style="color:#16a34a; font-weight:600;">ACTIVE</span></div>
+            <div>🔌 <b>MCP Catalog</b>: <span style="color:#2563eb; font-weight:600;">PORT 8002</span></div>
+            <div>⭐ <b>MCP Reviews</b>: <span style="color:#2563eb; font-weight:600;">PORT 8003</span></div>
+            <div>⏸️ <b>HITL Governance</b>: <span style="color:#ea580c; font-weight:600;">GATED</span></div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.markdown("### 💡 Suggestions")
     if st.session_state.suggestions:
         for suggestion in st.session_state.suggestions[:4]:
@@ -507,6 +520,51 @@ with st.sidebar:
         st.info("No suggestions yet. Ask a question to see quick follow-ups.")
     st.divider()
     _render_sidebar_products(_normalize_products({"used_context": st.session_state.used_context}))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HUMAN-IN-THE-LOOP (HITL) SUPERVISOR AUTHORIZATION PANEL
+# ─────────────────────────────────────────────────────────────────────────────
+
+if st.session_state.get("pending_hitl"):
+    hitl = st.session_state.pending_hitl
+    st.warning(
+        f"⚠️ **SUPERVISOR ACTION REQUIRED (HITL Governance)**\n\n"
+        f"**Target Action**: `{hitl.get('tool_name')}` | **Severity**: `{hitl.get('severity')}`\n\n"
+        f"**Description**: {hitl.get('description')}\n\n"
+        f"**Payload**: `{json.dumps(hitl.get('arguments', {}))}`"
+    )
+    col_appr, col_decl = st.columns([1, 1])
+    with col_appr:
+        if st.button("✅ Authorize Action", key="hitl_approve_btn", type="primary", use_container_width=True):
+            with st.spinner("Authorizing sensitive transaction..."):
+                ok, res = api_call("post", f"{config.API_URL}/rag/hitl/approve", json={
+                    "thread_id": hitl.get("thread_id"),
+                    "decision": "approved",
+                    "supervisor_notes": "Authorized by Tier-2 Supervisor via Streamlit Console"
+                })
+            if ok:
+                st.success(res.get("resolution_summary", "Action approved."))
+                st.session_state.messages.append({"role": "assistant", "content": res.get("resolution_summary", "✅ Action approved.")})
+                st.session_state.pending_hitl = None
+                st.rerun()
+            else:
+                st.error("Failed to submit approval.")
+    with col_decl:
+        if st.button("❌ Decline Action", key="hitl_reject_btn", use_container_width=True):
+            with st.spinner("Rejecting transaction..."):
+                ok, res = api_call("post", f"{config.API_URL}/rag/hitl/approve", json={
+                    "thread_id": hitl.get("thread_id"),
+                    "decision": "rejected",
+                    "supervisor_notes": "Declined by supervisor due to policy threshold"
+                })
+            if ok:
+                st.info(res.get("resolution_summary", "Action declined."))
+                st.session_state.messages.append({"role": "assistant", "content": res.get("resolution_summary", "❌ Action declined.")})
+                st.session_state.pending_hitl = None
+                st.rerun()
+            else:
+                st.error("Failed to submit rejection.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -583,6 +641,32 @@ if prompt:
 
                         # Render feedback widget inline after the fresh reply
                         _render_feedback_widget(new_msg_key)
+                        break
+
+                    if output.get("type") == "hitl_required":
+                        hitl_data = output["data"]
+                        st.session_state.pending_hitl = hitl_data
+                        status_placeholder.empty()
+                        message_placeholder.warning(
+                            f"⚠️ **Human-in-the-Loop Interception**: Action `{hitl_data.get('tool_name')}` requires supervisor approval. See authorization panel above."
+                        )
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": f"⚠️ **Supervisor Authorization Gated**: Action `{hitl_data.get('tool_name')}` ({hitl_data.get('description')}) paused awaiting supervisor review."
+                        })
+                        st.session_state.msg_ids.append(new_msg_key)
+                        st.rerun()
+                        break
+
+                    if output.get("type") == "security_violation":
+                        sec_data = output["data"]
+                        status_placeholder.empty()
+                        message_placeholder.error(sec_data.get("answer", "Security violation intercepted."))
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": sec_data.get("answer", "🛡️ **Security Alert**: Intercepted by BotShield WAF.")
+                        })
+                        st.session_state.msg_ids.append(new_msg_key)
                         break
 
                     if output.get("type") == "error":

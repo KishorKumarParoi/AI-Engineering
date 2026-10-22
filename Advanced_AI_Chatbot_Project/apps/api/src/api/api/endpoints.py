@@ -1,6 +1,5 @@
 from api.agents.modified_single_agent.graph import rag_agent_stream_wrapper
-from api.api.models import FeedbackRequest
-from api.api.models import FeedbackResponse
+from api.api.models import FeedbackRequest, FeedbackResponse, HITLApprovalRequest, HITLApprovalResponse
 from api.api.processors.submit_feedback import submit_feedback
 import os
 import logging
@@ -132,6 +131,61 @@ def rag(request: Request, payload: RagRequest) -> StreamingResponse:
         rag_agent_stream_wrapper(payload.query, payload.thread_id),
         media_type="text/event-stream",
     )
+
+
+@rag_router.get("/hitl/pending/{thread_id}")
+def get_pending_hitl(thread_id: str):
+    """Inspects if an active session is interrupted awaiting supervisor authorization."""
+    from api.hitl.manager import hitl_manager
+    action = hitl_manager.get_pending(thread_id)
+    if not action:
+        return {"status": "none", "pending": False, "thread_id": thread_id}
+    return {
+        "status": "pending_approval",
+        "pending": True,
+        "action": action.dict(),
+    }
+
+
+@rag_router.post("/hitl/approve")
+def resolve_hitl_action(request: Request, payload: HITLApprovalRequest) -> HITLApprovalResponse:
+    """Human-in-the-Loop decision endpoint for supervisors to authorize or reject actions."""
+    from api.hitl.manager import hitl_manager
+    req_id = getattr(request.state, "request_id", "req-hitl")
+    action = hitl_manager.resolve(
+        thread_id=payload.thread_id,
+        decision=payload.decision,
+        supervisor_notes=payload.supervisor_notes or "",
+    )
+    if not action:
+        return HITLApprovalResponse(
+            request_id=req_id,
+            status="error",
+            decision=payload.decision,
+            message=f"No pending action found for thread '{payload.thread_id}'.",
+        )
+    return HITLApprovalResponse(
+        request_id=req_id,
+        status="success",
+        action_id=action.action_id,
+        decision=action.status,
+        message=f"Action '{action.tool_name}' successfully resolved with status '{action.status}'.",
+        resolution_summary=action.resolution_summary,
+    )
+
+
+@rag_router.get("/mcp/status")
+def get_mcp_status():
+    """Returns cluster health of external Model Context Protocol (MCP) microservices."""
+    from api.mcp.client import mcp_client_manager
+    return mcp_client_manager.check_server_health()
+
+
+@rag_router.get("/security/stats")
+def get_security_stats():
+    """Returns real-time BotShield WAF security metrics and threat mitigation counts."""
+    from api.security.bot_shield import bot_shield_stats
+    return bot_shield_stats.to_dict()
 
 
 feedback_router = APIRouter()
