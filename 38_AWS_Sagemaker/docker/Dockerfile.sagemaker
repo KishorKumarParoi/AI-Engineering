@@ -1,0 +1,20 @@
+# Multi-stage custom SageMaker container for Training & Inference
+FROM 763104351884.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3
+
+# Set working directory
+WORKDIR /opt/ml/code
+
+# Copy requirements and install
+COPY requirements-sagemaker.txt /opt/ml/code/requirements.txt
+RUN pip install --no-cache-dir -r /opt/ml/code/requirements.txt
+
+# Copy training, preprocessing, evaluation and inference scripts
+COPY src/ /opt/ml/code/src/
+
+# SageMaker environment paths
+ENV SAGEMAKER_SUBMIT_DIRECTORY=/opt/ml/code
+ENV SAGEMAKER_PROGRAM=src/inference/inference.py
+ENV PYTHONPATH="/opt/ml/code:${PYTHONPATH}"
+
+# Default entrypoint for SageMaker containers
+ENTRYPOINT ["python"]
