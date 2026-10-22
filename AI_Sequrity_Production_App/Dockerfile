@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 # Pull uv binary from the official image — no pip install needed.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -10,12 +10,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 
 WORKDIR /app
 
-# Layer: install dependencies only (cached until pyproject.toml changes).
-# tomllib (stdlib in 3.11+) extracts [project.dependencies] so we can
-# install deps without copying source — preserves cache on code-only changes.
-# uv prefers binary wheels by default (no --prefer-binary flag needed).
-COPY pyproject.toml .
-RUN python3 -c "import tomllib,subprocess; deps=tomllib.load(open('pyproject.toml','rb'))['project']['dependencies']; subprocess.run(['uv','pip','install','--system','--no-cache']+deps,check=True)"
+# Layer: install production dependencies only (cached until requirements-prod.txt changes).
+COPY requirements-prod.txt .
+RUN uv pip install --system --no-cache -r requirements-prod.txt
 
 # Layer: copy source — only invalidates on code changes, not dep changes.
 COPY app/ ./app/

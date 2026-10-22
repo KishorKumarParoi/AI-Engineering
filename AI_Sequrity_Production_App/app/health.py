@@ -46,3 +46,13 @@ def ready(request: Request):
         status_code=status_code,
         content={"status": "ready" if healthy else "not_ready", "checks": checks},
     )
+
+
+@router.get("/health/live")
+def health_live():
+    return {"status": "alive"}
+
+
+@router.get("/health/ready")
+def health_ready(request: Request):
+    return ready(request)

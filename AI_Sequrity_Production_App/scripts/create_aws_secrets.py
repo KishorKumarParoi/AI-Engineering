@@ -61,20 +61,16 @@ def main():
 
     arns = {}
     for key in SECRET_KEYS:
+        val = values[key]
         secret_name = f"{project}/{key.lower().replace('_', '-')}"
-        value = values[key]
-
-        result = subprocess.run(
+        # Check if secret already exists
+        check_res = subprocess.run(
             [
                 "aws",
                 "secretsmanager",
-                "create-secret",
-                "--name",
+                "describe-secret",
+                "--secret-id",
                 secret_name,
-                "--description",
-                f"{key} for RAG deployment",
-                "--secret-string",
-                value,
                 "--query",
                 "ARN",
                 "--output",
@@ -82,9 +78,47 @@ def main():
             ],
             capture_output=True,
             text=True,
-            check=True,
         )
-        arn = result.stdout.strip()
+
+        if check_res.returncode == 0 and check_res.stdout.strip():
+            arn = check_res.stdout.strip()
+            subprocess.run(
+                [
+                    "aws",
+                    "secretsmanager",
+                    "put-secret-value",
+                    "--secret-id",
+                    secret_name,
+                    "--secret-string",
+                    val,
+                ],
+                capture_output=True,
+                check=True,
+            )
+            print(f"Updated secret {key}: {arn}")
+        else:
+            result = subprocess.run(
+                [
+                    "aws",
+                    "secretsmanager",
+                    "create-secret",
+                    "--name",
+                    secret_name,
+                    "--description",
+                    f"{key} for RAG deployment",
+                    "--secret-string",
+                    val,
+                    "--query",
+                    "ARN",
+                    "--output",
+                    "text",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            arn = result.stdout.strip()
+            print(f"Created secret {key}: {arn}")
         arns[key] = arn
         print(f"{key}_ARN={arn}")
 

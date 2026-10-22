@@ -6,6 +6,7 @@ on:
     types:
       - completed
     branches: [main, deployment]
+  workflow_dispatch:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -19,7 +20,7 @@ jobs:
   deploy:
     name: Build, Push, and Deploy to ECS
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout
@@ -60,12 +61,14 @@ jobs:
           RAG_API_KEY_ARN: ${{ secrets.RAG_API_KEY_ARN }}
           LOGFIRE_TOKEN_ARN: ${{ secrets.LOGFIRE_TOKEN_ARN }}
           LANGSMITH_API_KEY_ARN: ${{ secrets.LANGSMITH_API_KEY_ARN }}
+          PORTKEY_PRIMARY_CONFIG_ID: ${{ secrets.PORTKEY_PRIMARY_CONFIG_ID || 'pc-portke-a40482' }}
         run: |
           render() {
             sed \
               -e "s|<IMAGE_NAME>|$IMAGE_URI|g" \
               -e "s|<AWS_REGION>|$AWS_REGION|g" \
               -e "s|<BACKEND_URL>|$BACKEND_URL|g" \
+              -e "s|<PORTKEY_PRIMARY_CONFIG_ID>|$PORTKEY_PRIMARY_CONFIG_ID|g" \
               -e "s|<NEON_DB_URL_ARN>|$NEON_DB_URL_ARN|g" \
               -e "s|<UPSTASH_REDIS_REST_URL_ARN>|$UPSTASH_REDIS_REST_URL_ARN|g" \
               -e "s|<UPSTASH_REDIS_REST_TOKEN_ARN>|$UPSTASH_REDIS_REST_TOKEN_ARN|g" \

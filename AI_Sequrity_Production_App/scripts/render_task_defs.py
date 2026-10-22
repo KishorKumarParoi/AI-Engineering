@@ -37,7 +37,7 @@ def load_state():
                 line = line.strip().removeprefix("export ")
                 m = re.match(r'([A-Z_0-9]+)=(.+)', line)
                 if m:
-                    state[m.group(1)] = m.group(2)
+                    state[m.group(1)] = m.group(2).strip().strip('"').strip("'")
     return state
 
 

@@ -11,3 +11,5 @@ credentials.json
 __pycache__/
 *.py[cod]
 8hr-MARATHON/
+scripts/aws_secret_arns.sh
+scripts/aws_deploy_state.sh
