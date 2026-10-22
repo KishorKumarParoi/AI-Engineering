@@ -64,8 +64,11 @@ if [ -z "$VPC_ID" ] || [ "$VPC_ID" = "None" ]; then
 fi
 echo -e "${GREEN}✓ Using VPC: ${VPC_ID}${NC}"
 
-# Pick first available public subnet
-SUBNET_ID=$(aws ec2 describe-subnets --region "$AWS_REGION" --filters "Name=vpc-id,Values=${VPC_ID}" --query "Subnets[0].SubnetId" --output text 2>/dev/null || true)
+# Pick public subnet in AZs that support t3 instances (us-east-1a, us-east-1b)
+SUBNET_ID=$(aws ec2 describe-subnets --region "$AWS_REGION" --filters "Name=vpc-id,Values=${VPC_ID}" "Name=availability-zone,Values=${AWS_REGION}a,${AWS_REGION}b" --query "Subnets[0].SubnetId" --output text 2>/dev/null || true)
+if [ -z "$SUBNET_ID" ] || [ "$SUBNET_ID" = "None" ]; then
+    SUBNET_ID=$(aws ec2 describe-subnets --region "$AWS_REGION" --filters "Name=vpc-id,Values=${VPC_ID}" --query "Subnets[0].SubnetId" --output text 2>/dev/null || true)
+fi
 echo -e "${GREEN}✓ Using Subnet: ${SUBNET_ID}${NC}"
 
 # Security Group: Allow SSH (22), HTTP (80), FastAPI (8080), Streamlit (8501)

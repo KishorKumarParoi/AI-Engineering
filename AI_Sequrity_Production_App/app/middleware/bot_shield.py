@@ -123,6 +123,10 @@ class BotShieldMiddleware(BaseHTTPMiddleware):
         )
         path = request.url.path
 
+        # ── 0. Allow Health and Readiness Probes to bypass cleanly ────
+        if path.startswith(("/health", "/ready")):
+            return await call_next(request)
+
         # ── 1. Honeypot trap ──────────────────────────────────────────
         if path.lower() in HONEYPOT_PATHS or any(path.lower().startswith(h) for h in HONEYPOT_PATHS):
             if client_ip not in ("127.0.0.1", "::1", "localhost"):
