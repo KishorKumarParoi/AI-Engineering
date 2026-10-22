@@ -26,6 +26,13 @@ qdrant-client==1.17.1
 FlashRank==0.2.10
 redis==7.4.0
 
+# --- PRODUCTION PERSISTENCE ---
+langgraph-checkpoint-postgres==2.0.16
+psycopg-pool==3.3.0
+psycopg-binary==3.3.0
+prometheus-client==0.25.0
+prometheus-fastapi-instrumentator==8.0.2
+
 # --- LANGCHAIN & AGENTIC ORCHESTRATION ---
 langchain==1.2.18
 langgraph==1.1.10

@@ -57,5 +57,12 @@ langfuse                    # Live production monitoring, tracing & user feedbac
 # --- EMBEDDINGS (SENTENCE TRANSFORMERS) ---
 sentence-transformers       # Used by FlashRank reranker internally
 langchain_google_genai
-
 langchain-google-vertexai
+
+# --- PRODUCTION PERSISTENCE & RELIABILITY ---
+langgraph-checkpoint-postgres  # Postgres-backed LangGraph checkpointer
+psycopg-pool                   # Connection pool for PostgresSaver
+psycopg-binary                 # PostgreSQL driver
+redis                          # Redis client for rate limiting
+prometheus-client              # Prometheus metrics exposition
+prometheus-fastapi-instrumentator  # Automatic FastAPI request metrics

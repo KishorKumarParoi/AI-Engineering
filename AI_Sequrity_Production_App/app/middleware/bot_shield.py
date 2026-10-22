@@ -125,8 +125,9 @@ class BotShieldMiddleware(BaseHTTPMiddleware):
 
         # ── 1. Honeypot trap ──────────────────────────────────────────
         if path.lower() in HONEYPOT_PATHS or any(path.lower().startswith(h) for h in HONEYPOT_PATHS):
-            rate_limiter.ban(client_ip, duration_seconds=600)
-            logfire.warning(f"🍯 Honeypot triggered by {client_ip} on path '{path}'. Blacklisting IP.")
+            if client_ip not in ("127.0.0.1", "::1", "localhost"):
+                rate_limiter.ban(client_ip, duration_seconds=600)
+            logfire.warning(f"🍯 Honeypot triggered by {client_ip} on path '{path}'. Flagging IP.")
             return JSONResponse(
                 status_code=403,
                 content={"error": "Access Denied. Malicious activity flagged and reported."},
@@ -143,7 +144,8 @@ class BotShieldMiddleware(BaseHTTPMiddleware):
         user_agent = request.headers.get("user-agent", "")
         for pattern in SUSPICIOUS_UA_PATTERNS:
             if pattern.search(user_agent):
-                rate_limiter.ban(client_ip, duration_seconds=300)
+                if client_ip not in ("127.0.0.1", "::1", "localhost"):
+                    rate_limiter.ban(client_ip, duration_seconds=300)
                 logfire.warning(f"🛡️ Blocked attack tool signature '{user_agent}' from {client_ip}.")
                 return JSONResponse(
                     status_code=403,

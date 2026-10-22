@@ -66,6 +66,28 @@ def health_check():
     }
 
 
+@app.get("/ready")
+def readiness_check():
+    """
+    Readiness probe — verifies that critical external dependencies are reachable.
+    Returns 200 if critical services (Neon Postgres, Qdrant, Portkey, Jina) are operational.
+    """
+    from app.services.health.connection_checker import check_all_connections
+    from fastapi.responses import JSONResponse
+
+    results = check_all_connections()
+    checks = {name: result.to_dict()["status"] for name, result in results.items()}
+    critical_healthy = all(
+        results[k].healthy for k in ("postgres", "qdrant", "llm_gateway", "jina_embeddings", "jina_reranker")
+        if k in results
+    )
+    status_code = 200 if critical_healthy else 503
+    return JSONResponse(
+        status_code=status_code,
+        content={"status": "ready" if critical_healthy else "not_ready", "checks": checks},
+    )
+
+
 
 @app.get("/graph")
 def get_graph_image():

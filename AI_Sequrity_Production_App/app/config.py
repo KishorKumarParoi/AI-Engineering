@@ -1,11 +1,15 @@
 import os
+from urllib.parse import quote, urlunsplit
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
 class Settings:
-    # --- GEMINI EMBEDDINGS ---
+    # --- JINA AI (PRIMARY EMBEDDINGS & RERANKER) ---
+    JINA_API_KEY = os.getenv("JINA_API_KEY")
+
+    # --- GEMINI EMBEDDINGS (FALLBACK) ---
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
     # --- VECTOR DB (QDRANT) ---
@@ -42,10 +46,42 @@ class Settings:
     GCP_PROCESSED_BUCKET = os.getenv("GCP_PROCESSED_BUCKET", "enterprise-rag-processed-kkp-53d8ce01")
     GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "service_account.json")
 
+    # --- DATABASE & CACHE ---
+    NEON_DB_URL = os.getenv("NEON_DB_URL")
+    UPSTASH_REDIS_REST_URL = os.getenv("UPSTASH_REDIS_REST_URL")
+    UPSTASH_REDIS_REST_TOKEN = os.getenv("UPSTASH_REDIS_REST_TOKEN")
+
+    # --- API SECURITY & KEYS ---
+    API_KEY = os.getenv("RAG_API_KEY")
+    LOGFIRE_TOKEN = os.getenv("LOGFIRE_TOKEN")
+    PORTKEY_PRIMARY_SLUG = os.getenv("PORTKEY_PRIMARY_SLUG", "openai")
+    PORTKEY_FALLBACK_SLUG = os.getenv("PORTKEY_FALLBACK_SLUG", "gemini")
+
     # --- BOT & SECURITY DEFENSE ---
-    RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
+    RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "20"))
     BURST_LIMIT_PER_SECOND = int(os.getenv("BURST_LIMIT_PER_SECOND", "5"))
     MAX_PAYLOAD_BYTES = int(os.getenv("MAX_PAYLOAD_BYTES", "65536"))  # 64KB max query body
+
+    @property
+    def postgres_uri(self) -> str:
+        """LangGraph Postgres checkpointer URI (Neon)."""
+        base = (self.NEON_DB_URL or "").rstrip("/")
+        if not base:
+            return ""
+        keepalive = "keepalives=1&keepalives_idle=30&keepalives_interval=10&keepalives_count=5"
+        if "?" in base:
+            return f"{base}&{keepalive}"
+        return f"{base}?{keepalive}"
+
+    @property
+    def redis_url(self) -> str:
+        """TLS Redis URL derived from Upstash REST credentials."""
+        if not self.UPSTASH_REDIS_REST_URL:
+            return ""
+        host = self.UPSTASH_REDIS_REST_URL.replace("https://", "").rstrip("/")
+        token = quote(self.UPSTASH_REDIS_REST_TOKEN or "", safe="")
+        netloc = f"default:{token}@{host}"
+        return urlunsplit(("rediss", netloc, "", "", ""))
 
 # Resolve Google Application Credentials if path exists
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
