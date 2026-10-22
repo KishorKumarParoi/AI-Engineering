@@ -8,12 +8,34 @@ Usage:
 
 import argparse
 import os
+import socket
 import subprocess
 import sys
 import time
 
 
+def free_port(port: int):
+    """Attempt to terminate any stale process holding the port."""
+    try:
+        res = subprocess.run(["lsof", "-ti", f":{port}"], capture_output=True, text=True)
+        pids = [p.strip() for p in res.stdout.strip().split("\n") if p.strip()]
+        for pid in pids:
+            if pid and pid != str(os.getpid()):
+                print(f"⚠️ Port {port} in use by PID {pid}. Freeing port...")
+                subprocess.run(["kill", "-9", pid], capture_output=True)
+                time.sleep(0.5)
+    except Exception:
+        pass
+
+
+def is_port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("127.0.0.1", port)) == 0
+
+
 def run_api(port: int = 8000, reload: bool = True):
+    if is_port_in_use(port):
+        free_port(port)
     print(f"🚀 Starting FastAPI Backend on http://localhost:{port} ...")
     cmd = [sys.executable, "-m", "uvicorn", "app.main:app", "--port", str(port)]
     if reload:
@@ -22,7 +44,10 @@ def run_api(port: int = 8000, reload: bool = True):
 
 
 def run_ui(port: int = 8501):
+    if is_port_in_use(port):
+        free_port(port)
     print(f"🌐 Starting Streamlit UI on http://localhost:{port} ...")
+
     cmd = [
         sys.executable,
         "-m",

@@ -10,30 +10,61 @@ load_dotenv()
 logfire.configure(token=os.getenv("LOGFIRE_TOKEN"))
 
 # Now safe to import app modules - logfire is already active
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, HTTPException
+from app.config import settings
 from app.agents.graph import rag_agent
 from app.guardrails import initialize_rails, guard
+from app.middleware.bot_shield import BotShieldMiddleware
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 
 # Initialize FastAPI
-app = FastAPI(title="Enterprise Agentic RAG API")
+app = FastAPI(
+    title="Enterprise Agentic RAG API",
+    description="Production RAG with NeMo Guardrails, LangGraph Multi-Agent, and Bot Defense Shield",
+    version="2.0.0",
+)
+
+# Attach Enterprise Bot Attack & Rate Limiting Shield
+app.add_middleware(BotShieldMiddleware)
 
 
 @app.on_event("startup")
 def startup_event():
     initialize_rails()
 
+
 class QueryRequest(BaseModel):
-    q: str
-    thread_id: Optional[str] = "default_user"
-    
-    
+    q: str = Field(..., min_length=1, max_length=4096, description="User query prompt")
+    thread_id: Optional[str] = Field("default_user", max_length=128, description="Session thread ID")
+
+
 @app.get("/")
 def home():
-    return {"message": "Enterprise LangGraph RAG API is live."}
+    return {
+        "message": "Enterprise LangGraph RAG API is live and protected.",
+        "defense": "BotShield active",
+        "version": "2.0.0",
+    }
+
+
+@app.get("/health")
+def health_check():
+    """Liveness probe for Cloud Run, Kubernetes, and monitoring health checks."""
+    return {
+        "status": "healthy",
+        "project_id": settings.PROJECT_ID,
+        "location": settings.LOCATION,
+        "gcp_doc_ai_processor": settings.GCP_DOC_AI_PROCESSOR_ID,
+        "gcp_raw_bucket": settings.GCP_RAW_BUCKET,
+        "gcp_processed_bucket": settings.GCP_PROCESSED_BUCKET,
+        "qdrant_collection": settings.QDRANT_COLLECTION,
+        "guardrails": "initialized",
+        "bot_shield": "active",
+    }
+
 
 
 @app.get("/graph")

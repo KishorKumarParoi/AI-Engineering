@@ -27,14 +27,35 @@ qdrant_client = QdrantClient(
 )
 
 
+def sync_to_gcs(local_path: str, bucket_name: str, blob_name: str):
+    """Sync file to Google Cloud Storage bucket if credentials and bucket exist."""
+    if not bucket_name:
+        return
+    try:
+        from google.cloud import storage
+        client = storage.Client()
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        blob.upload_from_filename(local_path)
+        logfire.info(f"☁️ Synced to GCS: gs://{bucket_name}/{blob_name}")
+    except Exception as e:
+        logfire.warning(f"GCS sync to gs://{bucket_name}/{blob_name} skipped: {e}")
+
+
 def save_processed_locally(data: dict, source_type: str, filename: str) -> str:
-    """Save parsed chunk metadata as JSON in processed_data/<source_type>/."""
+    """Save parsed chunk metadata as JSON in processed_data/<source_type>/ and sync to GCS."""
     folder = os.path.join(PROCESSED_DATA_DIR, source_type)
     os.makedirs(folder, exist_ok=True)
     dest = os.path.join(folder, f"{filename}.json")
     with open(dest, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+    # Sync to GCP Processed Bucket
+    if settings.GCP_PROCESSED_BUCKET:
+        sync_to_gcs(dest, settings.GCP_PROCESSED_BUCKET, f"{source_type}/{filename}.json")
+
     return dest
+
 
 
 def process_file(file_path: str, filename: str, source_type: str):
@@ -73,6 +94,11 @@ def process_file(file_path: str, filename: str, source_type: str):
             }
             local_path = save_processed_locally(processed_data, source_type, filename)
             logfire.info(f"Saved processed data → {local_path}")
+
+            # 3b. Sync raw file to GCP Raw Bucket
+            if settings.GCP_RAW_BUCKET:
+                sync_to_gcs(file_path, settings.GCP_RAW_BUCKET, f"{source_type}/{filename}")
+
 
             # 4. Embed and index in Qdrant
             with logfire.span("Vectorizing & Indexing"):

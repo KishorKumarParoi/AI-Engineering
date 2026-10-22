@@ -4,3 +4,9 @@ test.md
 .logfire
 Cour*.xlsx
 update*.py
+service_account.json
+*service_account*.json
+*.key
+credentials.json
+__pycache__/
+*.py[cod]
