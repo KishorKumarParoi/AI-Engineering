@@ -1,33 +1,41 @@
 # 🍕 Zomato AI Data Engineering: Enterprise Lakehouse & Multimodal AI Platform
 
-[![Test Suite](https://img.shields.io/badge/Test%20Suite-7%20Passed%20(100%25)-34D399?logo=checkmarx&logoColor=white)](testing/data-engineering/)
+[![Unit Test Suite](https://img.shields.io/badge/Unit%20Tests-12%20Passed%20(100%25)-34D399?logo=pytest&logoColor=white)](tests/)
 [![Snowflake](https://img.shields.io/badge/Snowflake-Medallion%20Lakehouse-29B5E8?logo=snowflake&logoColor=white)](https://www.snowflake.com/)
 [![dbt Core](https://img.shields.io/badge/dbt-SCD2%20%26%20Marts-FF694B?logo=dbt&logoColor=white)](https://www.getdbt.com/)
+[![Feast](https://img.shields.io/badge/Feast-Feature%20Store%20(%3C5ms)-3388FF?logo=redis&logoColor=white)](feast/)
 [![Apache Airflow](https://img.shields.io/badge/Astronomer-Airflow%20Orchestrator-017CEE?logo=apache-airflow&logoColor=white)](https://airflow.apache.org/)
-[![Apache Spark](https://img.shields.io/badge/Apache%20Spark-4.2.0-E25A1C?logo=apache-spark&logoColor=white)](https://spark.apache.org/)
 [![Delta Lake](https://img.shields.io/badge/Delta%20Lake-ACID%20SCD2-00A4E4?logo=databricks&logoColor=white)](https://delta.io/)
-[![Azure Event Hubs](https://img.shields.io/badge/Azure-Event%20Hubs%20Streaming-0089D6?logo=microsoft-azure&logoColor=white)](https://azure.microsoft.com/)
-[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini%20%7C%20Embeddings-412991?logo=openai&logoColor=white)](https://openai.com/)
-[![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8?logo=opencv&logoColor=white)](https://opencv.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-Interactive%20Apps-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Terraform](https://img.shields.io/badge/Terraform-AWS%20EKS%20%7C%20MSK-7B42BC?logo=terraform&logoColor=white)](terraform/aws/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Argo%20Canary%20Rollouts-326CE5?logo=kubernetes&logoColor=white)](k8s/)
+[![OpenAI & G-Eval](https://img.shields.io/badge/AI%20Guardrails-G--Eval%20%26%20PII%20Filter-412991?logo=openai&logoColor=white)](ai/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Enterprise%20Portal-FF4B4B?logo=streamlit&logoColor=white)](streamlit_app.py)
 
-> **A production-hardened Big Data Lakehouse and Multimodal AI Analytics Platform processing food delivery datasets at scale (35M+ rows, 2.3 GB).** Featuring a **Snowflake Medallion Lakehouse** (Bronze/Silver/Gold/SCD2), **dbt dimensional modeling**, **PySpark 4.2.0 Delta Lake streaming & quarantine isolation**, **Azure Event Hubs real-time AMQP 1.0 buffering**, **Astronomer Apache Airflow DAG orchestration**, **OpenAI Semantic RAG & Text-to-SQL**, and an **Autonomous Computer Vision & Receipt OCR Dispute Arbitration Engine**.
+> **A production-hardened Big Data Lakehouse and Multimodal AI Analytics Platform processing food delivery datasets at scale (35M+ rows, 2.3 GB).** Fully elevated to the **Enterprise AI Architect Roadmap (Phases 0 - 5)**: featuring **Pydantic Data Contracts**, **Debezium CDC WAL capture**, **Feast Real-Time Feature Store (<5ms)**, **MLflow Champion vs Challenger Gating**, **Transactional Outbox & Distributed Saga Orchestration**, **AWS Terraform IaC (EKS, MSK, KMS, S3)**, **Argo Rollouts Canary/Blue-Green**, **PSI & KS-test Drift Detection**, and **Multimodal Vision & Dispute RAG with Chain-of-Thought G-Eval Verification**.
 
 ---
 
 ## 📑 Table of Contents
-1. [Executive Summary & Platform Scope](#-executive-summary--platform-scope)
-2. [Master Platform Test Scorecard (100% Pass)](#-master-platform-test-scorecard-100-pass)
-3. [Step-by-Step Visual Architecture & System Flows](#-step-by-step-visual-architecture--system-flows)
+1. [🎓 Master Step-by-Step Learning Guide (Complete Tutorial)](docs/STEP_BY_STEP_LEARNING_GUIDE.md)
+2. [Executive Summary & Platform Scope](#-executive-summary--platform-scope)
+3. [Master Test Scorecard: Integration & Unit Suites (100% Pass)](#-master-platform-test-scorecard-100-pass)
+4. [Step-by-Step Visual Architecture & System Flows](#-step-by-step-visual-architecture--system-flows)
    - [Step 1: End-to-End Enterprise Lakehouse Architecture](#step-1-end-to-end-enterprise-lakehouse-architecture)
    - [Step 2: Snowflake Medallion Lakehouse & dbt SCD Type 2](#step-2-snowflake-medallion-lakehouse--dbt-scd-type-2)
    - [Step 3: Real-Time Streaming & PySpark Delta Lake Processing](#step-3-real-time-streaming--pyspark-delta-lake-processing)
    - [Step 4: Astronomer Apache Airflow Orchestration DAG](#step-4-astronomer-apache-airflow-orchestration-dag)
    - [Step 5: Generative AI Analytics: Review RAG & Text-to-SQL](#step-5-generative-ai-analytics-review-rag--text-to-sql)
    - [Step 6: Multimodal CV & Receipt OCR Dispute Engine](#step-6-multimodal-cv--receipt-ocr-dispute-engine)
-4. [Technology Stack & Architectural Tool Matrix](#-technology-stack--architectural-tool-matrix)
-5. [Principal Engineer Design Rationale & Trade-Offs](#-principal-engineer-design-rationale--trade-offs)
-6. [Quickstart & Execution Runbook](#-quickstart--execution-runbook)
+5. [🏛️ Enterprise AI Architect Roadmap Assets (Phases 0 - 5)](#-enterprise-ai-architect-roadmap-assets-phases-0---5)
+   - [Architecture Decision Records (5 ADRs)](docs/adr/)
+   - [Operational Runbooks & SEV-1 Postmortem](docs/runbooks/)
+   - [3 Public Reference Architectures](docs/REFERENCE_ARCHITECTURES/)
+   - [Cloud Cost Optimization Case Study (-38.5% GPU Spend)](docs/CASE_STUDIES/)
+   - [Principal Engineer Interview & Compensation Playbook](docs/INTERVIEW_PLAYBOOK/)
+   - [AI Platform Starter Kit: Unified Golden Path](docs/STARTER_KIT/AI_PLATFORM_STARTER_KIT.md)
+6. [Technology Stack & Architectural Tool Matrix](#-technology-stack--architectural-tool-matrix)
+7. [Principal Engineer Design Rationale & Trade-Offs](#-principal-engineer-design-rationale--trade-offs)
+8. [Quickstart & Execution Runbook](#-quickstart--execution-runbook)
 
 ---
 
@@ -167,6 +175,56 @@ The platform includes an automated master test suite ([`test_connection.py`](fil
 
 ---
 
+## 🏛️ Enterprise AI Architect Roadmap Assets (Phases 0 - 5)
+
+The platform incorporates the complete architectural rigor mandated by the Enterprise AI Architect Roadmap:
+
+### 1. Data Contracts & CDC Streaming
+- **Pydantic Data Contracts** ([`data_contracts/order_event_contract.py`](data_contracts/order_event_contract.py)): Enforces geographic bounding box coordinates across India and subtotal financial checksum verification.
+- **Debezium CDC WAL Engine** ([`cdc/cdc_engine.py`](cdc/cdc_engine.py)): Parses continuous PostgreSQL WAL events (`c`, `u`, `d`, `r`) directly into Delta Lake Bronze append rows.
+
+### 2. Feast Dual-Storage Feature Platform
+- **Sub-5ms Real-Time Serving** ([`feast/features.py`](feast/features.py)): Redis cluster serving `restaurant_hourly_stats` and `customer_risk_profile` with `<50ms` feature freshness SLAs.
+- **Point-in-Time Offline Training Store** ([`feast/feature_store.yaml`](feast/feature_store.yaml)): Time-travel joins over Delta Lake Parquet without lookahead bias.
+
+### 3. Distributed Event Patterns
+- **Transactional Outbox & Idempotency** ([`patterns/outbox.py`](patterns/outbox.py)): Atomic outbox records with SHA-256 idempotency key deduplication guaranteeing exactly-once publishing to AWS MSK Kafka.
+- **Distributed Saga Orchestrator** ([`patterns/order_saga.py`](patterns/order_saga.py)): Multi-service transaction coordinator (Kitchen, Payment, Fleet) with automated backward compensating rollbacks.
+
+### 4. Enterprise MLOps & CI/CD
+- **Automated Model Registry Gating** ([`mlops/registry/model_registry.py`](mlops/registry/model_registry.py)): Gated promotion requiring test MAE lift > 2.0% and G-Eval fairness score $\ge 0.85$ across delivery pin-codes.
+- **Argo Rollouts & Kubernetes** ([`k8s/canary-rollout.yaml`](k8s/canary-rollout.yaml)): Progressive canary traffic stepping (10% ➔ 25% ➔ 50% ➔ 100%) and instant active/preview Blue-Green rollback.
+
+### 5. AI Guardrails & G-Eval Dispute RAG
+- **PII Masking & Prompt Injection Defense** ([`ai/dispute_rag_service.py`](ai/dispute_rag_service.py)): Redacts Indian mobile numbers and payment cards; blocks adversarial prompt jailbreaks with `<4ms` latency.
+- **Chain-of-Thought G-Eval Rubric** ([`ai/geval_dispute_eval.py`](ai/geval_dispute_eval.py)): Automated scoring of groundedness ($\ge 0.90$), fairness ($\ge 0.90$), and fraud risk ($\le 0.10$).
+
+### 6. Architecture Decision Records (ADRs)
+- [ADR 0001: Medallion Lakehouse Architecture on S3 & Delta Lake](docs/adr/0001-delta-lakehouse-medallion-architecture.md)
+- [ADR 0002: Change Data Capture (CDC) via Debezium and Outbox Pattern](docs/adr/0002-cdc-kafka-streaming-and-outbox-pattern.md)
+- [ADR 0003: Feast Dual Feature Store for Hyperlocal Spatial Features](docs/adr/0003-feast-feature-store-and-evidently-drift.md)
+- [ADR 0004: Multimodal Vision & Hybrid RAG for Dispute Resolution](docs/adr/0004-multimodal-vision-dispute-resolution.md)
+- [ADR 0005: Multi-Region Active-Active LLM Gateway and Auto-Failover](docs/adr/0005-multi-region-active-active-failover.md)
+
+### 7. Operational Runbooks & High-Severity Postmortem
+- [RUNBOOK: Kafka Consumer Lag & Transactional Outbox Retry Mitigation](docs/runbooks/RUNBOOK_KAFKA_LAG_AND_OUTBOX_RETRY.md)
+- [RUNBOOK: Feature Drift Detection & Automated Model Retraining](docs/runbooks/RUNBOOK_DATA_DRIFT_AND_MODEL_RETRAINING.md)
+- [RUNBOOK: Multimodal Vision Dispute RAG Circuit Breaker Failover](docs/runbooks/RUNBOOK_DISPUTE_VISION_FAILOVER.md)
+- [RUNBOOK: Canary Rollback & Incident Triage](docs/runbooks/RUNBOOK_CANARY_ROLLBACK_AND_INCIDENT_TRIAGE.md)
+- [POSTMORTEM: New Year's Eve High-Velocity Order Surge (14,800 QPS)](docs/postmortems/POSTMORTEM_NEW_YEARS_EVE_ORDER_SPIKE.md)
+
+### 8. Principal Engineer Portfolio & Interview Playbook
+- [Reference Architecture 01: Hyperlocal Lakehouse Streaming & Feature Store](docs/REFERENCE_ARCHITECTURES/01-hyperlocal-lakehouse-streaming.md) ($7,112/mo AWS cost breakdown)
+- [Reference Architecture 02: Multimodal Vision & Dispute Resolution RAG](docs/REFERENCE_ARCHITECTURES/02-multimodal-vision-dispute-rag.md) ($42,572/mo BPO savings)
+- [Reference Architecture 03: Multi-Region Active-Active AI & Lakehouse Failover](docs/REFERENCE_ARCHITECTURES/03-multiregion-active-active-failover.md) (RTO < 30s, RPO < 5s)
+- [Cost Case Study: Cutting Cloud GPU Spend by 38.5% via INT8 Quantization](docs/CASE_STUDIES/cost-optimization-quantized-vision-dispute.md)
+- [Interview Playbook: Systems Design Drill (20k QPS)](docs/INTERVIEW_PLAYBOOK/01-systems-design-drill.md)
+- [Interview Playbook: Behavioral STAR Stories](docs/INTERVIEW_PLAYBOOK/02-behavioral-star-stories.md)
+- [Interview Playbook: Bengaluru, Hyderabad & Pune Compensation Bands (INR 1.3 - 1.85 Cr TC)](docs/INTERVIEW_PLAYBOOK/03-compensation-negotiation.md)
+- [AI Platform Starter Kit: Unified Golden Path Blueprint](docs/STARTER_KIT/AI_PLATFORM_STARTER_KIT.md)
+
+---
+
 ## 🛠️ Technology Stack & Architectural Tool Matrix
 
 | Component | Technology | Role & Architectural Function | License / Tier |
@@ -256,10 +314,27 @@ python test_connection.py --suite pyspark
 python test_connection.py --suite vision
 ```
 
-### 4. Launch Interactive Streamlit Applications
+### 4. Run Enterprise AI Architect Unit Test Suite (12 Tests, 100% Pass)
 ```bash
-# Launch unified Streamlit operational dashboard
+# Execute contract, CDC, outbox, saga, and dispute RAG test suite
+PYTHONPATH=. pytest tests/test_data_contracts.py tests/test_model_inference.py tests/test_cdc_and_outbox.py tests/test_dispute_rag_and_geval.py -v
+```
+
+### 5. Launch Interactive Streamlit Operations Hub
+```bash
+# Launch unified Streamlit operational dashboard (Feature 7: Enterprise Architect & Governance Hub)
 streamlit run streamlit_app.py --server.port 8501
+```
+
+### 6. Cloud Infrastructure Deployment & $0.00 Teardown
+```bash
+# Deploy AWS EKS, MSK Kafka, KMS, and S3 Delta Lake
+cd terraform/aws
+terraform init
+terraform apply -auto-approve
+
+# Instant $0.00 cloud teardown when finished
+terraform destroy -auto-approve
 ```
 
 ---
