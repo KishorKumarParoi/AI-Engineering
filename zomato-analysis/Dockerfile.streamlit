@@ -1,0 +1,34 @@
+# ==============================================================================
+# Production Dockerfile for Zomato Unified AI & Analytics Hub (Streamlit)
+# Ultra-fast build with astral-sh/uv and minimal memory footprint
+# ==============================================================================
+FROM python:3.12-slim-bookworm
+
+# Pull uv binary directly for fast dependency installation
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Install essential system libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Cache dependencies
+COPY requirements.txt .
+RUN uv pip install --system --no-cache -r requirements.txt
+
+# Copy application files
+COPY streamlit_app.py .
+COPY review_embeddings.parquet .
+COPY design.png .
+COPY .env.example .env
+COPY services/ ./services/
+COPY testing/ ./testing/
+
+EXPOSE 8501
+
+HEALTHCHECK --interval=15s --timeout=5s --retries=3 \
+  CMD curl -fs http://localhost:8501/_stcore/health || exit 1
+
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0", "--server.headless", "true"]

@@ -15,8 +15,29 @@
 
 ---
 
+### ⚡ Quick Start: 1-Command Zero-Touch EC2 Bootstrapper
+
+Run this single command directly on any bare Ubuntu / Debian / Amazon Linux EC2 instance or cloud VM. It automatically installs git, curl, docker, allocates 4GB swap space for OOM safety on cost-effective instances (`t3.medium`), clones the codebase shallowly (`--depth 1`), configures secrets, builds the multi-stage images with BuildKit, and launches all platform services:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/KishorKumarParoi/zomato-analysis/main/bootstrap.sh | bash
+```
+
+*Or run the ultra-fast native mode via Astral `uv` without Docker:*
+```bash
+curl -fsSL https://raw.githubusercontent.com/KishorKumarParoi/zomato-analysis/main/bootstrap.sh | bash -s -- --native
+```
+
+*Zero pre-configuration required. Platform will immediately become operational at:*
+* 🍔 **Unified Streamlit AI & Lakehouse Hub**: `http://<EC2_PUBLIC_IP>:8501`
+* ⚛️  **Next.js Consumer Portal**: `http://<EC2_PUBLIC_IP>:3000`
+* 🛑 **Zero-Cost Teardown**: `./clear.sh`
+
+---
+
 ## 📑 Table of Contents
-1. [🎓 Master Step-by-Step Learning Guide (Complete Tutorial)](docs/STEP_BY_STEP_LEARNING_GUIDE.md)
+1. [⚡ Quick Start: 1-Command Bootstrapper](#-quick-start-1-command-zero-touch-ec2-bootstrapper)
+2. [🎓 Master Step-by-Step Learning Guide (Complete Tutorial)](docs/STEP_BY_STEP_LEARNING_GUIDE.md)
 2. [Executive Summary & Platform Scope](#-executive-summary--platform-scope)
 3. [Master Test Scorecard: Integration & Unit Suites (100% Pass)](#-master-platform-test-scorecard-100-pass)
 4. [Step-by-Step Visual Architecture & System Flows](#-step-by-step-visual-architecture--system-flows)
