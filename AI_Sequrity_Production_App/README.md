@@ -20,6 +20,8 @@
    - [Step 1: Ingestion & Document Processing Pipeline](#step-1-ingestion--document-processing-pipeline)
    - [Step 2: Multi-Layered AI Security & Threat Defense](#step-2-multi-layered-ai-security--threat-defense)
    - [Step 3: LangGraph Agentic Reasoning & Adaptive Retrieval](#step-3-langgraph-agentic-reasoning--adaptive-retrieval)
+   - [Step 3.1: Enterprise Hybrid Re-Ranking Engine (Cohere v3.5 + FlashRank + Lexical BM25)](#step-31-enterprise-hybrid-re-ranking-engine-cohere-v35--flashrank--lexical-bm25)
+   - [Step 3.2: Model Context Protocol (FastMCP) & Human-In-The-Loop (HITL) Governance](#step-32-model-context-protocol-fastmcp--human-in-the-loop-hitl-governance)
    - [Step 4: Portkey LLM Gateway, Resilience & Observability](#step-4-portkey-llm-gateway-resilience--observability)
    - [Step 5: Cloud Deployment, CI/CD & Zero-Cost Teardown](#step-5-cloud-deployment-cicd--zero-cost-teardown)
 3. [Technology Stack & Architectural Tool Matrix](#-technology-stack--architectural-tool-matrix)
@@ -82,7 +84,7 @@ This system solves these failure modes via a **Defense-in-Depth, Decoupled Archi
 
 ### Step 1: Ingestion & Document Processing Pipeline
 
-![Ingestion Pipeline](docs/images/01_ingestion_pipeline.jpg)
+![Ingestion Pipeline](DOCS/images/01_ingestion_pipeline.jpg)
 
 #### Ingestion Workflow Breakdown:
 1. **Source Ingestion:** Heterogeneous documents (PDF, Markdown, HTML, DOCX, TXT) ingested from enterprise Google Cloud Storage buckets (`enterprise-rag-raw-kkp-53d8ce01`).
@@ -95,7 +97,7 @@ This system solves these failure modes via a **Defense-in-Depth, Decoupled Archi
 
 ### Step 2: Multi-Layered AI Security & Threat Defense
 
-![Security & Guardrails Flow](docs/images/02_security_guardrails.jpg)
+![Security & Guardrails Flow](DOCS/images/02_security_guardrails.jpg)
 
 #### Threat Mitigation Matrix:
 
@@ -112,20 +114,59 @@ This system solves these failure modes via a **Defense-in-Depth, Decoupled Archi
 
 ### Step 3: LangGraph Agentic Reasoning & Adaptive Retrieval
 
-![Agentic Retrieval Flow](docs/images/03_agentic_retrieval.jpg)
+![Supervisor Multi-Agent Flow](DOCS/images/06_supervisor_multi_agent.jpg)
 
-#### Two-Stage Retrieval & Routing:
-1. **Planner Node & Intent Classifier:** Uses few-shot semantic classification to categorize queries into `conversational` (greetings, identity, capabilities) vs. `technical_domain`.
-2. **Conversational Branch:** Bypasses vector database entirely, saving latency and cost while retrieving past dialogue state via `MemorySaver` thread checkpoints.
-3. **Stage 1 (Bi-Encoder Dense Search):** Queries Qdrant Cloud via approximate nearest neighbor (ANN) search, retrieving top-10 candidate chunks in `<35ms`.
-4. **Stage 2 (Cross-Encoder FlashRank Reranker):** Executes local ultra-fast cross-encoder reranking over candidate chunks, scoring relevance and filtering to the top-3 highest-density snippets.
-5. **Responder Synthesis:** LLM synthesizes a grounded answer, generating explicit reasoning traces (`thought_process`) and citations (`sources`).
+#### Autonomous Multi-Agent Network (Supervisor & 5 Specialized Sub-Agents):
+1. **👑 Security Supervisor Agent (`SecuritySupervisor`):**
+   - Triages incoming threat intelligence queries, formulates dynamic DAG execution plans, and synthesizes multi-agent findings into comprehensive incident response briefings.
+2. **🕵️ Agent 1: Threat Researcher (`ThreatResearcherAgent`):**
+   - **Tavily Search API:** Deep semantic technical web searches across security CVE bulletins, vendor advisories, and dark-web indicators.
+   - **Serper Google API:** Google Search API integration for zero-day news coverage and community threat reports.
+   - **FastMCP Protocol:** Dispatches RPC queries to local Model Context Protocol tools (`cve_lookup`, `threat_intel_feed`).
+3. **💥 Agent 2: Exploit Analyst (`ExploitAnalystAgent`):**
+   - Red-teaming specialist evaluating OWASP Top 10 for LLMs (LLM01 Prompt Injection, LLM06 Sensitive Data Leakage), synthesizing exploit mechanics and blast-radius estimations.
+4. **📚 Agent 3: Security Retrieval Agent (`SecurityRetrievalAgent`):**
+   - Interfaces with Qdrant Cloud vector collections for enterprise runbooks, hardening guides, and security policies.
+   - Uses the **Hybrid Re-Ranking Engine** (Cohere v3.5 + FlashRank ONNX + Lexical BM25 RRF).
+5. **⚖️ Agent 4: Compliance Auditor (`ComplianceAuditorAgent`) — Reflection Loop Critic:**
+   - Evaluates proposed remediations against NIST AI RMF, ISO 27001, and CVSS v3.1.
+   - **Loop Engineering:** Rejects unverified fixes lacking rollback scripts, generating actionable critique that forces cyclic state regression back to Agent 5.
+6. **🛠️ Agent 5: Remediation Patcher (`RemediationPatchAgent`):**
+   - Synthesizes concrete infrastructure fixes: ModSecurity WAF rules, IP blocklists, regex guardrail rules, and application code diffs, refining outputs based on the Auditor's critique.
+
+---
+
+### Step 3.1: Enterprise Hybrid Re-Ranking Engine (Cohere v3.5 + FlashRank + Lexical BM25)
+
+![Enterprise Hybrid Re-Ranking Engine](DOCS/images/07_hybrid_reranker_cascade.jpg)
+
+#### 🎯 Re-Ranking Evaluation: Cohere vs FlashRank (Dual-Tier Cascading & RRF):
+- **FlashRank (Local ONNX):** **1.4ms latency**, **$0.00 cost**, **100% in-VPC air-gapped** data privacy. Runs locally inside the application pod on CPU using quantized `ms-marco-TinyBERT-L-2-v2`.
+- **Cohere v3.5 (Cloud Transformer):** Deep cross-attention semantic nuance capturing multi-hop technical and security reasoning.
+- **Lexical BM25 Security Anchor:** Sublinear term matching with heuristic boosts (3.5x for CVE patterns, 2.0x for WAF/RCE/SSRF primitives).
+- **The Principal Engineer Solution:** We implement three production re-ranking strategies:
+  1. **Reciprocal Rank Fusion (RRF Ensemble):** Merges Cohere, FlashRank, and Lexical rankings via $RRF(d) = \sum \frac{w_m}{60 + \text{rank}_m(d)}$ with zero calibration overhead.
+  2. **Cascade Dual-Tier:** FlashRank rapidly prunes raw candidates (50 ➔ 15) in **1.4ms** at $0.00 cost; Cohere v3.5 refines to the top-5 high-assurance results.
+  3. **Convex Score Blending:** Weighted min-max normalized combination ($0.55 \cdot S_{\text{Cohere}} + 0.35 \cdot S_{\text{FlashRank}} + 0.10 \cdot S_{\text{Lexical}}$).
+- **Resilience Invariant:** If Cohere API experiences outages or rate limits, the system seamlessly falls back to FlashRank with **zero downtime and 1.4ms guaranteed latency**.
+
+---
+
+### Step 3.2: Model Context Protocol (FastMCP) & Human-In-The-Loop (HITL) Governance
+
+![Model Context Protocol & HITL Governance](DOCS/images/08_mcp_hitl_governance.jpg)
+
+#### 🔌 FastMCP & ⏸️ Human-In-The-Loop (HITL) Break-Glass Protection:
+- **FastMCP Tool Server:** Standardized Model Context Protocol server exposing `cve_lookup`, `threat_intel_feed`, and `waf_metrics` over JSON-RPC 2.0.
+- **HITL Break-Glass Protection:** Critical actions (such as dynamic WAF IP bans or kernel patch deployments) trigger an execution suspension:
+  - `GET /api/v1/hitl/pending/{thread_id}`: Review pending high-impact action and severity.
+  - `POST /api/v1/hitl/approve`: SecOps human supervisor approves or rejects. Execution resumes only upon cryptographic approval.
 
 ---
 
 ### Step 4: Portkey LLM Gateway, Resilience & Observability
 
-![LLM Gateway Flow](docs/images/04_llm_gateway.jpg)
+![LLM Gateway Flow](DOCS/images/04_llm_gateway.jpg)
 
 #### High-Availability Gateway Specs:
 * **Semantic Caching:** Hashes queries semantically; identical queries return cached responses in **`<50ms`** with **zero LLM cost**.
@@ -139,7 +180,7 @@ This system solves these failure modes via a **Defense-in-Depth, Decoupled Archi
 
 ### Step 5: Cloud Deployment, CI/CD & Zero-Cost Teardown
 
-![Cloud Deployment Flow](docs/images/05_cloud_deployment.jpg)
+![Cloud Deployment Flow](DOCS/images/05_cloud_deployment.jpg)
 
 #### DevOps & Cloud Pipeline:
 * **Automated GitHub Actions CI:** Every push triggers `.github/workflows/ci.yml`, running `ruff` linting and comprehensive unit tests (`test_health.py`, `test_connection_checker.py`, `test_api_endpoints.py`).

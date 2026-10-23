@@ -66,3 +66,9 @@ psycopg-binary                 # PostgreSQL driver
 redis                          # Redis client for rate limiting
 prometheus-client              # Prometheus metrics exposition
 prometheus-fastapi-instrumentator  # Automatic FastAPI request metrics
+
+# --- AGENTIC WEB SEARCH, RE-RANKING & MCP (SUPERVISOR EXPANSION) ---
+tavily-python                  # Tavily Search API for deep agentic web recon
+cohere                         # Cohere API for Tier-2 deep transformer cross-encoder reranking
+fastmcp                        # Model Context Protocol (MCP) server & client tools
+httpx                          # Async HTTP client for Serper Google search & MCP RPC

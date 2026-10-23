@@ -81,25 +81,39 @@ def _rerank_with_flashrank(query: str, documents: list[str], top_n: int = 5) -> 
 
 def rerank_documents(query: str, documents: list[str], top_n: int = 5) -> list[str]:
     """
-    Industry-standard two-tier semantic reranking:
-    1. Primary: Jina AI Reranker (jina-reranker-v2-base-multilingual)
-    2. Fallback: Local FlashRank ONNX TinyBERT
-    3. Last resort: Original vector order documents[:top_n]
+    Industry-standard hybrid semantic reranking:
+    1. Primary: Hybrid RRF (Cohere v3.5 deep cross-attention + FlashRank ONNX + Lexical BM25).
+    2. Fallback: Local FlashRank ONNX TinyBERT.
+    3. Last resort: Original vector order documents[:top_n].
     """
     if not documents:
         return []
 
     start_time = time.time()
-    logfire.info(f"📡 [Reranker] Reranking {len(documents)} documents for query: '{query[:40]}...'")
+    logfire.info(f"📡 [Reranker] Hybrid reranking {len(documents)} documents for query: '{query[:40]}...'")
 
-    # 1. Try Jina AI Reranker first (Industry Standard)
-    jina_results = _rerank_with_jina(query, documents, top_n)
-    if jina_results is not None:
+    # 1. Try Jina AI Reranker if key is explicitly set
+    if settings.JINA_API_KEY:
+        jina_results = _rerank_with_jina(query, documents, top_n)
+        if jina_results is not None:
+            duration = time.time() - start_time
+            logfire.info(f"⚡ [Reranker] Jina rerank completed in {duration:.2f}s")
+            return jina_results
+
+    # 2. Primary: Hybrid Reranker (Cohere v3.5 + FlashRank RRF Ensemble)
+    try:
+        from app.services.reranker import hybrid_reranker
+        doc_objs = [{"id": f"doc_{i}", "text": d} for i, d in enumerate(documents)]
+        ranked_objs = hybrid_reranker.rerank(query, doc_objs, top_k=top_n, mode="hybrid_rrf")
+        ranked_texts = [d["text"] for d in ranked_objs]
         duration = time.time() - start_time
-        logfire.info(f"⚡ [Reranker] Jina rerank completed in {duration:.2f}s")
-        return jina_results
+        top_ranker = ranked_objs[0].get("ranker", "hybrid") if ranked_objs else "hybrid"
+        logfire.info(f"⚡ [Reranker] Hybrid ({top_ranker}) completed in {duration:.2f}s. Kept {len(ranked_texts)} docs.")
+        return ranked_texts
+    except Exception as e:
+        logfire.warning(f"⚠️ [Reranker] Hybrid Reranker failed ({e}), trying standalone FlashRank...")
 
-    # 2. Try FlashRank fallback
+    # 3. Fallback to standalone local FlashRank
     try:
         flash_results = _rerank_with_flashrank(query, documents, top_n)
         duration = time.time() - start_time
@@ -108,3 +122,4 @@ def rerank_documents(query: str, documents: list[str], top_n: int = 5) -> list[s
     except Exception as e:
         logfire.error(f"❌ [Reranker] FlashRank failed: {e}. Returning original vector order.")
         return documents[:top_n]
+
