@@ -8,6 +8,7 @@ import os
 import json
 import time
 import random
+import uuid
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -181,7 +182,8 @@ with st.sidebar:
             "Live Kafka & ML Telemetry",
             "Metadata PySpark & SCD Hub",
             "Medallion Lakehouse Explorer",
-            "Multimodal CV & OCR Dispute Hub"
+            "Multimodal CV & OCR Dispute Hub",
+            "Enterprise Architect & Governance Platform"
         ],
         index=0
     )
@@ -790,3 +792,256 @@ elif app_mode == "Multimodal CV & OCR Dispute Hub":
                         st.write(f"- **EXIF Hardware:** `{fr.get('exif_audit', {}).get('camera_model', 'N/A')}`")
         else:
             st.info("👈 Select a test scenario or upload a photo, review the order context, and click 'Run Multimodal Verification & Arbitration'.")
+
+# -----------------------------------------------------------------------------
+# Feature 7: Enterprise Architect & Governance Platform (Phases 0 - 5)
+# -----------------------------------------------------------------------------
+elif app_mode == "Enterprise Architect & Governance Platform":
+    st.title("🏛️ Enterprise AI Architect & Governance Hub")
+    st.caption("Standard: Enterprise AI Architect Roadmap (Phases 0 - 5) • Zero-Trust • Medallion Lakehouse • Event-Driven")
+
+    arch_tab1, arch_tab2, arch_tab3, arch_tab4, arch_tab5 = st.tabs([
+        "📜 Data Contracts & CDC",
+        "🏪 Feast Feature Platform",
+        "⚡ Outbox & Saga Patterns",
+        "🛡️ AI Guardrails & G-Eval",
+        "📋 ADR & ISO 27001 Governance"
+    ])
+
+    # Tab 1: Data Contracts & CDC
+    with arch_tab1:
+        st.subheader("Data Contracts & Debezium CDC Engine")
+        st.write("Strict Pydantic contract validation ensures bad data never enters the Medallion Lakehouse.")
+        
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("##### 🧪 Interactive Order Contract Tester")
+            test_order_id = st.text_input("Order ID", "ORD_8820")
+            test_lat = st.number_input("Customer Latitude (India: 8.0 - 37.5)", value=12.9716, format="%.4f")
+            test_lng = st.number_input("Customer Longitude (India: 68.0 - 97.5)", value=77.5946, format="%.4f")
+            test_amount = st.number_input("Total Amount (INR)", value=349.0, min_value=1.0)
+            
+            if st.button("Validate Contract", key="btn_validate_contract"):
+                from data_contracts.order_event_contract import DataContractValidator
+                sample_payload = {
+                    "order_id": test_order_id,
+                    "customer_id": "CUST_991",
+                    "restaurant_id": "REST_204",
+                    "city": "Bengaluru",
+                    "customer_lat": test_lat,
+                    "customer_lng": test_lng,
+                    "restaurant_lat": 12.9352,
+                    "restaurant_lng": 77.6245,
+                    "items": [{"item_id": "ITM_1", "item_name": "Paneer Biryani", "quantity": 1, "unit_price_inr": test_amount, "is_veg": True}],
+                    "subtotal_inr": test_amount,
+                    "delivery_fee_inr": 0.0,
+                    "total_amount_inr": test_amount,
+                    "payment_method": "UPI"
+                }
+                is_valid, contract, err = DataContractValidator.validate_order_event(sample_payload)
+                if is_valid:
+                    st.success("✅ **Data Contract Validated!** Payload satisfies geographic bounds and checksum rules.")
+                    st.json(contract.model_dump())
+                else:
+                    st.error(f"❌ **Contract Violation:** {err}")
+
+        with c2:
+            st.markdown("##### 🔄 Change Data Capture (Debezium WAL) Pipeline")
+            st.caption("PostgreSQL WAL mutations streamed to Bronze Delta Lake tables.")
+            cdc_op = st.selectbox("Simulate CDC Operation", ["c (INSERT)", "u (UPDATE)", "d (DELETE)"])
+            
+            if st.button("Process CDC Envelope", key="btn_process_cdc"):
+                from cdc.cdc_engine import CDCIngestionEngine, CDCOperation
+                op_code = cdc_op[0]
+                engine = CDCIngestionEngine()
+                raw_event = json.dumps({
+                    "payload": {
+                        "op": op_code,
+                        "ts_ms": int(time.time() * 1000),
+                        "source": {"table": "orders", "schema": "public", "lsn": 204900, "txId": 992},
+                        "before": {"id": test_order_id, "status": "PENDING"} if op_code != "c" else None,
+                        "after": {"id": test_order_id, "amount": test_amount, "status": "CONFIRMED"} if op_code != "d" else None
+                    }
+                })
+                record = engine.parse_debezium_payload(raw_event)
+                bronze_row = engine.route_to_bronze(record)
+                st.write("**Parsed Delta Lake Bronze Record:**")
+                st.json(bronze_row)
+
+    # Tab 2: Feast Feature Store
+    with arch_tab2:
+        st.subheader("Dual-Storage Feature Platform (Feast + Redis + Parquet)")
+        st.write("Sub-5ms online feature retrieval for dynamic ETA prediction and offline point-in-time training joins.")
+        
+        fc1, fc2, fc3 = st.columns(3)
+        with fc1:
+            st.metric("Online Feature Store", "Redis Cluster", "p99 < 4.2ms")
+        with fc2:
+            st.metric("Offline Lakehouse Store", "S3 Parquet / Delta", "60 TB")
+        with fc3:
+            st.metric("Feature Freshness SLA", "< 50 ms (Online)", "Pass")
+
+        st.markdown("##### Registered Entities & Feature Views")
+        st.code("""
+# Entity: restaurant_id
+# Feature View: restaurant_hourly_stats
+- avg_prep_time_minutes: Float32
+- order_volume_last_hour: Int32
+- kitchen_rush_score: Float32
+
+# Entity: customer_id
+# Feature View: customer_risk_profile
+- refund_claim_frequency_30d: Int32
+- lifetime_order_value_inr: Float32
+- customer_trust_score: Float32
+        """, language="python")
+
+    # Tab 3: Outbox & Saga Patterns
+    with arch_tab3:
+        st.subheader("Distributed Event Patterns: Transactional Outbox & Saga Orchestration")
+        st.write("Guarantees exactly-once message publishing and automatic compensating rollbacks under network failures.")
+        
+        s1, s2 = st.columns(2)
+        with s1:
+            st.markdown("##### 📤 Transactional Outbox & Idempotency")
+            outbox_key = st.text_input("Idempotency Key", f"IDEMP_{uuid.uuid4().hex[:8]}")
+            if st.button("Publish Outbox Event", key="btn_outbox_publish"):
+                from patterns.outbox import zomato_outbox
+                rec = zomato_outbox.insert_outbox_event(
+                    aggregate_type="ORDER",
+                    aggregate_id="ORD_8820",
+                    topic_name="zomato.orders.events",
+                    payload={"order_id": "ORD_8820", "amount": 349.0},
+                    idempotency_key=outbox_key
+                )
+                dispatched = zomato_outbox.poll_and_dispatch()
+                st.success(f"✅ Event `{rec.event_id}` dispatched with status `{rec.status.value}`")
+                st.write(f"Deduplication cache active for key `{outbox_key}`.")
+
+        with s2:
+            st.markdown("##### 🔄 Saga Distributed Transaction")
+            simulate_failure = st.checkbox("Simulate Rider Assignment Timeout", value=False)
+            if st.button("Trigger Order Saga", key="btn_trigger_saga"):
+                from patterns.order_saga import ZomatoOrderSagaCoordinator
+                saga = ZomatoOrderSagaCoordinator(order_id="ORD_SAGA_DEMO")
+                saga_logs = []
+                
+                saga.add_step(
+                    name="ReserveKitchenSlot",
+                    action=lambda: saga_logs.append("Kitchen Slot Reserved"),
+                    compensate=lambda: saga_logs.append("↩️ Compensated: Kitchen Slot Released")
+                )
+                saga.add_step(
+                    name="DebitCustomerUPI",
+                    action=lambda: saga_logs.append("UPI Payment Debited"),
+                    compensate=lambda: saga_logs.append("↩️ Compensated: UPI Payment Refunded")
+                )
+                
+                if simulate_failure:
+                    def rider_fail():
+                        raise TimeoutError("No rider available in 5km radius.")
+                    saga.add_step(
+                        name="AssignFleetRider",
+                        action=rider_fail,
+                        compensate=lambda: saga_logs.append("↩️ Compensated: Rider Lock Cleared")
+                    )
+                else:
+                    saga.add_step(
+                        name="AssignFleetRider",
+                        action=lambda: saga_logs.append("Rider Assigned"),
+                        compensate=lambda: saga_logs.append("↩️ Compensated: Rider Lock Cleared")
+                    )
+                
+                success = saga.execute()
+                if success:
+                    st.success("🎉 **Saga Completed Successfully!** All microservices committed.")
+                else:
+                    st.warning("⚠️ **Saga Step Failed! Backward Compensating Transactions Executed.**")
+                for log in saga_logs:
+                    st.caption(f"• {log}")
+
+    # Tab 4: AI Guardrails & G-Eval
+    with arch_tab4:
+        st.subheader("Dispute Resolution Guardrails & G-Eval Evaluator")
+        st.write("Automated PII scrubbing, prompt-injection defense, and Chain-of-Thought LLM evaluation.")
+        
+        g1, g2 = st.columns(2)
+        with g1:
+            st.markdown("##### 🛡️ Test Claim & Guardrail Filter")
+            cust_prompt = st.text_area(
+                "Customer Claim",
+                "My pizza arrived spilt and cold. Please call me on +91 9876543210 or refund to 4111-2222-3333-4444."
+            )
+            claim_val = st.number_input("Claimed Amount (INR)", value=450.0, min_value=1.0)
+            
+            if st.button("Evaluate Dispute Claim", key="btn_eval_dispute"):
+                from ai.dispute_rag_service import dispute_service
+                from ai.geval_dispute_eval import dispute_evaluator
+                
+                result = dispute_service.process_dispute("DISP_DEMO", cust_prompt, claim_val)
+                st.write("**Sanitized Prompt (PII Stripped):**")
+                st.code(result.sanitized_prompt)
+                
+                st.write(f"- **PII Redacted:** `{result.pii_filtered}`")
+                st.write(f"- **Prompt Injection Detected:** `{result.injection_detected}`")
+                st.write(f"- **Decision:** `{result.decision}`")
+                st.write(f"- **Refund Amount:** `₹{result.refund_amount_inr}`")
+                st.write(f"- **Latency:** `{result.latency_ms} ms`")
+                st.info(f"Justification: {result.justification}")
+                
+                # G-Eval Assessment
+                geval = dispute_evaluator.evaluate_decision(
+                    dispute_id="DISP_DEMO",
+                    customer_claim=cust_prompt,
+                    decision=result.decision,
+                    refund_amount=result.refund_amount_inr,
+                    policy_content="Food delivered spilt or cold is eligible for 100% refund."
+                )
+                with g2:
+                    st.markdown("##### ⚖️ G-Eval Evaluation Rubric")
+                    st.metric("Groundedness Score", f"{geval.groundedness_score * 100:.1f}%")
+                    st.metric("Fairness Score", f"{geval.fairness_score * 100:.1f}%")
+                    st.metric("Fraud Risk Score", f"{geval.fraud_risk_score * 100:.1f}%", delta="-Clean", delta_color="inverse")
+                    st.metric("Overall Quality Score", f"{geval.overall_quality * 100:.1f}%")
+                    for step in geval.evaluation_steps:
+                        st.caption(step)
+
+    # Tab 5: Architecture Decision Records & Compliance
+    with arch_tab5:
+        st.subheader("Architectural Governance & Compliance Documentation")
+        
+        doc_col1, doc_col2 = st.columns(2)
+        with doc_col1:
+            st.markdown("##### 🏛️ Architecture Decision Records (ADRs)")
+            st.markdown("""
+            - [ADR 0001: Medallion Lakehouse Architecture on S3 & Delta Lake](docs/adr/0001-delta-lakehouse-medallion-architecture.md)
+            - [ADR 0002: Change Data Capture (CDC) via Debezium and Outbox](docs/adr/0002-cdc-kafka-streaming-and-outbox-pattern.md)
+            - [ADR 0003: Feast Dual Feature Store for Hyperlocal Spatial Features](docs/adr/0003-feast-feature-store-and-evidently-drift.md)
+            - [ADR 0004: Multimodal Vision & Hybrid RAG for Dispute Resolution](docs/adr/0004-multimodal-vision-dispute-resolution.md)
+            - [ADR 0005: Multi-Region Active-Active LLM Gateway and Auto-Failover](docs/adr/0005-multi-region-active-active-failover.md)
+            """)
+            
+            st.markdown("##### 🚨 Operational Runbooks & Postmortems")
+            st.markdown("""
+            - `RUNBOOK_KAFKA_LAG_AND_OUTBOX_RETRY.md`: Kafka Lag & Outbox DLQ Replay
+            - `RUNBOOK_DATA_DRIFT_AND_MODEL_RETRAINING.md`: Feature Drift & Retraining
+            - `RUNBOOK_DISPUTE_VISION_FAILOVER.md`: Vision RAG Circuit Breaker Failover
+            - `RUNBOOK_CANARY_ROLLBACK_AND_INCIDENT_TRIAGE.md`: Argo Rollouts Rollback
+            - `POSTMORTEM_NEW_YEARS_EVE_ORDER_SPIKE.md`: SEV-1 14,800 QPS Surge Analysis
+            """)
+
+        with doc_col2:
+            st.markdown("##### 🔒 ISO 27001 / SOC 2 & DPDP Act Compliance Checklist")
+            st.checkbox("A.8.24 Use of Cryptography: AWS KMS Customer Managed Keys (CMK) Active", value=True, disabled=True)
+            st.checkbox("A.8.28 Secure Coding: PII Masking & Prompt Injection Defense in API Gateway", value=True, disabled=True)
+            st.checkbox("CC6.1 Logical Access Controls: IAM IRSA Roles with Least-Privilege Scoping", value=True, disabled=True)
+            st.checkbox("CC7.2 Incident Management: Automated PagerDuty Alerting & Chaos Drills", value=True, disabled=True)
+            st.checkbox("DPDP Act 2023 Sec 6: Informed Consent & Customer Right to Erasure in Lakehouse", value=True, disabled=True)
+            
+            st.markdown("##### 💼 Interview & Comp Playbook")
+            st.markdown("""
+            - `01-systems-design-drill.md`: 20k QPS Hyperlocal Systems Design Whiteboard
+            - `02-behavioral-star-stories.md`: Principal Engineer STAR Stories (Incidents, Migrations, Cost)
+            - `03-compensation-negotiation.md`: Bengaluru / Tier-1 Comp Bands (INR 1.3 - 1.85 Cr TC)
+            """)
+

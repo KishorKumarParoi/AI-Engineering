@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: zomato-dispute-rag-bluegreen
+  namespace: zomato-production
+spec:
+  replicas: 4
+  strategy:
+    blueGreen:
+      activeService: zomato-dispute-active-svc
+      previewService: zomato-dispute-preview-svc
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 60
+  selector:
+    matchLabels:
+      app: zomato-dispute-rag
+  template:
+    metadata:
+      labels:
+        app: zomato-dispute-rag
+    spec:
+      containers:
+        - name: dispute-service
+          image: 789130777295.dkr.ecr.us-east-1.amazonaws.com/zomato-dispute:v2.1.0
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10

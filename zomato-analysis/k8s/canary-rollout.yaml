@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: zomato-delivery-eta-rollout
+  namespace: zomato-production
+spec:
+  replicas: 6
+  strategy:
+    canary:
+      steps:
+        - setWeight: 10
+        - pause: { duration: 15m }
+        - setWeight: 30
+        - pause: { duration: 30m }
+        - setWeight: 60
+        - pause: { duration: 15m }
+      analysis:
+        templates:
+          - templateName: eta-p95-latency-check
+        args:
+          - name: service-name
+            value: zomato-eta-svc
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: zomato-delivery-eta
+  template:
+    metadata:
+      labels:
+        app: zomato-delivery-eta
+    spec:
+      containers:
+        - name: eta-serving
+          image: 789130777295.dkr.ecr.us-east-1.amazonaws.com/zomato-eta:v2.1.0
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
