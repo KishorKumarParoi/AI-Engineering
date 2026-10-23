@@ -101,10 +101,10 @@ KEY_EXISTS=$(aws ec2 describe-key-pairs --region "$AWS_REGION" --key-names "$KEY
 
 if [ -z "$KEY_EXISTS" ] || [ "$KEY_EXISTS" = "None" ]; then
     PUB_KEY=""
-    if [ -f "$HOME/.ssh/id_rsa.pub" ]; then
-        PUB_KEY="$HOME/.ssh/id_rsa.pub"
-    elif [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
+    if [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
         PUB_KEY="$HOME/.ssh/id_ed25519.pub"
+    elif [ -f "$HOME/.ssh/id_rsa.pub" ]; then
+        PUB_KEY="$HOME/.ssh/id_rsa.pub"
     fi
 
     if [ -n "$PUB_KEY" ]; then
@@ -140,6 +140,13 @@ cat > "$USER_DATA_FILE" << EOF
 set -e
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 echo "=== Starting Enterprise RAG EC2 Bootstrap ==="
+
+# 0. Configure 2GB Swap space to safeguard Docker build memory spikes
+fallocate -l 2G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=2048
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 
 # 1. Install prerequisites & Docker CE + Docker Compose
 apt-get update -y
@@ -237,7 +244,7 @@ echo -e "\n${YELLOW}[6/6] Waiting for Docker build & containers to become health
 echo "Installing Docker packages and spinning up containers (this takes ~60-90 seconds)..."
 
 HEALTHY=false
-for attempt in {1..30}; do
+for attempt in {1..45}; do
     STATUS=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 3 "http://${PUBLIC_IP}:8080/health" 2>/dev/null || true)
     if [ "$STATUS" = "200" ]; then
         HEALTHY=true
