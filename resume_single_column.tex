@@ -1,0 +1,344 @@
+%----------------------------------------------------------------------------------------
+%   SINGLE-COLUMN ATS HIGH-DENSITY RESUME TEMPLATE (2-PAGE COMPACT)
+%   Compiles with: pdflatex / xelatex / tectonic
+%   Candidate: Kishor Kumar Paroi (Principal Systems Architect)
+%----------------------------------------------------------------------------------------
+\documentclass[9.5pt,a4paper]{article}
+
+\usepackage[left=0.28in,right=0.28in,top=0.22in,bottom=0.22in]{geometry}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+
+% Color definition (Academic burgundy)
+\definecolor{burgundy}{RGB}{100, 28, 38}
+\definecolor{darkgray}{RGB}{45, 45, 45}
+\definecolor{lightgray}{RGB}{210, 210, 210}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=burgundy,
+    urlcolor=burgundy,
+    pdfauthor={Kishor Kumar Paroi},
+    pdftitle={Resume - Kishor Kumar Paroi}
+}
+
+% Page and text formatting
+\pagestyle{empty}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{2.5pt}
+
+% Section Header Formatting
+\newcommand{\resumesection}[1]{%
+    \vspace{4.0pt}%
+    {\color{burgundy}\scshape\bfseries\fontsize{10.0pt}{11.2pt}\selectfont #1}%
+    \vspace{1.0pt}%
+    \hrule height 0.6pt\relax%
+    \vspace{2.5pt}%
+}
+
+% Compact itemize settings
+\setlist[itemize]{
+    leftmargin=9.0pt,
+    itemsep=1.0pt,
+    topsep=1.0pt,
+    parsep=0pt,
+    partopsep=0pt,
+    label={\small$\bullet$}
+}
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%   HEADER SECTION
+%----------------------------------------------------------------------------------------
+\begin{center}
+    {\fontsize{19.0pt}{21.0pt}\selectfont\color{burgundy}\scshape\bfseries Kishor Kumar Paroi}\\[2.0pt]
+    {\fontsize{7.8pt}{9.0pt}\selectfont\textbf{AI SYSTEMS ARCHITECT \;\textbar\; (Dev/ML/LLM/AI)Ops \;\textbar\; Founder@KoomAI \;\textbar\; FDE(LangGraph, Kubernetes, Kubeflow, GCP, Hybrid RAG$<$35ms, Agent Mesh, AI Security) \;\textbar\; vLLM, Finetune \;\textbar\; Data Engineer(Azure, AWS, Databricks, Snowflake) \;\textbar\; Rust SIMD}}\\[2.0pt]
+    {\fontsize{8.0pt}{9.2pt}\selectfont
+        \textbf{Founder @ KoomAI} (\href{https://koom.kishor.tech/}{\textbf{Live: koom.kishor.tech}} \;\textbar\; \href{https://github.com/KishorKumarParoi/Koom-AI}{\textbf{GitHub}}) \quad$\cdot$\quad
+        B.Sc. in CSE @ RUET \quad$\cdot$\quad
+        Dhaka, Bangladesh / Global Remote
+    }\\[1.8pt]
+    {\fontsize{7.2pt}{8.5pt}\selectfont\color{darkgray}
+        \textit{Core Architect Pillars:} Multi-Cloud Agentic AI (MCP) $\;\vert\;$ Distributed MLOps/LLMOps $\;\vert\;$ High-Throughput SIMD Scoring $\;\vert\;$ Zero-Trust DevSecOps IaC
+    }\\[2.5pt]
+    {\fontsize{7.5pt}{8.8pt}\selectfont
+        \href{mailto:1703053@student.ruet.ac.bd}{1703053@student.ruet.ac.bd} \quad$\vert$\quad
+        \href{mailto:kishor.ruet.cse@gmail.com}{kishor.ruet.cse@gmail.com} \quad$\vert$\quad
+        \href{https://wa.me/8801724714156}{+880 1724-714156 (WhatsApp)} \quad$\vert$\quad
+        \href{https://koom.kishor.tech/}{\textbf{koom.kishor.tech}} \quad$\vert$\quad
+        \href{https://vantage.kishor.tech/}{\textbf{vantage.kishor.tech}} \quad$\vert$\quad
+        \href{https://kishor.tech/}{\textbf{kishor.tech (macOS)}} \quad$\vert$\quad
+        \href{https://3d.kishor.tech/}{\textbf{3d.kishor.tech (3D)}} \quad$\vert$\quad
+        \href{https://hacker.kishor.tech/}{\textbf{hacker.kishor.tech}} \quad$\vert$\quad
+        \href{https://linkedin.com/in/kishor-kumar-paroi-b06344166}{linkedin.com/in/kishor-kumar-paroi-b06344166} \quad$\vert$\quad
+        \href{https://github.com/KishorKumarParoi}{github.com/KishorKumarParoi} \quad$\vert$\quad
+        \href{https://x.com/Mr_paroi}{x.com/Mr\_paroi}
+    }
+\end{center}
+
+\vspace{1.0pt}
+
+%----------------------------------------------------------------------------------------
+%   EDUCATION SECTION
+%----------------------------------------------------------------------------------------
+\resumesection{Education}
+
+\noindent\textbf{B.Sc. in Computer Science \& Engineering} \hfill {\small\textit{2018 -- 2023}}\\
+\textit{Rajshahi University of Engineering \& Technology (RUET)} \hfill {\small CGPA: \textbf{3.25 / 4.00 (Degree with Honors)} $\;\vert\;$ \textbf{National Merit Rank: 483rd in Bangladesh}}
+
+\vspace{1.5pt}
+\noindent\textbf{Higher Secondary Certificate (HSC)} \hfill {\small\textit{2015 -- 2017}}\\
+\textit{Saint Joseph Higher Secondary School (Dhaka Board)} \hfill {\small GPA: \textbf{5.00 / 5.00} $\;\vert\;$ \textbf{Rank 85th in Dhaka Board} (National Merit Scholarship)}
+
+\vspace{1.5pt}
+\noindent\textbf{Secondary School Certificate (SSC)} \hfill {\small\textit{2013 -- 2015}}\\
+\textit{S.J Govt Model High School (Gopalganj, Dhaka Board)} \hfill {\small GPA: \textbf{5.00 / 5.00} $\;\vert\;$ \textbf{Rank 90th in Dhaka Board} (National Merit Scholarship)}
+
+%----------------------------------------------------------------------------------------
+%   WORK EXPERIENCE
+%----------------------------------------------------------------------------------------
+\resumesection{Work Experience}
+
+\noindent\textbf{phi0.ai} \hfill {\small\textit{July 2026 -- Oct 2026}}\\
+\textit{Forward Deployed AI Engineer (Production RAG, GenAI \& MLOps)} \hfill {\footnotesize\textit{Europe $\vert$ Remote}}
+\begin{itemize}
+    \item Orchestrated forward deployment of \textbf{5 concurrent autonomous AI agents} executing multi-step tools, cyclic state machines (\textbf{LangGraph}), and dynamic routing; attained \textbf{99.4\% task completion} under complex enterprise workloads, accelerating client onboarding by \textbf{4x}.
+    \item Devised high-throughput \textbf{Hybrid RAG engine} combining dense HNSW vector search, sparse BM25, and multi-stage re-ranking (\textbf{FlashRank ONNX + Cohere v3.5}) with semantic caching (\textbf{$<$35ms latency}); curtailed hallucinations by \textbf{46\%} and diminished LLM token expenditure by \textbf{\$18K/month}.
+    \item Codified continuous \textbf{MLOps \& GenAI flywheel} featuring NeMo Guardrails, autonomous PII scrubbing, and canary model rollouts on \textbf{Kubernetes}; eradicated model regressions and spearheaded phi0.ai's enterprise AI transformation, securing \textbf{\$1.4M in enterprise contracts}.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{Samsung AI Core / Care Health} \hfill {\small\textit{March 2026 -- June 2026}}\\
+\textit{Data Engineering \& AI Systems Intern} \hfill {\footnotesize\textit{Gurgaon / Remote}}
+\begin{itemize}
+    \item Formulated batch \& streaming pipelines via \textbf{AWS S3, EMR, Athena, PySpark}; slashed operational compute overhead by \textbf{\$4.2K/run (34\% savings)} via event-driven AWS Lambda/SQS asynchronous worker dispatch.
+    \item Accelerated 8B/70B LLM inference on NVIDIA H100 GPUs via \textbf{FlashAttention-2} and custom fused CUDA kernels; realized \textbf{3.8x throughput} on $>$32K context windows, mitigating p99 latency by \textbf{54\%}.
+    \item Spearheaded multi-node fine-tuning with \textbf{PyTorch FSDP and DeepSpeed ZeRO-3} alongside HIPAA-compliant de-identification; trimmed training wall-clock time by \textbf{42\% (\$14K saved/run)} and preparation overhead by \textbf{65\%}.
+    \item Deployed real-time health insurance claim fraud detection pipeline over \textbf{AWS Kinesis and OpenTelemetry}; preempted false-positive claim investigations by \textbf{52\%}, safeguarding \textbf{\$380K annually across high-risk audits}.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{Independent AI Specialization \& Engineering Sabbatical} \hfill {\small\textit{Oct 2025 -- Feb 2026}}\\
+\textit{Hands-on Immersion (Full-time career break dedicated to mastering mathematical AI foundations, Big Data \& MLOps)} \hfill {\footnotesize\textit{Self-Directed / Remote}}
+\begin{itemize}
+    \item \textbf{Mathematical Foundations:} Rigorous deep dive into \textbf{Linear Algebra} (SVD, Eigenvalues, PCA, Matrix Decompositions) and \textbf{Multivariate Calculus} (Gradient Descent dynamics, Backpropagation, loss manifolds, convex optimization).
+    \item \textbf{Hands-on ML, DL \& NLP:} Crafted architectures from first principles in \textbf{PyTorch} (Transformers, Multi-Head Self-Attention, CNNs, tokenizers, custom loss functions), mastering modern representation learning.
+    \item \textbf{GenAI, RAG \& Agentic AI:} Built production pipelines using \textbf{Hybrid RAG (HNSW + BM25 + Cross-Encoder Reranking)}, \textbf{LangGraph cyclic state machines}, FastMCP tool execution, and NVIDIA NeMo guardrails.
+    \item \textbf{Big Data Engineering \& Lakehouses:} Mastered distributed data systems \& Medallion Lakehouses (Zach Wilson, Mayank Agarwal) across \textbf{Apache Spark, Delta Lake, Snowflake, dbt Core SCD-2, Apache Kafka} streaming, and Debezium CDC.
+    \item \textbf{Production MLOps:} Instituted continuous experimentation and deployment pipelines using \textbf{MLflow, DVC, Feast Feature Store}, Docker, and Kubernetes for low-latency serving.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{kepi.ai} \hfill {\small\textit{Jan 2022 -- Sep 2025}}\\
+\textit{Senior Full Stack Engineer (3 yrs 9 mos)} \hfill {\footnotesize\textit{Rajshahi, Bangladesh (Remote)}}
+\begin{itemize}
+    \item Architected zero-downtime microservices migration to \textbf{Kubernetes on AWS EKS}; scaled platform throughput by \textbf{300\%} while curtailing p95 latency by \textbf{48\%} at 99.99\% multi-region availability.
+    \item Spearheaded enterprise AI initiatives: devised autonomous multi-agent pipelines and scalable LLM microservices, driving a \textbf{22\% sustained increase in customer LTV}.
+    \item Fortified zero-trust mesh infrastructure with \textbf{Istio mTLS and fine-grained RBAC}; precluded unencrypted inter-service traffic and diminished cross-zone egress costs by \textbf{38\%}.
+    \item Designed event-driven asynchronous processing core using \textbf{Redis Streams and Celery}; sustained \textbf{15M+ daily async background tasks} with zero message loss under 4x traffic surges.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{foodpanda} \hfill {\small\textit{2021 -- 2022}}\\
+\textit{Full Stack Engineer} \hfill {\footnotesize\textit{Dhaka / Remote}}
+\begin{itemize}
+    \item Crafted high-traffic checkout microservices with \textbf{Next.js/MERN}; trimmed latency by \textbf{34\%} and sustained \textbf{100K+ daily peak orders} at 99.98\% uptime, averting \textbf{\$120K in checkout cart abandonment}.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%   FOUNDER EXPERIENCE & STARTUP PLATFORM
+%----------------------------------------------------------------------------------------
+\resumesection{Founder Experience \& Startup Platform: KoomAI}
+
+\noindent\textbf{KoomAI --- Enterprise Asynchronous Video Intelligence Platform} \hfill {\small\textit{Jan 2025 -- Dec 2025}}\\
+\textit{Founder \& Principal Architect \;\textbar\; Orchestrating Desktop, Chrome Extension, Backend \& Full-Stack Next.js with AWS, CDN}\\[1.5pt]
+{\footnotesize
+    \href{https://koom.kishor.tech/}{\textbf{Live: koom.kishor.tech}} \;\textbar\;
+    \href{https://github.com/KishorKumarParoi/Koom-AI}{\textbf{GitHub: Full-Stack Next.js}} \;\textbar\;
+    \href{https://github.com/KishorKumarParoi/Koom-ai-desktop}{\textbf{GitHub: Desktop Client}} \;\textbar\;
+    \href{https://github.com/KishorKumarParoi/Koom-AI-Chrome-Extension}{\textbf{GitHub: Chrome Extension}} \;\textbar\;
+    \href{https://github.com/KishorKumarParoi/koom-ai-express}{\textbf{GitHub: Backend API}}
+}
+\begin{itemize}
+    \item \textbf{WebRTC 60 FPS Engine \& Electron Desktop:} Devised real-time WebRTC media pipeline (\textbf{$<$120ms} latency) and Electron desktop client with native NVENC/VideoToolbox encoding; sustained 60 FPS 1080p video with 0\% stutter across \textbf{50K+ active video minutes} (-45\% idle CPU).
+    \item \textbf{Autonomous 20-Agent Mesh \& Video Copilot:} Deployed 20 concurrent \textbf{LangGraph} specialist agents (\textbf{$<$35ms p99}) and interactive video chatbot copilot generating 1-click GitHub PRs, Jira BDD stories, and Playwright E2E tests over Whisper transcripts.
+    \item \textbf{Personal NotebookLLM Studio \& AI Job Recon:} Built conversational two-host audio podcast generator, Principal Architect system design drills (Kafka, CDC, Feast, Saga), and automated \textbf{ai-job-search} Trojan Horse proposals with tailored ATS CVs.
+    \item \textbf{Pomodoro Chrome MV3 \& Client Invoicing:} Engineered screen-recording extension with integrated \textbf{Pomodoro focus sprints}, tab usage monitor, and 432Hz meditation audio; coupled video deliverables with instant \textbf{Stripe client invoicing} (\textbf{\$24K MRR} pilot).
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%   TECHNICAL PROJECTS & REPOSITORIES (ALL 11 PROJECTS)
+%----------------------------------------------------------------------------------------
+\resumesection{Technical Projects \& Production Repositories}
+
+\noindent\textbf{1. Zomato AI Lakehouse \& Multimodal Dispute Platform} \hfill {\small\textit{Sept 2026 -- Present}}\\
+\textit{Lakehouse (35M+ Rows), Feast Feature Store, dbt SCD-2 \& CV Engine} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/zomato-analysis}{\textbf{GitHub: zomato-analysis}}}
+\begin{itemize}
+    \item Architected enterprise Lakehouse on \textbf{Snowflake \& PySpark Delta Lake} processing \textbf{35M+ orders (2.3 GB)} with \textbf{dbt Core SCD-2}; curtailed warehouse compute by \textbf{42\% (\$18K/mo savings)}.
+    \item Devised real-time feature streaming via \textbf{Airflow, Debezium CDC WAL}, and \textbf{Feast Store} over Redis; lowered serving latency to \textbf{$<$5ms}, unlocking \textbf{+\$340K quarterly revenue lift}.
+    \item Operationalized multimodal CV dispute arbitration (\textbf{DHash} anti-fraud, receipt OCR) with \textbf{G-Eval CoT}; neutralized fraudulent claims by \textbf{68\%}, safeguarding \textbf{\$1.2M in annual partner margins}.
+    \item Deployed decentralized \textbf{CQRS and Transactional Outbox pattern} with Apache Kafka event streams, \textbf{Great Expectations} validation, and \textbf{AWS S3 Glacier} archiving (\$7.8K/mo saved).
+    \item Mechanized real-time \textbf{Presidio PII redaction and NeMo Guardrails} across review streams; guaranteed 100\% GDPR/DPDP data privacy compliance with zero PII leaks into the gold layer.
+    \item Instituted continuous self-healing data observability \& reconciliation via Monte Carlo principles and Prometheus alerts; eradicated silent schema corruption across 14 ingestion channels, protecting \textbf{\$450K in merchant payouts}.
+    \item Formulated resilient dead-letter queue (DLQ) automated replay semantics with \textbf{AWS SQS \& Kafka consumer groups}; recovered \textbf{\$210K in transient webhook timeouts} with zero order transaction loss.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{2. Hybrid Anime Intelligence \& Continuous LLMOps Platform} \hfill {\small\textit{Aug 2026 -- Present}}\\
+\textit{Polyglot Mesh (Go/Rust), RSLoRA Flywheel \& Dynamic Multi-LoRA vLLM} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/Hybrid-Anime-Recommender}{\textbf{GitHub: Hybrid-Anime-Recommender}}}
+\begin{itemize}
+    \item Polyglot mesh: \textbf{Go API Gateway}, \textbf{Rust SIMD} vector scoring, and \textbf{FastAPI} AI core over \textbf{Kafka}; curtailed scoring latency from 25ms to \textbf{$<$0.5ms (50x speedup)}, saving \textbf{64\% CPU cost}.
+    \item Pioneered hybrid retrieval synthesizing \textbf{Dual-Tower NCF, ChromaDB HNSW}, and \textbf{BM25} via Reciprocal Rank Fusion (\textbf{NDCG@10 = 0.94}); catalyzed a \textbf{28\% lift in user session retention}.
+    \item Served adapters via \textbf{vLLM Multi-LoRA dynamic multiplexing} on 1x GPU with \textbf{RSLoRA flywheel}; curtailed GPU spend by \textbf{68\%} while elevating token throughput to \textbf{3.4x}.
+    \item Codified headless \textbf{Kubeflow v2 \& MLflow continuous training pipeline} with DVC data versioning, NeFTune regularization, and stringent model quality gating.
+    \item Orchestrated multi-cloud GitOps continuous delivery via \textbf{ArgoCD and Kustomize} across \textbf{AWS EKS, GCP GKE, and Azure AKS}; empowered KEDA autoscaling from 1 to 24 pods in $<$45s under 15K req/s spikes.
+    \item Implemented real-time embedding concept drift observability with \textbf{Evidently AI \& Prometheus}; detected semantic divergence within \textbf{90 seconds}, triggering automated LoRA adapter hot-swapping.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{3. Enterprise AI Security \& Production Agentic RAG Platform} \hfill {\small\textit{Oct 2026 -- Present}}\\
+\textit{Defense-in-Depth AI Gateway, NVIDIA NeMo Guardrails \& LangGraph} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/AI_Security_Production_App}{\textbf{GitHub: AI\_Security\_Production\_App}}}
+\begin{itemize}
+    \item Built zero-trust defense with \textbf{BotShield WAF and NVIDIA NeMo Guardrails}; blocked \textbf{95\%+ of prompt injections \& jailbreaks} (benchmarked via \textbf{Microsoft PyRIT 0.14.0}).
+    \item Formulated stateful agentic core in \textbf{LangGraph} with MemorySaver checkpoints and \textbf{Portkey Gateway}; saved \textbf{\$8.4K/month (42\%)} via \textbf{$<$50ms semantic similarity caching}.
+    \item Standardized tool execution via \textbf{FastMCP} with \textbf{Human-in-the-Loop (HITL)} gates and Logfire/LangSmith tracing; guaranteed \textbf{100\% audit compliance} with zero unauthorized tool runs.
+    \item Architected hierarchical multi-agent supervisor coordinating 5 specialized sub-agents (Ingestion, Safety, Retrieval, Synthesis, Verification) with \textbf{cyclic retry loops and state rollbacks}; boosted multi-hop reasoning accuracy by \textbf{37\%}.
+    \item Instituted high-precision two-stage retrieval combining \textbf{Jina v3 1024-dim dense vectors}, BM25 sparse search, and \textbf{local ONNX FlashRank cross-encoders} with \textbf{Cohere Rerank v3.5} fallback; garnered \textbf{96.4\% Context Precision} at sub-35ms p95 latency.
+\end{itemize}
+
+\pagebreak
+
+\noindent\textbf{4. Smart Manufacturing Industrial AI \& Multi-Cloud MLOps Platform} \hfill {\small\textit{Oct 2026 -- Present}}\\
+\textit{Polyglot (Rust/Go/Next.js), PyTorch Autoencoders, GKE/K3s \& ArgoCD GitOps} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/smart-manufacturing}{\textbf{GitHub: smart-manufacturing}}}
+\begin{itemize}
+    \item Deployed IoT anomaly detection (\textbf{PyTorch Autoencoders}) and defect inspection (\textbf{CNN, $<$20ms}); mitigated part escape defect rate by \textbf{31\%}, saving \textbf{\$420K annually in scrap waste}.
+    \item Built polyglot edge architecture: \textbf{Rust SIMD} edge vibration pre-filter (:8082), \textbf{Go cloud-native gateway} with rate-limiting (:8085), \textbf{Next.js 15} industrial cockpit (:3000), and \textbf{PyTorch AI core} (:8000).
+    \item Formulated resilient Kubernetes: \textbf{GKE multi-zone cluster with seamless fallback to host-native k3s CNCF engine} for zero-dependency standalone execution on EC2.
+    \item Orchestrated 12-stage declarative CI/CD via \textbf{Jenkins, SonarQube, Nexus 3, and ArgoCD GitOps} across AWS \& GCP; curtailed deployment cycles by \textbf{96\% (4h to 8m)} with zero-downtime failover.
+    \item Sustained edge offline resilience via \textbf{local SQLite write-ahead caching and asynchronous MQTT broker sync}; averted telemetry loss during plant network disconnects across \textbf{120+ simulated IoT sensors}.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{5. Nexus-AI: Enterprise Multi-Cloud Lakehouse \& Autonomous Agent Mesh} \hfill {\small\textit{Sept 2026 -- Present}}\\
+\textit{Multi-Cloud Lakehouse (Bronze-Silver-Gold), 5-Agent Mesh, Go Gateway \& Next.js 16} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/Nexus_AI}{\textbf{GitHub: Nexus\_AI}}}
+\begin{itemize}
+    \item Architected security-first 5-agent mesh (Data NL2SQL, Business Analyst, MLOps Supervisor, OWASP Firewall, Voice Alerts) over \textbf{LangGraph}; accelerated ad-hoc enterprise analytics turnaround by \textbf{82\%}.
+    \item Constructed 3-tier Medallion Lakehouse (Bronze Parquet $\to$ Silver 32-point DQ validation $\to$ Gold Star Schema marts) with \textbf{DuckDB}; compressed downstream dashboard query latencies from 4.5s to \textbf{$<$120ms}.
+    \item Crafted \textbf{Go 1.22 API Gateway} with JWT edge authentication and token-bucket rate limiting paired with Express BFF and \textbf{Next.js 16} glassmorphic cockpit; sustained 12K req/s with zero memory leaks.
+    \item Codified multi-cloud infrastructure via \textbf{Terraform across AWS (EKS, S3, Glue), GCP (GKE, BigQuery), and Azure (AKS, Synapse)}; compressed environment provisioning time by 90\% via master launcher.
+    \item Governed attribute-based access control (ABAC) and row-level security (RLS) across \textbf{Medallion Delta tables}; enforced strict multi-tenant data isolation and audit trails across \textbf{40+ analytical business units}.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{6. Advanced AI Chatbot: Enterprise Autonomous Agent \& HITL Platform} \hfill {\small\textit{Jul 2026 -- Present}}\\
+\textit{LangGraph Cyclic State Machine, FastMCP, HITL Financial Gating \& BotShield WAF} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/Advanced_AI_Chatbot_Project}{\textbf{GitHub: Advanced\_AI\_Chatbot\_Project}}}
+\begin{itemize}
+    \item Built enterprise conversational agent using \textbf{LangGraph cyclic state machines} with PostgreSQL checkpointer; empowered fault-tolerant multi-turn thread persistence, dynamic rollbacks, and \textbf{sub-50ms session recovery}.
+    \item Standardized isolated tool execution using \textbf{Model Context Protocol (FastMCP)} with strict \textbf{Human-in-the-Loop (HITL)} approval gates on financial actions ($>$\$50 refunds/cancellations); eradicated \textbf{100\% of unauthorized transaction risk}.
+    \item Pioneered \textbf{BotShield WAF} middleware featuring honeypot traps (/.env, /wp-admin), scanner fingerprint dropping, and sliding-window rate limiting; intercepted \textbf{99.4\% of adversarial probes}.
+    \item Operationalized two-stage hybrid retrieval with \textbf{Qdrant (BGE-Large dense vectors) and BM25 sparse keyword matching} with real-time Server-Sent Events (SSE) token streaming; elevated response relevance to \textbf{94.8\%}.
+    \item Architected semantic intent caching layer with \textbf{Redis \& Cosine similarity gating ($<$0.15 threshold)}; served 38\% of repetitive customer intents in \textbf{$<$12ms}, curtailing LLM token billing by \textbf{\$3.2K/month}.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{7. Data Agent: Enterprise Multi-Agent Business Intelligence \& SQL System} \hfill {\small\textit{Sept 2026 -- Present}}\\
+\textit{Hierarchical LangGraph Mesh, Self-Reflective SQL Security Judge \& ReAct ETL} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/Data-Agent}{\textbf{GitHub: Data-Agent}}}
+\begin{itemize}
+    \item Architected a \textbf{LangGraph supervisor router} classifying business queries into specialized SQL and ETL analyst subgraphs; garnered \textbf{96.2\% routing accuracy} across multi-domain operational requests.
+    \item Instituted dynamic PostgreSQL schema introspection with an \textbf{independent LLM security judge}; sanitized generated SQL and \textbf{intercepted 100\% of destructive DDL/DML injection attacks}.
+    \item Built autonomous \textbf{React tool-calling agent} for file extraction, pandas data transformation, and sandboxed python execution; compressed ad-hoc data pipeline development time by \textbf{75\%}.
+    \item Integrated \textbf{self-healing SQL execution} with automatic syntax retry \& schema reflection; programmatically corrected \textbf{89\% of initial query execution errors} without human intervention.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{8. Advanced Network Security Medallion Lakehouse \& Distributed ML Platform} \hfill {\small\textit{Aug 2026 -- Present}}\\
+\textit{Azure Data Factory, ADLS Gen2, Databricks Spark, MongoDB Atlas, Synapse CETAS \& Sub-4ms ML} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/Advanced_ETL_Project}{\textbf{GitHub: Advanced\_ETL\_Project}}}
+\begin{itemize}
+    \item Architected enterprise Lakehouse: orchestrated batch extraction via \textbf{Azure Data Factory (ADF v2)} dynamic lookup and parallel ForEach loops, landing raw logs into \textbf{ADLS Gen2 Bronze layer}.
+    \item Conducted large-scale ETL in \textbf{Azure Databricks (Apache Spark)} with Azure AD OAuth 2.0 Client Credentials, cross-joining real-time operational metadata from \textbf{MongoDB Atlas}.
+    \item Materialized analytical serving layer in \textbf{Azure Synapse Analytics Serverless SQL} using Managed Identity scoped credentials and \textbf{CETAS (*Create External Table As Select*)} for instant Power BI/Fabric reporting.
+    \item Built data validation engine with schema drift traps, KNN imputation + RobustScaler, and multi-model benchmark (\textbf{XGBoost, CatBoost, Random Forest} delivering \textbf{98.4\% detection accuracy}).
+    \item Containerized sub-4ms \textbf{FastAPI ONNX inference serving} with single-command zero-touch bootstrapper (curl $\vert$ bash) and deterministic \textbf{\$0.00 teardown (clear.sh)}; mitigated p99 latency by \textbf{11.8x}.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{9. AWS SageMaker End-to-End MLOps Pipeline \& Governance Platform} \hfill {\small\textit{Oct 2026 -- Present}}\\
+\textit{SageMaker Pipelines (DAG), Managed Spot Training, Model Registry \& Serverless Serving} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/AWS-SageMaker}{\textbf{GitHub: AWS-SageMaker}}}
+\begin{itemize}
+    \item Designed \textbf{SageMaker DAG Pipeline} (ProcessingStep $\to$ TrainingStep $\to$ ConditionStep $\to$ ModelStep) with \textbf{AWS Managed Spot Training}, curtailing model compute costs by \textbf{70\%}.
+    \item Instituted programmatic quality evaluation gating ($\ge$ 85\% holdout accuracy) for promotion into \textbf{SageMaker Model Registry}, deploying to real-time and serverless endpoints with standard inference contracts (model\_fn, input\_fn, predict\_fn, output\_fn) and FastAPI fallback.
+    \item Configured \textbf{DataCaptureConfig} streaming 100\% of live inference payloads to Amazon S3 for baseline statistical drift detection, anomaly alerting, and programmatic retraining triggers.
+    \item Hardened inference endpoints with \textbf{AWS KMS customer-managed keys (CMK) envelope encryption and TLS 1.3 mutual auth}; achieved complete compliance with \textbf{NIST AI RMF} governance mandates.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{10. Cloud-Native Real-Time MLOps: KServe, AWS ECS Fargate \& Kubernetes} \hfill {\small\textit{Aug 2025 -- Present}}\\
+\textit{KServe v1beta1, AWS ECS Fargate, Kubernetes, Terraform IaC \& S3} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/realtime-mlops}{\textbf{GitHub: realtime-mlops}}}
+\begin{itemize}
+    \item Deployed serverless model inference using \textbf{KServe v1beta1 InferenceService} on Kubernetes backed by Amazon S3 model storage; facilitated dynamic scale-to-zero autoscaling, curtailing idle GPU/CPU compute spend by \textbf{65\%}.
+    \item Architected containerized microservices orchestration on \textbf{AWS ECS on Fargate} with Application Load Balancers and modular \textbf{Terraform IaC}; accelerated infrastructure provisioning by \textbf{80\%} with zero server maintenance overhead.
+    \item Hardened end-to-end container security with \textbf{Trivy CVE scanning and AWS KMS envelope encryption}; ensured \textbf{100\% programmatic CI/CD gating} with zero critical vulnerability deployments.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{11. Core Systems Engineering: Rust Git Engine \& POSIX Terminal Shell} \hfill {\small\textit{Aug 2024}}\\
+\textit{Bare-Metal Systems Programming in Rust, Concurrency \& Process Pipelines} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/codecrafters-git-rust}{\textbf{GitHub: codecrafters-git-rust}}}
+\begin{itemize}
+    \item Crafted Git internals in \textbf{Rust} (SHA-1 object graph, streaming zlib decompression with SIMD, delta packfiles); matched C Git performance within 3\% while guaranteeing \textbf{100\% compile-time memory safety}.
+    \item Built POSIX shell with async signal multiplexing, fork/exec pipelines, and I/O redirection; clocked \textbf{sub-microsecond execution latency} under heavy concurrent process loads with \textbf{73\% lower peak heap allocation}.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%   ACHIEVEMENTS & HACKATHONS
+%----------------------------------------------------------------------------------------
+\resumesection{Achievements \& Hackathons}
+\begin{itemize}
+    \item \textbf{Competitive Programming \& DSA:} \textbf{Ranked 232nd} in Codeforces Div-2 (\textbf{Blue Coder}), \textbf{5-Star on CodeChef}, \textbf{17th in IUPC}; Qualified in \textbf{Meta Hacker Cup Round 3}; 2000+ DSA and system design problems solved.
+    \item \textbf{Champion \;\textbar\; Technobeast AI Agents Hackathon:} Pioneered Qdrant vector optimization with negative embeddings, trajectory matching with transformers, and multimodal API divergence detection.
+    \item \textbf{7th Rank \;\textbar\; AI Security Hackathon:} Ranked in top tier for real-time prompt injection firewall (\textbf{97.2\% accuracy, $<$30ms} latency).
+    \item \textbf{National Merit Scholarships:} Conferred merit scholarships for 85th Rank in Dhaka Board (HSC) and 90th Rank in Dhaka Board (SSC).
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%   LEADERSHIP & MENTORING
+%----------------------------------------------------------------------------------------
+\resumesection{Leadership \& Mentoring}
+\begin{itemize}
+    \item \textbf{In-Person AI Agents Building Masterclass:} Conducted immersive hands-on in-person workshops on architecting autonomous AI Agents, cyclic state machines (\textbf{LangGraph}), tool calling, and production deployment.
+    \item \textbf{Technical Mentorship \& Community Impact:} Mentored \textbf{100+ students \& engineers} across \textbf{Machine Learning, AI Agents, DevOps, and MLOps}, leading code reviews, production architecture design sessions, and career roadmapping.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%   TECHNICAL SKILLS
+%----------------------------------------------------------------------------------------
+\resumesection{Technical Skills}
+\begin{itemize}
+    \item \textbf{Languages \& Frameworks:} Python, C/C++, Rust (Actix-web), Go (Gin/Fiber), SQL, Bash, TypeScript, JavaScript, Java (Spring Boot), FastAPI, Express.js, NestJS, Next.js 16, Streamlit
+    \item \textbf{AI, ML \& LLMOps:} PyTorch, vLLM, LangGraph, LangChain, HuggingFace, TRL, PEFT (RSLoRA, QLoRA), NeFTune, MLflow, Feast, Kubeflow, AWS SageMaker, KServe, DVC
+    \item \textbf{Big Data \& Lakehouse:} Snowflake, Databricks, Azure Data Factory (ADF), Azure Synapse Analytics (CETAS), ADLS Gen2, dbt Core, PySpark, Delta Lake, Apache Kafka, Apache Airflow, Debezium CDC, DuckDB, ChromaDB, Qdrant
+    \item \textbf{Cloud Platforms \& Infra:} AWS (EKS, S3, KMS, EMR, Athena, ECS, Fargate, Bedrock, SageMaker), GCP (GKE, BigQuery, GCE, VertexAI, Gemini AI), Azure (Databricks, Synapse, Fabric, vLLM, AKS), Terraform, Ansible, Helm, ArgoCD, Sonatype Nexus, Docker, Kubernetes (GKE, EKS, K3s)
+    \item \textbf{DevSecOps \& Observability:} NVIDIA NeMo Guardrails, PyRIT RedTeaming, BotShield WAF, SonarQube, Trivy, Jenkins, GitLab CI/CD, GitHub Actions, Prometheus, Grafana, EFK (Elasticsearch/Kibana), Redis
+    \item \textbf{WebRTC, 3D Graphics \& Full-Stack Systems:} WebVR, WebRTC, Three.js, React Three Fiber, ElectronJS, Next.js 16, Prisma, Drizzle ORM, Stripe Connect, PostgreSQL, MongoDB Atlas
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%   CERTIFICATIONS & SPECIALIZATIONS
+%----------------------------------------------------------------------------------------
+\resumesection{Certifications \& Specializations}
+\begin{itemize}
+    \item \textbf{Deep Learning Specialization (DeepLearning.AI \& Stanford -- Andrew Ng):} Neural Networks, Hyperparameter Tuning, CNNs, Sequence Models, Attention Mechanisms \& Transformers.
+    \item \textbf{Machine Learning Specialization (Stanford Online \& DeepLearning.AI -- Andrew Ng):} Supervised Learning, Advanced Learning Algorithms, Unsupervised Learning, Recommenders \& Reinforcement Learning.
+    \item \textbf{Enterprise Production MLOps \& AI Systems Architecture:} End-to-End MLOps Pipelines (Krish Naik/CampusX), Enterprise AI Systems Architecture (Vivian Aranha), Agentic-AI, n8n (Mayank Agarwal), Computer Vision (Sourangshu Paul), AI Data Analyst (Ansh Lamba), Automation \& MCP (Ed Donner)
+    \item \textbf{Distributed Systems, Big Data \& AI System Design:} High-Throughput Distributed Systems \& AI Architecture (Arpit Bhayani, Gaurav Sen, ByteByteGo, Hussein Nasser), Big Data Engineering \& Lakehouses (Mayank Agarwal, Zach Wilson), LLM Foundations (Karpathy, Aurimas), LeetCode algorithmic mastery.
+    \item \textbf{Digital Portfolios \& Systems Architecture Showcases:} \href{https://kishor.tech/}{\textbf{kishor.tech}} \;\textbar\; \href{https://github.com/KishorKumarParoi/vantage-portfolio}{\textbf{GitHub: vantage-portfolio}} --- Clean academic AI architecture showcase presenting complete 38-module AI curriculum, multi-agent lakehouses, sub-35ms semantic search \& FastMCP governance. \;\textbullet\; \href{https://3d.kishor.tech/}{\textbf{3d.kishor.tech}} \;\textbar\; \href{https://github.com/KishorKumarParoi/re-invent}{\textbf{GitHub: re-invent}} --- React 19.2, Rolldown Vite, GSAP 3D choreography \& Supabase real-time visitor telemetry.
+    \item \textbf{Core CS \& Engineering Foundations (RUET):} Advanced Data Structures \& Algorithms, Object-Oriented Programming (C++/Java), Operating Systems \& System Programming, Database Systems (DBMS), Distributed Systems \& Cloud Computing, Computer Networks \& Internet Protocols, Theory of Computation \& Automata, Compiler Design, Software Engineering \& System Analysis, Computer Architecture, Artificial Intelligence, Microprocessors \& Interfacing, Discrete Mathematics, and Network Security \& Cryptography.
+\end{itemize}
+
+\end{document}
