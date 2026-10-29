@@ -1,3 +1,25 @@
+<div align="center">
+
+# 🏛️ Kishor Kumar Paroi — AI Engineering & Systems Architecture
+
+[![Live Portfolio](https://img.shields.io/badge/Live_Portfolio-kishor.tech-800000?style=for-the-badge&logo=google-chrome&logoColor=white)](https://kishor.tech)
+[![macOS Desktop Portfolio](https://img.shields.io/badge/macOS_Ecosystem-macos.kishor.tech-000000?style=for-the-badge&logo=apple&logoColor=white)](https://macos.kishor.tech)
+[![3D WebGL Platform](https://img.shields.io/badge/3D_Platform-3d.kishor.tech-4B0082?style=for-the-badge&logo=three.js&logoColor=white)](https://3d.kishor.tech)
+[![3D Cyber Hacker](https://img.shields.io/badge/Hacker_Cockpit-hacker.kishor.tech-008080?style=for-the-badge&logo=gnubash&logoColor=white)](https://hacker.kishor.tech)
+<br/>
+[![Executive CV (1-Page)](https://img.shields.io/badge/Executive_CV-1--Page%20PDF%20(ATS%20100)-A02020?style=for-the-badge&logo=adobe-acrobat-reader&logoColor=white)](https://kishor.tech/resume.pdf)
+[![ATS Resume (2-Page)](https://img.shields.io/badge/ATS_Resume-2--Page%20PDF%20(ATS%20100)-1a1a1a?style=for-the-badge&logo=files&logoColor=white)](https://kishor.tech/resume_single_column.pdf)
+
+### 📜 Official Verified Resumes (ATS 100/100)
+| Format | Document | Specifications & ATS Score | Direct Download Link |
+| :--- | :--- | :--- | :--- |
+| **Executive CV** | [`resume.pdf`](./resume.pdf) | **Strict 1-Page A4 PDF &bull; 100/100 ATS Score:** High-DPI layout, RUET CSE credentials, 61 quantified metrics. | [📥 **Download 1-Page Visual Resume**](https://kishor.tech/resume.pdf) |
+| **Comprehensive ATS** | [`resume_single_column.pdf`](./resume_single_column.pdf) | **Comprehensive 2-Page A4 PDF &bull; 100/100 ATS Score:** 97 quantified metrics, deep architectural breakdown across all systems. | [📥 **Download 2-Page ATS Resume**](https://kishor.tech/resume_single_column.pdf) |
+
+</div>
+
+---
+
 # 🧑‍💻 What is [AI Engineering](https://maven.com/aimakerspace/ai-eng-bootcamp)?
 
 AI Engineering refers to the industry-relevant skills that data science and engineering teams need to successfully **build, deploy, operate, and improve Large Language Model (LLM) applications in production environments**.  
