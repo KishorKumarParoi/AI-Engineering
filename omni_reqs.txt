@@ -1,0 +1,800 @@
+PRODUCT & TECHNICAL
+REQUIREMENTS DOCUMENT
+Omni-Channel Appointment Booking Agent
+Document: Sample PRD / Technical Requirements Sheet
+Version: 0.1 — Draft for technical discovery
+Status: Proposed; validate with stakeholders
+Audience: Product, Engineering, AI/ML, Integrations, QA, Security and Operations
+
+Purpose
+Define a reusable AI appointment-booking agent that understands customer requests, checks live availability, books,
+reschedules or cancels appointments, and confirms outcomes across messaging and voice. It should support spas, salons,
+clinics, doctors’ offices and other appointment-based businesses through configurable business profiles—not separate
+custom agents for every industry.
+
+Core principle: One shared booking orchestration layer and business configuration model, with channel-specific
+experiences for text and voice.
+
+Channels in scope
+Channel
+
+Experience
+
+Interaction
+
+Facebook Messenger
+
+Text chatbot
+
+Customer messages and agent replies in Messenger
+
+Instagram Messenger
+
+Text chatbot
+
+Customer messages and agent replies in Instagram DMs
+
+Website embedded chat
+
+Text chatbot widget
+
+Conversational booking embedded on business website
+
+Phone
+
+Voice agent
+
+Speech-based conversation; agent listens, responds and books
+
+Omni-Channel Appointment Booking Agent | Sample Requirements
+
+Page 1
+
+1. Product Overview
+The agent acts as a virtual receptionist. It identifies intent, understands the requested service, collects required details,
+checks the business’s actual availability and completes the action only after the customer confirms.
+
+1.1 Goals
+•
+
+Enable 24/7 appointment booking without requiring staff intervention.
+
+•
+
+Provide consistent booking capability across social messaging, website chat and phone.
+
+•
+
+Reduce missed inquiries, manual scheduling effort and booking errors.
+
+•
+
+Support multiple locations, services, staff, durations, business hours and booking policies.
+
+•
+
+Allow business configuration without custom development for each new tenant.
+
+1.2 Suggested initial exclusions
+•
+
+Clinical diagnosis, treatment recommendations or medical advice beyond approved safety scripts.
+
+•
+
+Full CRM replacement, payroll, inventory management or marketing automation.
+
+•
+
+Complex recurring/group bookings unless explicitly added to scope.
+
+•
+
+Payments/deposits unless payment integration and compliance requirements are approved.
+
+2. Users & Roles
+Role
+
+Needs / permissions
+
+Customer / caller
+
+Discover services; ask questions; book, reschedule or cancel; receive confirmation.
+
+Business admin
+
+Configure profile, locations, services, hours, policies, integrations and agent behavior.
+
+Receptionist / staff
+
+View/manage appointments, handle escalations and review permitted conversation context.
+
+Platform admin
+
+Manage tenants, channel connections, permissions, monitoring and platform controls.
+
+3. Core Functional Requirements
+Priority: P0 launch-critical; P1 important; P2 future/optional.
+ID
+
+Requirement
+
+Priority
+
+Description
+
+FR-001
+
+Business identification &
+configuration
+
+P0
+
+Resolve tenant from channel connection, website embed or inbound phone number. Load
+business services, locations, hours, policies, language and rules.
+
+FR-002
+
+Intent recognition
+
+P0
+
+Recognize booking, availability, reschedule, cancellation, FAQs, human assistance and
+unsupported requests.
+
+FR-003
+
+Service selection
+
+P0
+
+Clarify service; support categories, aliases, duration, price/range, add-ons, eligibility and
+intake fields.
+
+FR-004
+
+Location selection
+
+P0
+
+Identify preferred location for multi-location businesses; never mix calendars across
+locations.
+
+FR-005
+
+Staff/provider preference
+
+P1
+
+Allow specific provider or ‘any available’; respect service qualification rules.
+
+FR-006
+
+Live availability
+
+P0
+
+Query scheduler using duration, hours, staff, location, buffers, time zone and booking
+constraints.
+
+FR-007
+
+Slot suggestions
+
+P0
+
+Offer clear available options; understand natural-language dates/times and clarify
+ambiguity.
+
+FR-008
+
+Pre-booking review
+
+P0
+
+Summarize service, location, date/time, provider, duration, fees and customer details;
+obtain explicit confirmation.
+
+FR-009
+
+Create appointment
+
+P0
+
+Create in source-of-truth scheduler; prevent duplicates and recheck conflicts.
+
+FR-010
+
+Customer details
+
+P0
+
+Collect only required details; validate and confirm spelling/digits when needed.
+
+FR-011
+
+Reschedule
+
+P0
+
+Find/verify booking, check new availability, summarize change, confirm and update
+scheduler.
+
+Omni-Channel Appointment Booking Agent | Sample Requirements
+
+Page 2
+
+ID
+
+Requirement
+
+Priority
+
+Description
+
+FR-012
+
+Cancel
+
+P0
+
+Find/verify booking, explain configured policy, confirm cancellation and update scheduler.
+
+FR-013
+
+Confirmation/reminders
+
+P0
+
+Provide booking reference/details; support configured reminders through integrated
+channels.
+
+FR-014
+
+Business FAQs
+
+P0
+
+Answer from approved content: services, prices, hours, address, accessibility, preparation
+and policies.
+
+FR-015
+
+Human handoff
+
+P0
+
+Escalate on request, low confidence, exceptions, complaints or failure; pass summary
+and collected details.
+
+FR-016
+
+Conversation continuity
+
+P1
+
+Maintain session context; retrieve cross-channel context only when identity and consent
+permit.
+
+FR-017
+
+Languages
+
+P1
+
+Support configurable languages; voice requires compatible speech recognition and
+synthesis.
+
+FR-018
+
+Business rules
+
+P0
+
+Apply lead time, booking horizon, cancellation window, buffers, eligibility, deposits and
+required fields.
+
+FR-019
+
+Failure recovery
+
+P0
+
+Handle unclear input, no slots, timeouts and interruptions; never claim success without
+scheduler confirmation.
+
+FR-020
+
+Analytics/audit
+
+P0
+
+Record channel, intent, funnel stage, outcome, handoff, failure reason and latency subject
+to privacy rules.
+
+Omni-Channel Appointment Booking Agent | Sample Requirements
+
+Page 3
+
+4. Channel-Specific Requirements
+4.1 Messaging: Facebook Messenger, Instagram Messenger and website chat
+•
+
+Support inbound/outbound text and channel-appropriate formatting; show typing/processing indicators where supported.
+
+•
+
+Use quick replies, buttons or structured choices where available, with text fallback.
+
+•
+
+Handle multi-part messages, typos, corrections, short replies and natural-language date/time expressions.
+
+•
+
+Website widget supports configurable branding, greeting, launcher and responsive layout.
+
+•
+
+Respect Meta platform permissions, messaging windows, opt-in rules and approved outbound templates.
+
+•
+
+Provide a concise text equivalent if a channel cannot render a requested format.
+
+4.2 Phone voice agent
+•
+
+Answer inbound calls with configured greeting; identify business/location from number or routing metadata.
+
+•
+
+Use speech recognition, dialogue orchestration and text-to-speech with barge-in and natural turn-taking.
+
+•
+
+Speak clearly, avoid long lists, repeat important details and confirm critical fields when confidence is low.
+
+•
+
+Handle silence, noise, interruptions, DTMF where available, voicemail and dropped calls.
+
+•
+
+Offer live transfer or callback capture when staff are unavailable.
+
+•
+
+Provide automated-agent and recording/consent disclosures where required.
+
+•
+
+Never invent availability or claim a booking is complete before scheduler confirmation.
+
+4.3 Channel parity
+All channels use the same booking rules and source-of-truth scheduling APIs. Presentation may differ, but eligibility,
+availability, confirmation, cancellation and audit outcomes must remain consistent.
+
+5. Business Configuration & Scheduling Model
+Area
+
+Fields / behavior
+
+Business profile
+
+Name, category, time zone, locale, contact details, locations, channel IDs, brand voice and escalation contacts.
+
+Services
+
+Name, category, description, duration, price/range, buffers, add-ons, eligibility and intake fields.
+
+Availability
+
+Hours, holidays, staff schedules, rooms/equipment, capacity, lead time and booking horizon.
+
+Policies
+
+Cancellation/reschedule, deposits, late arrival, no-show, age requirements and customer-facing wording.
+
+Providers
+
+Staff identity, qualified services, locations, schedule, breaks, preference rules and calendar connection.
+
+Knowledge base
+
+Approved FAQs, directions, preparation instructions, accessibility, pricing disclaimers and business answers.
+
+6. Integrations & Architecture
+Layer
+
+Responsibility
+
+Channel adapters
+
+Meta webhooks/APIs, website chat SDK, telephony/SIP or voice provider; normalize inbound events.
+
+Conversation orchestration
+
+Session state, intent/entity extraction, dialogue policy, tool selection, business context and channel rendering.
+
+Booking service/API
+
+Canonical operations: availability search, create, retrieve, reschedule, cancel and confirm.
+
+Integration connectors
+
+Adapters for scheduling/CRM systems; map external IDs, calendars, staff, services and statuses.
+
+Tenant configuration
+
+Business profiles, secrets, channel mapping, feature flags, policies, knowledge and permissions.
+
+Observability/governance
+
+Metrics, traces, audit events, quality evaluation, access control, retention and incident monitoring.
+
+6.1 Integration expectations
+•
+
+Documented, versioned APIs with authentication, authorization, idempotency keys and consistent errors.
+
+Omni-Channel Appointment Booking Agent | Sample Requirements
+
+Page 4
+
+•
+
+Webhooks/events for external appointment changes where supported.
+
+•
+
+Business scheduling platform remains the source of truth; avoid conflicting shadow calendars.
+
+•
+
+Retries with backoff for transient failures and reconciliation for uncertain outcomes.
+
+•
+
+Encrypt and tenant-scope channel credentials and provider secrets.
+
+•
+
+Create an integration certification checklist for every supported scheduler/telephony provider.
+
+7. Data, Privacy & Security
+•
+
+Tenant isolation across conversations, customer records, calendars and credentials.
+
+•
+
+Collect only data necessary for the request; define retention and deletion policies.
+
+•
+
+Encrypt data in transit and at rest; role-based access and audit logs.
+
+•
+
+Protect against prompt injection, malicious links, data exfiltration and unauthorized tool/API calls.
+
+•
+
+For healthcare, assess applicable legal/regulatory/contractual obligations; minimize sensitive health data and do not
+diagnose or prescribe.
+
+•
+
+Support consent/disclosure requirements for calls, recordings, messaging and data use.
+
+•
+
+Redact logs where configured; do not store unnecessary sensitive or payment-card data.
+
+8. Non-Functional Requirements
+Area
+
+Sample target / requirement
+
+Availability
+
+Proposed 99.9% monthly availability for core orchestration, excluding documented third-party outages; confirm SLO.
+
+Latency
+
+Text p95 under 3 seconds for non-scheduler turns; measure scheduler latency separately. Voice pauses should be
+minimized; set pilot target.
+
+Scalability
+
+Support multi-tenant concurrent sessions; load-test peak traffic and provider limits.
+
+Reliability
+
+Idempotent operations, duplicate prevention, timeout handling and reconciliation.
+
+Accessibility
+
+Website widget supports keyboard navigation, screen readers, contrast and responsive layouts.
+
+Maintainability
+
+Modular adapters, versioned APIs, configuration-driven rules and regression tests.
+
+Monitoring
+
+Dashboards/alerts for errors, conversion, latency, provider health, handoffs and channel failures.
+
+Omni-Channel Appointment Booking Agent | Sample Requirements
+
+Page 5
+
+9. Reference Conversation & Booking Flow
+1
+
+Welcome: greet customer and identify business using channel context.
+
+2
+
+Intent: determine booking, reschedule, cancellation or question.
+
+3
+
+Service: identify requested service and clarify ambiguity.
+
+4
+
+Location/provider: collect preferences if applicable.
+
+5
+
+Time: ask for date/time or range; clarify ambiguous expressions.
+
+6
+
+Availability: query live scheduler and offer valid slots.
+
+7
+
+Customer details: collect and validate required information.
+
+8
+
+Review: summarize appointment and policies; obtain explicit confirmation.
+
+9
+
+Commit: create appointment and verify success response.
+
+10
+
+Confirm: provide reference, date/time, location, service and next steps.
+
+Required exception paths
+•
+
+No availability: ask for alternate date/time/provider/location.
+
+•
+
+Slot conflict: re-query and offer alternatives.
+
+•
+
+Customer correction: update state and re-check affected fields.
+
+•
+
+Unclear speech/text: ask one concise clarification; do not guess critical details.
+
+•
+
+Integration unavailable: explain limitation and offer handoff/callback; do not represent an unconfirmed request as booked.
+
+•
+
+Medical/urgent request: follow approved safety routing; no diagnosis or treatment advice.
+
+10. Acceptance Criteria / Definition of Done
+•
+
+New booking completes end-to-end on all four channels.
+
+•
+
+Agent checks live availability and commits to configured source-of-truth scheduler.
+
+•
+
+Explicit confirmation required before create, reschedule or cancel.
+
+•
+
+Retries and duplicate events do not create duplicate appointments.
+
+•
+
+Slot conflict triggers fresh availability check and alternatives.
+
+•
+
+Reschedule/cancel verifies booking and applies configured policies.
+
+•
+
+Supported business configuration changes do not require code deployment.
+
+•
+
+Human handoff includes summary, collected details and escalation reason.
+
+•
+
+Analytics/logs capture outcomes while honoring privacy and retention settings.
+
+•
+
+Tests cover happy path, ambiguity, no availability, API failure, interruption and recovery.
+
+Omni-Channel Appointment Booking Agent | Sample Requirements
+
+Page 6
+
+11. Analytics & Success Metrics
+Metric
+
+Definition
+
+Breakdown
+
+Booking conversion
+
+Completed bookings ÷ eligible booking conversations
+
+Channel, business, service, location
+
+Completion rate
+
+Successful scheduler commits ÷ booking attempts
+
+Failure reason, scheduler
+
+Self-service resolution
+
+Conversations completed without human handoff
+
+Intent, channel, business type
+
+Handoff rate
+
+Transferred/callback conversations ÷ total
+
+Reason, channel, time
+
+Booking error rate
+
+Incorrect, duplicate or unconfirmed bookings ÷ completed
+bookings
+
+Error type, integration
+
+Customer satisfaction
+
+Post-interaction rating or survey; define method
+
+Channel, flow, business
+
+Response latency
+
+P50/P95 first response and tool completion
+
+Channel, integration, period
+
+12. Suggested Delivery Phases
+Phase
+
+Scope
+
+Exit criteria
+
+0 — Discovery
+
+Confirm scheduler(s), channel/provider constraints, data model, pilot
+businesses, privacy and ownership.
+
+Approved requirements, architecture,
+integration plan and test scenarios.
+
+1 — Booking MVP
+
+Website chat + one messaging channel + one scheduler; booking,
+availability, FAQs and handoff.
+
+Pilot meets agreed quality, reliability and
+booking accuracy targets.
+
+2 — Channel
+expansion
+
+Add remaining Meta channel, voice, reschedule/cancel, reminders and
+analytics.
+
+Channel parity, voice quality and monitoring
+validated.
+
+3 — Platform scale
+
+Multiple scheduler connectors, self-serve onboarding, multilingual support
+and advanced rules.
+
+Repeatable onboarding/support across
+business categories.
+
+13. Open Questions for Technical Discovery
+•
+
+Which scheduling systems are required first (industry software, Google/Microsoft calendars, clinic systems, custom
+APIs)?
+
+•
+
+One scheduler per tenant initially, or multiple connected calendars?
+
+•
+
+Which telephony provider, number provisioning and call-transfer model?
+
+•
+
+Initial languages, countries, time zones and business categories?
+
+•
+
+Are deposits/payments, insurance details or patient intake forms included? What compliance review is needed?
+
+•
+
+What identity verification is required before modifying an existing booking?
+
+•
+
+Expected traffic, concurrency, uptime SLOs and response targets?
+
+•
+
+Who owns onboarding, knowledge updates, escalation coverage and incident response?
+
+14. Sample User Stories
+Story
+
+User story
+
+Customer booking
+
+As a customer, I want to book by chat or phone so I can secure an appointment outside business hours.
+
+Availability
+
+As a customer, I want actual available times so I can choose a slot that fits my schedule.
+
+Reschedule
+
+As a customer, I want to change my appointment when my plans change.
+
+Business admin
+
+As an admin, I want to configure services, durations, hours and policies so bookings follow business rules.
+
+Staff handoff
+
+As a receptionist, I want a conversation summary so I can help without asking the customer to repeat everything.
+
+End of sample document. Validate priorities, service-level targets, integrations and compliance requirements
+with stakeholders before implementation.
+
+Omni-Channel Appointment Booking Agent | Sample Requirements
+
+Page 7
+
+
