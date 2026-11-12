@@ -1,0 +1,365 @@
+[
+  {
+    "id": "3b3b73c0-2c2e-4dc5-ba31-62746a8063d7",
+    "createdAt": "2026-11-07T16:39:11.526Z",
+    "updatedAt": "2026-11-08T04:36:36.020Z",
+    "type": "transferCall",
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "destinations": [
+      {
+        "type": "assistant",
+        "description": "Transfer the call back to Sophia, Front Desk Voice Receptionist, whenever the caller asks to speak with Sophia, wants front desk scheduling, nails, facial, or general salon reception check-in.",
+        "assistantName": "Luxe Salon Voice Receptionist - Sophia"
+      }
+    ],
+    "latestVersion": "v2"
+  },
+  {
+    "id": "8bc4057a-a651-44f8-8a17-8686ee11c63c",
+    "createdAt": "2026-11-07T16:39:04.100Z",
+    "updatedAt": "2026-11-08T04:36:27.764Z",
+    "type": "transferCall",
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "destinations": [
+      {
+        "type": "assistant",
+        "description": "Transfer the call to Marcus Vance, Creative Hair Director & Master Colorist, whenever the caller asks to talk to Marcus, asks for Marcus, wants hair coloring, balayage, or haircut consultation with Marcus, asks for the director or manager, or asks to speak with someone else.",
+        "assistantName": "Luxe Salon Director - Marcus"
+      }
+    ],
+    "latestVersion": "v2"
+  },
+  {
+    "id": "e3ef24b4-f338-465c-8e77-67879bc26295",
+    "createdAt": "2026-11-07T08:15:46.130Z",
+    "updatedAt": "2026-11-07T10:04:21.450Z",
+    "type": "endCall",
+    "function": {
+      "name": "end_call",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    "messages": [
+      {
+        "type": "request-start",
+        "blocking": false
+      }
+    ],
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "latestVersion": "v2"
+  },
+  {
+    "id": "08f2844b-b585-45cb-a8e5-d141f3e2d35a",
+    "createdAt": "2026-11-07T07:38:29.484Z",
+    "updatedAt": "2026-11-07T07:38:29.484Z",
+    "type": "function",
+    "function": {
+      "name": "query_knowledge_base",
+      "description": "Instant semantic search over FAQs: pricing, hours, location, parking, and cancellation policies.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "description": "Customer question to lookup.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  },
+  {
+    "id": "6f53781e-a34a-4350-965e-4908e3145bfe",
+    "createdAt": "2026-11-07T07:38:29.111Z",
+    "updatedAt": "2026-11-07T07:38:29.111Z",
+    "type": "function",
+    "function": {
+      "name": "send_text",
+      "description": "Sends an instant SMS/WhatsApp booking confirmation or directions to the caller phone.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "message_text": {
+            "description": "Message body to send.",
+            "type": "string"
+          },
+          "recipient_phone": {
+            "description": "Recipient phone number.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipient_phone",
+          "message_text"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  },
+  {
+    "id": "3f11bf9e-e6a9-4978-9ece-04329a445bd1",
+    "createdAt": "2026-11-07T07:38:28.738Z",
+    "updatedAt": "2026-11-07T07:38:28.738Z",
+    "type": "function",
+    "function": {
+      "name": "transfer_to_manager",
+      "description": "Escalates and warmly transfers the caller to a human manager or supervisor.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "description": "Reason for human escalation.",
+            "type": "string"
+          },
+          "caller_name": {
+            "description": "Caller name if provided.",
+            "type": "string"
+          },
+          "caller_phone": {
+            "description": "Caller phone number.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  },
+  {
+    "id": "92898ace-6e80-4c1a-8c6a-00d6a33b2bb4",
+    "createdAt": "2026-11-07T07:38:28.355Z",
+    "updatedAt": "2026-11-07T07:38:28.355Z",
+    "type": "function",
+    "function": {
+      "name": "cancel_appointment",
+      "description": "Cancels an existing reservation, releases the slot in Google Calendar, and updates Google Sheets.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "description": "Reason for cancellation.",
+            "type": "string"
+          },
+          "booking_id": {
+            "description": "Optional booking ID.",
+            "type": "string"
+          },
+          "caller_phone": {
+            "description": "Client registered phone number.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "caller_phone"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  },
+  {
+    "id": "8ecb870d-ee27-424b-8213-5ee6e64e9bec",
+    "createdAt": "2026-11-07T07:38:27.985Z",
+    "updatedAt": "2026-11-07T07:38:27.985Z",
+    "type": "function",
+    "function": {
+      "name": "reschedule_appointment",
+      "description": "Reschedules an existing appointment to a new date and time in Google Calendar and Google Sheets.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "booking_id": {
+            "description": "Optional booking ID.",
+            "type": "string"
+          },
+          "caller_phone": {
+            "description": "Client phone number.",
+            "type": "string"
+          },
+          "new_appointment_datetime": {
+            "description": "New ISO 8601 formatted datetime.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "caller_phone",
+          "new_appointment_datetime"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  },
+  {
+    "id": "6b46e87e-a59d-451b-9076-db3f334bd676",
+    "createdAt": "2026-11-07T07:38:27.579Z",
+    "updatedAt": "2026-11-07T07:38:27.579Z",
+    "type": "function",
+    "function": {
+      "name": "lookup_appointment",
+      "description": "Looks up active salon reservations by phone number or booking reference.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "caller_phone": {
+            "description": "Client registered phone number in E.164 format.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "caller_phone"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  },
+  {
+    "id": "6c678d32-d55e-4aef-90da-e6e5d1e4a5c4",
+    "createdAt": "2026-11-07T07:38:27.205Z",
+    "updatedAt": "2026-11-07T16:43:46.141Z",
+    "type": "function",
+    "function": {
+      "name": "book_appointment",
+      "description": "Commits an appointment directly to Google Calendar, live Google Sheets, and sends instant email & WhatsApp confirmations.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "caller_name": {
+            "description": "Full name of the caller.",
+            "type": "string"
+          },
+          "caller_email": {
+            "description": "Caller email address to receive immediate booking confirmation, receipt, and Google Calendar invite.",
+            "type": "string"
+          },
+          "caller_phone": {
+            "description": "Caller phone number in E.164 format (+1XXXXXXXXXX or international).",
+            "type": "string"
+          },
+          "service_name": {
+            "description": "Selected salon service.",
+            "type": "string"
+          },
+          "stylist_name": {
+            "description": "Assigned stylist (Elena, Marcus, Chloe, or Any).",
+            "type": "string"
+          },
+          "appointment_datetime": {
+            "description": "ISO 8601 formatted datetime string (e.g. 2026-11-08T14:00:00).",
+            "type": "string"
+          }
+        },
+        "required": [
+          "caller_name",
+          "caller_phone",
+          "service_name",
+          "appointment_datetime"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "latestVersion": "v2"
+  },
+  {
+    "id": "bd3985e3-b96d-4a18-bc7f-c3f320fe80d3",
+    "createdAt": "2026-11-07T07:38:26.820Z",
+    "updatedAt": "2026-11-07T07:38:26.820Z",
+    "type": "function",
+    "function": {
+      "name": "check_availability",
+      "description": "Checks live available appointment slots for a specified service, date, and stylist against Google Calendar.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target_date": {
+            "description": "Target date in YYYY-MM-DD format (e.g. 2026-11-08).",
+            "type": "string"
+          },
+          "service_name": {
+            "description": "The exact service requested (e.g., Womens Haircut, Balayage).",
+            "type": "string"
+          },
+          "preferred_stylist": {
+            "description": "Preferred stylist name (Elena, Marcus, Chloe, or any).",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service_name",
+          "target_date"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  },
+  {
+    "id": "1e334917-439a-41d0-8700-ad2313464bc7",
+    "createdAt": "2026-11-07T07:37:42.978Z",
+    "updatedAt": "2026-11-07T07:37:42.978Z",
+    "type": "function",
+    "function": {
+      "name": "check_availability",
+      "description": "Checks live available appointment slots for a specified service, date, and preferred provider against Google Calendar and business hours.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target_date": {
+            "description": "Target date in YYYY-MM-DD format.",
+            "type": "string"
+          },
+          "service_name": {
+            "description": "The exact service requested.",
+            "type": "string"
+          },
+          "preferred_stylist": {
+            "description": "Preferred stylist or 'any'.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service_name",
+          "target_date"
+        ]
+      }
+    },
+    "orgId": "002324ba-3cda-4e09-ac3e-37524b0efe7c",
+    "server": {
+      "url": "https://ai-voice-receptionist.kishor.tech/webhook/vapi-tools"
+    },
+    "latestVersion": "v1"
+  }
+]

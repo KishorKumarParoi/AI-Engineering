@@ -112,6 +112,13 @@
     %------------------------------------------------------------------------------------
     \resumesection{Work Experience}
     
+    \noindent\textbf{Omnichannel AI --- Voice \& Chat Receptionist} \hfill {\footnotesize\textit{Sept'26 -- Present}}\\
+    \textit{Lead Voice AI Architect \;\textbar\; PSTN: +1-667-307-0119} \; \href{https://ai-voice-receptionist.kishor.tech/}{\textbf{Live}} \textbar\ \href{https://ai-voice-receptionist.kishor.tech/vapi-call}{\textbf{WebRTC}} \textbar\ \href{https://github.com/KishorKumarParoi/omnichannel-voice-chat-ai-receptionist}{\faGithub\ GitHub}
+    \begin{itemize}
+        \item Launched live \textbf{Vapi Squad (Marcus$\leftrightarrow$Sophia)} concierge on \textbf{Deepgram Nova-2 STT (<180ms), FastAPI (<40ms), Cartesia Sonic-3.5 (<110ms)}; attained \textbf{sub-500ms latency} across PSTN, WebRTC, WhatsApp, IG, Messenger \& Telegram.
+        \item Built multi-tenant \textbf{Clerk + Neon PostgreSQL + Google Calendar v3} backend with \textbf{n8n/Slack} escalations, vector FAQ RAG, and automated \textbf{Twilio SMS/WhatsApp} 24h/1h cron reminders.
+    \end{itemize}
+
     \noindent\textbf{phi0.ai} \hfill {\footnotesize\textit{Jul'26 -- Oct'26}}\\
     \textit{Forward Deployed AI Engineer (Production RAG, GenAI \& MLOps, Europe $\vert$ Remote)}
     \begin{itemize}
@@ -257,17 +264,54 @@
         \item Built async POSIX terminal shell with signal multiplexing and I/O redirection; attained \textbf{sub-microsecond ($<$1$\mu$s) latency} with \textbf{73\% lower heap allocation}.
     \end{itemize}
 
+    \vspace{0.8pt}\noindent{\color{lightgray}\hrule height 0.3pt}\vspace{1.2pt}
+    % PROJECT: FLASHATTENTION
+    \noindent\textbf{FlashAttention-2, 3 \& Flash-Decoding Kernel} \hfill {\footnotesize\textit{Oct'26 -- Present}}\\
+    \textit{Bare-Metal CUDA/C++, Split-KV, PagedAttention \& FP8} \href{https://github.com/KishorKumarParoi/cuda-attention-kernel}{\faGithub}
+    \begin{itemize}
+        \item Handcrafted \textbf{CUDA FlashAttention-2 \& 3}; eliminated $O(N^2)$ memory via \textbf{Tiled Online Softmax}; built \textbf{Flash-Decoding (Split-KV)} achieving \textbf{100\% SM occupancy} for \textbf{8x lower decode latency}.
+        \item Engineered \textbf{PagedAttention virtual paging} over physical block tables ($<$4\% waste), tile-pruned sliding window attention with fused ALiBi, and FP8 scaled attention.
+        \item Designed $O(N)$ backward pass via \textbf{SRAM recomputation}; verified bitwise numerical equivalence against PyTorch native attention across 39 unit test suites.
+    \end{itemize}
+
+    \vspace{0.8pt}\noindent{\color{lightgray}\hrule height 0.3pt}\vspace{1.2pt}
+    % PROJECT: DISTRIBUTED LLM TRAINING
+    \noindent\textbf{Distributed LLM Training Framework (4D Parallelism)} \hfill {\footnotesize\textit{Oct'26 -- Present}}\\
+    \textit{4D Parallelism (TP x PP x DP x SP), Interleaved 1F1B \& ZeRO-3} \href{https://github.com/KishorKumarParoi/distributed-llm-training}{\faGithub}
+    \begin{itemize}
+        \item Handcrafted distributed framework for LLaMA-3 (8B/70B) with \textbf{Megatron TP, Interleaved 1F1B PP with virtual stages, ZeRO-3 FSDP, and Ring Attention Context Parallelism}.
+        \item Implemented dynamic \textbf{ZeRO-3 parameter lifecycle} and custom \textbf{Ring All-Reduce} ($2\frac{P-1}{P}NB$); sustained \textbf{49.07\% MFU across 64x H100s}.
+        \item Engineered \textbf{Ring Attention context parallelism} (1M+ tokens, 100\% comm overlap) and \textbf{Distributed Asynchronous Checkpointing (DCP)} with topology resharding.
+    \end{itemize}
+
+    \vspace{0.8pt}\noindent{\color{lightgray}\hrule height 0.3pt}\vspace{1.2pt}
+    % PROJECT: AUTOCUT-AI
+    \noindent\textbf{AutoCut-AI: Multi-Modal Video Editor} \hfill {\footnotesize\textit{Aug'26 -- Present}}\\
+    \textit{OpenAI Whisper Diarization, FFmpeg GPU NVENC \& Next.js} \href{https://github.com/KishorKumarParoi/autocut-ai}{\faGithub}
+    \begin{itemize}
+        \item Built Whisper diarization, silence/filler removal, and FFmpeg NVENC animated subtitles; generates 9:16 reels in \textbf{$<$45s (4.2x retention lift)}.
+    \end{itemize}
+
+    \vspace{0.8pt}\noindent{\color{lightgray}\hrule height 0.3pt}\vspace{1.2pt}
+    % PROJECT: NIMBUS-AI 5-AGENT SUITE
+    \noindent\textbf{Nimbus-AI: 5-Agent Live Voice Suite} \hfill {\footnotesize\textit{Sept'26 -- Present}}\\
+    \textit{Live Agents: \href{https://sales.kishor.tech/}{Sales} (\href{https://github.com/KishorKumarParoi/sales-voice-agent}{\faGithub}), \href{https://meeting.kishor.tech/}{Meeting} (\href{https://github.com/KishorKumarParoi/meeting-voice-agent}{\faGithub}), \href{https://research.kishor.tech/}{Research} (\href{https://github.com/KishorKumarParoi/research-voice-agent}{\faGithub}), \href{https://scheduling.kishor.tech/}{Schedule} (\href{https://github.com/KishorKumarParoi/scheduling-voice-agent}{\faGithub}), \href{https://desktop.kishor.tech/}{Desktop} (\href{https://github.com/KishorKumarParoi/desktop-voice-agent}{\faGithub})} \href{https://nimbus.kishor.tech/}{\textbf{Live}} \href{https://github.com/KishorKumarParoi/nimbus-voice-agents-suite}{\faGithub}
+    \begin{itemize}
+        \item Built scratch \textbf{5-agent voice platform} on \textbf{LiveKit WebRTC, FastAPI, GPT-4o/Whisper \& ElevenLabs Turbo v2.5} achieving \textbf{$<$400ms} roundtrips.
+        \item Engineered \textbf{60fps audio waveform}, instant barge-in interruption, RAG vs RAG-less routing \& 5 production specialist tools (CRM, Scribe, Citations, Calendar, OS).
+    \end{itemize}
+
     %------------------------------------------------------------------------------------
     %   TECHNICAL SKILLS
     %------------------------------------------------------------------------------------
     \resumesection{Technical Skills}
     \begin{itemize}[leftmargin=7pt]
         \item \textbf{Languages \& Frameworks:} Python, C/C++, Rust (Actix), Go (Gin), SQL, Bash, TypeScript, Java (Spring Boot), FastAPI, Express, NestJS, Next.js 16, Streamlit
-        \item \textbf{AI, ML \& LLMOps:} PyTorch, vLLM, LangGraph, LangChain, HuggingFace, TRL, PEFT (RSLoRA, QLoRA), NeFTune, MLflow, Feast, Kubeflow, AWS SageMaker, KServe, DVC
+        \item \textbf{AI, ML \& LLMOps:} PyTorch, vLLM, Vapi, Deepgram Nova-2, Cartesia Sonic-3.5, LangGraph, LangChain, HF, TRL, RSLoRA/QLoRA, MLflow, Feast, Kubeflow, SageMaker, KServe, DVC
         \item \textbf{Big Data \& Lakehouse:} Snowflake, Databricks, Azure Data Factory (ADF), Synapse CETAS, ADLS Gen2, dbt Core, PySpark, Delta Lake, Kafka, Airflow, Debezium CDC
         \item \textbf{Cloud Platforms \& Infra:} AWS, GCP, Azure, Terraform, Ansible, Helm, ArgoCD, Sonatype Nexus, Docker, Kubernetes (GKE, EKS, K3s)
         \item \textbf{DevSecOps \& Observability:} NVIDIA NeMo Guardrails, PyRIT, BotShield WAF, SonarQube, Trivy, Jenkins, GitLab CI/CD, Prometheus, Grafana, EFK (Elasticsearch/Kibana)
-        \item \textbf{WebRTC, 3D \& Full-Stack:} WebVR, WebRTC, Three.js, React Three Fiber, ElectronJS, Next.js 16, Prisma, Drizzle, Stripe Connect, PostgreSQL, MongoDB Atlas
+        \item \textbf{WebRTC, 3D \& Full-Stack:} WebVR, WebRTC, Three.js, R3F, ElectronJS, Next.js 16, Clerk, n8n, Twilio, Neon PostgreSQL, Prisma, Drizzle, Stripe Connect, MongoDB Atlas
     \end{itemize}
 
 \end{minipage}

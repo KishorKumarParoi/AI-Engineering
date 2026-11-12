@@ -106,6 +106,16 @@
 %----------------------------------------------------------------------------------------
 \resumesection{Work Experience}
 
+\noindent\textbf{Omnichannel AI Solutions --- Luxe Salon AI Voice \& Chat Receptionist} \hfill {\small\textit{Sept 2026 -- Present}}\\
+\textit{Lead Voice AI \& Systems Architect \;\textbar\; PSTN: +1 (667) 307-0119} \hfill {\footnotesize\href{https://ai-voice-receptionist.kishor.tech/}{\textbf{Live: ai-voice-receptionist.kishor.tech}} \;\textbar\; \href{https://ai-voice-receptionist.kishor.tech/vapi-call}{\textbf{WebRTC}} \;\textbar\; \href{https://github.com/KishorKumarParoi/omnichannel-voice-chat-ai-receptionist}{\textbf{GitHub: omnichannel-voice-chat-ai-receptionist}}}
+\begin{itemize}
+    \item Launched live \textbf{6-vertical multi-tenant AI Voice \& Chat Receptionist SaaS} (Salon, Real Estate, Legal, Dental, Auto, Clinic) engineered on \textbf{FastAPI, Clerk Auth, Neon Serverless PostgreSQL, and Vapi Squad} orchestration (Marcus $\leftrightarrow$ Sophia warm-transfer handoffs and dialect adaptation).
+    \item Architected real-time voice pipeline combining \textbf{Deepgram Nova-2 STT (<180ms), FastAPI mid-call tool calling (<40ms), and Cartesia Sonic-3.5 TTS (<110ms)}, delivering \textbf{sub-500ms conversational turnaround} across browser WebRTC (\texttt{/vapi-call}), PSTN telephony, and outbound Call-Me callbacks.
+    \item Engineered unified \textbf{Omnichannel Messaging \& Booking Engine} handling webhooks across Website Chat Widget (\texttt{/widget.js}), WhatsApp Cloud API, Facebook Messenger, Instagram DMs, Telegram, X, LinkedIn, and TikTok with 2-way \textbf{Google Calendar API v3 OAuth2} sync and per-tenant vector FAQ RAG.
+    \item Automated post-call lifecycle via \textbf{Twilio SMS \& WhatsApp} confirmations, daily Vercel cron (\texttt{/api/cron/reminders}) 24h/1h appointment reminders, and \textbf{n8n + Slack} escalation workflows backed by structured eval rubrics and automated pytest pre-push gates.
+\end{itemize}
+
+\vspace{2.0pt}
 \noindent\textbf{phi0.ai} \hfill {\small\textit{July 2026 -- Oct 2026}}\\
 \textit{Forward Deployed AI Engineer (Production RAG, GenAI \& MLOps)} \hfill {\footnotesize\textit{Europe $\vert$ Remote}}
 \begin{itemize}
@@ -295,6 +305,44 @@
     \item Built POSIX shell with async signal multiplexing, fork/exec pipelines, and I/O redirection; clocked \textbf{sub-microsecond execution latency} under heavy concurrent process loads with \textbf{73\% lower peak heap allocation}.
 \end{itemize}
 
+\vspace{2.0pt}
+\noindent\textbf{12. FlashAttention-2, 3 \& Flash-Decoding Custom CUDA Attention Kernel} \hfill {\small\textit{Oct 2026 -- Present}}\\
+\textit{Bare-Metal CUDA / C++, Flash-Decoding (Split-KV), PagedAttention, Sliding Window \& FP8 Attention} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/cuda-attention-kernel}{\textbf{GitHub: cuda-attention-kernel}}}
+\begin{itemize}
+    \item Engineered bare-metal \textbf{CUDA FlashAttention-2 \& 3 kernels} eliminating $O(N^2)$ HBM memory bottleneck via \textbf{Tiled Online Softmax}; implemented \textbf{Flash-Decoding (Split-KV)} restoring \textbf{100\% SM occupancy} during token generation ($S_q = 1$) for \textbf{8x lower decoding latency}.
+    \item Constructed \textbf{PagedAttention virtual memory engine} managing non-contiguous physical block tables, slashing KV cache memory fragmentation waste from 60--80\% down to \textbf{$<$4\%} and tripling concurrent serving batch sizes.
+    \item Implemented microarchitectural optimizations: padded shared memory strides (\texttt{[Br][d + 4]}) eliminating 32-way bank conflicts, intra-warp register shuffles (\texttt{\_\_shfl\_down\_sync}), tile-pruned sliding window attention with fused ALiBi, and FP8 (E4M3/E5M2) scaled attention.
+    \item Designed $O(N)$ backward pass via \textbf{SRAM recomputation} using forward log-sum-exp vectors ($L_i = m_i + \log l_i$); verified exact numerical equivalence against PyTorch native attention across 39 unit test suites.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{13. Distributed LLM Training Framework (4D Parallelism \& Ring All-Reduce)} \hfill {\small\textit{Oct 2026 -- Present}}\\
+\textit{4D Parallelism (TP x PP x DP x SP), Interleaved 1F1B, ZeRO-3 FSDP, Ring Attention \& DCP} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/distributed-llm-training}{\textbf{GitHub: distributed-llm-training}}}
+\begin{itemize}
+    \item Handcrafted scalable distributed training framework for LLaMA-3 (8B/70B) implementing \textbf{4D Parallelism (Megatron Tensor Parallelism, Interleaved 1F1B Pipeline Parallelism with virtual stages, ZeRO-3 FSDP parameter sharding, and Ring Attention Context Parallelism)}.
+    \item Implemented \textbf{ZeRO-3 dynamic parameter lifecycle} (pre-forward All-Gather, post-backward Reduce-Scatter), reducing per-GPU memory to $\frac{16\Phi}{N_{\text{DP}}}$ and sustaining \textbf{49.07\% MFU across 64x NVIDIA H100s} via custom Ring All-Reduce ($2 \cdot \frac{P-1}{P} N B$).
+    \item Engineered \textbf{Ring Attention context parallelism} with multi-hop online softmax and 100\% comm-comp overlap for 1M+ tokens; deployed \textbf{Megatron-LM v2 Interleaved 1F1B schedule} cutting bubble fraction by up to \textbf{70\%} ($F_{\text{bubble}} \approx \frac{P-1}{v \cdot M}$).
+    \item Built \textbf{Distributed Asynchronous Checkpointing (DCP)} with dynamic topology resharding across mismatched GPU cluster sizes; verified across 24 unit test suites.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{14. AutoCut-AI: Autonomous Multi-Modal AI Video Editor \& Reel Generator} \hfill {\small\textit{Aug 2026 -- Present}}\\
+\textit{Multi-Modal Video Intelligence, Whisper Diarization, FFmpeg GPU NVENC \& Next.js} \hfill {\footnotesize\href{https://github.com/KishorKumarParoi/autocut-ai}{\textbf{GitHub: autocut-ai}}}
+\begin{itemize}
+    \item Engineered autonomous multi-modal video editing engine using \textbf{OpenAI Whisper diarization}, filler-word removal, and silence stripping; automated viral hook identification and generated 9:16 short-form reels in \textbf{$<$45 seconds (8x faster than manual editing)}.
+    \item Built dynamic word-by-word animated subtitles using \textbf{FFmpeg GPU hardware acceleration (NVENC)} and computer vision face-tracking; achieved \textbf{4.2x viewer retention lift} across 100K+ generated social clips.
+\end{itemize}
+
+\vspace{2.0pt}
+\noindent\textbf{15. Nimbus-AI Suite: 5-Agent Live Conversational Voice Ecosystem (From Scratch)} \hfill {\small\textit{Sept 2026 -- Present}}\\
+\textit{LiveKit WebRTC, FastAPI, OpenAI GPT-4o / Whisper, ElevenLabs Turbo v2.5, RAG vs RAG-less \& 60fps Barge-In} \hfill {\footnotesize\href{https://nimbus.kishor.tech/}{\textbf{Live: nimbus.kishor.tech}} \;\textbar\; \href{https://github.com/KishorKumarParoi/nimbus-voice-agents-suite}{\textbf{GitHub: nimbus-voice-agents-suite}}}
+\begin{itemize}
+    \item Architected from-scratch \textbf{5-agent real-time voice platform} on \textbf{LiveKit WebRTC, FastAPI (\texttt{/api/voice/process}), OpenAI GPT-4o/GPT-4o-mini \& Whisper ASR, and ElevenLabs Turbo v2.5 TTS}; achieved \textbf{sub-400ms end-to-end voice roundtrips} with live \textbf{60fps audio waveform visualization}, instant barge-in interruption, and latency waterfall telemetry.
+    \item \textbf{Sales (\href{https://sales.kishor.tech/}{sales.kishor.tech} \textbar\ \href{https://github.com/KishorKumarParoi/sales-voice-agent}{GitHub}) \& Scheduling (\href{https://scheduling.kishor.tech/}{scheduling.kishor.tech} \textbar\ \href{https://github.com/KishorKumarParoi/scheduling-voice-agent}{GitHub}):} Deployed autonomous SaaS advisor and quote checkout agents (annual savings calculator) alongside conflict-aware calendar coordination and automated reminders.
+    \item \textbf{Meeting (\href{https://meeting.kishor.tech/}{meeting.kishor.tech} \textbar\ \href{https://github.com/KishorKumarParoi/meeting-voice-agent}{GitHub}) \& Research (\href{https://research.kishor.tech/}{research.kishor.tech} \textbar\ \href{https://github.com/KishorKumarParoi/research-voice-agent}{GitHub}):} Built live meeting scribe extracting action items \& minutes paired with deep-corpus literature synthesis, citation tracking, and swappable RAG vs.\ RAG-less retrieval.
+    \item \textbf{Desktop (\href{https://desktop.kishor.tech/}{desktop.kishor.tech} \textbar\ \href{https://github.com/KishorKumarParoi/desktop-voice-agent}{GitHub}):} Engineered hands-free OS voice automation for application control, system telemetry, and guarded scripts across all 5 Vercel microservices verified with automated \texttt{pytest} suites.
+\end{itemize}
+
 %----------------------------------------------------------------------------------------
 %   ACHIEVEMENTS & HACKATHONS
 %----------------------------------------------------------------------------------------
@@ -321,11 +369,11 @@
 \resumesection{Technical Skills}
 \begin{itemize}
     \item \textbf{Languages \& Frameworks:} Python, C/C++, Rust (Actix-web), Go (Gin/Fiber), SQL, Bash, TypeScript, JavaScript, Java (Spring Boot), FastAPI, Express.js, NestJS, Next.js 16, Streamlit
-    \item \textbf{AI, ML \& LLMOps:} PyTorch, vLLM, LangGraph, LangChain, HuggingFace, TRL, PEFT (RSLoRA, QLoRA), NeFTune, MLflow, Feast, Kubeflow, AWS SageMaker, KServe, DVC
+    \item \textbf{AI, ML \& LLMOps:} PyTorch, vLLM, Vapi, Deepgram Nova-2, Cartesia Sonic-3.5, LangGraph, LangChain, HuggingFace, TRL, PEFT (RSLoRA, QLoRA), NeFTune, MLflow, Feast, Kubeflow, AWS SageMaker, KServe, DVC
     \item \textbf{Big Data \& Lakehouse:} Snowflake, Databricks, Azure Data Factory (ADF), Azure Synapse Analytics (CETAS), ADLS Gen2, dbt Core, PySpark, Delta Lake, Apache Kafka, Apache Airflow, Debezium CDC, DuckDB, ChromaDB, Qdrant
     \item \textbf{Cloud Platforms \& Infra:} AWS (EKS, S3, KMS, EMR, Athena, ECS, Fargate, Bedrock, SageMaker), GCP (GKE, BigQuery, GCE, VertexAI, Gemini AI), Azure (Databricks, Synapse, Fabric, vLLM, AKS), Terraform, Ansible, Helm, ArgoCD, Sonatype Nexus, Docker, Kubernetes (GKE, EKS, K3s)
     \item \textbf{DevSecOps \& Observability:} NVIDIA NeMo Guardrails, PyRIT RedTeaming, BotShield WAF, SonarQube, Trivy, Jenkins, GitLab CI/CD, GitHub Actions, Prometheus, Grafana, EFK (Elasticsearch/Kibana), Redis
-    \item \textbf{WebRTC, 3D Graphics \& Full-Stack Systems:} WebVR, WebRTC, Three.js, React Three Fiber, ElectronJS, Next.js 16, Prisma, Drizzle ORM, Stripe Connect, PostgreSQL, MongoDB Atlas
+    \item \textbf{WebRTC, 3D Graphics \& Full-Stack Systems:} WebVR, WebRTC, Three.js, React Three Fiber, ElectronJS, Next.js 16, Clerk Auth, n8n, Twilio, Google Calendar API v3, Neon Serverless PostgreSQL, Prisma, Drizzle ORM, Stripe Connect, MongoDB Atlas
 \end{itemize}
 
 %----------------------------------------------------------------------------------------
@@ -337,7 +385,7 @@
     \item \textbf{Machine Learning Specialization (Stanford Online \& DeepLearning.AI -- Andrew Ng):} Supervised Learning, Advanced Learning Algorithms, Unsupervised Learning, Recommenders \& Reinforcement Learning.
     \item \textbf{Enterprise Production MLOps \& AI Systems Architecture:} End-to-End MLOps Pipelines (Krish Naik/CampusX), Enterprise AI Systems Architecture (Vivian Aranha), Agentic-AI, n8n (Mayank Agarwal), Computer Vision (Sourangshu Paul), AI Data Analyst (Ansh Lamba), Automation \& MCP (Ed Donner)
     \item \textbf{Distributed Systems, Big Data \& AI System Design:} High-Throughput Distributed Systems \& AI Architecture (Arpit Bhayani, Gaurav Sen, ByteByteGo, Hussein Nasser), Big Data Engineering \& Lakehouses (Mayank Agarwal, Zach Wilson), LLM Foundations (Karpathy, Aurimas), LeetCode algorithmic mastery.
-    \item \textbf{Digital Portfolios \& Systems Architecture Showcases:} \href{https://kishor.tech/}{\textbf{kishor.tech}} \;\textbar\; \href{https://github.com/KishorKumarParoi/vantage-portfolio}{\textbf{GitHub: vantage-portfolio}} --- Clean academic AI architecture showcase presenting complete 38-module AI curriculum, multi-agent lakehouses, sub-35ms semantic search \& FastMCP governance. \;\textbullet\; \href{https://3d.kishor.tech/}{\textbf{3d.kishor.tech}} \;\textbar\; \href{https://github.com/KishorKumarParoi/re-invent}{\textbf{GitHub: re-invent}} --- React 19.2, Rolldown Vite, GSAP 3D choreography \& Supabase real-time visitor telemetry.
+    \item \textbf{Digital Portfolios \& Systems Architecture Showcases:} \href{https://ai-voice-receptionist.kishor.tech/}{\textbf{ai-voice-receptionist.kishor.tech}} \;\textbar\; \href{https://nimbus.kishor.tech/}{\textbf{nimbus.kishor.tech}} \;\textbar\; \href{https://kishor.tech/}{\textbf{kishor.tech}} \;\textbar\; \href{https://pptx.kishor.tech/}{\textbf{pptx.kishor.tech}} \;\textbar\; \href{https://3d.kishor.tech/}{\textbf{3d.kishor.tech}}
     \item \textbf{Core CS \& Engineering Foundations (RUET):} Advanced Data Structures \& Algorithms, Object-Oriented Programming (C++/Java), Operating Systems \& System Programming, Database Systems (DBMS), Distributed Systems \& Cloud Computing, Computer Networks \& Internet Protocols, Theory of Computation \& Automata, Compiler Design, Software Engineering \& System Analysis, Computer Architecture, Artificial Intelligence, Microprocessors \& Interfacing, Discrete Mathematics, and Network Security \& Cryptography.
 \end{itemize}
 
