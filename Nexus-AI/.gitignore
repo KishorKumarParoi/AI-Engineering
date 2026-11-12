@@ -1,0 +1,55 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+*.egg
+
+# ---- Node.js ----
+node_modules/
+.next/
+out/
+.turbo/
+
+# ---- Go ----
+backend/gateway/gateway
+*.exe
+
+# ---- Environment ----
+.env
+.env.local
+.env.*.local
+
+# ---- Data (large files) ----
+data/raw/*.csv
+data/raw/*.parquet
+data/raw/*.json
+zomato-dataset/data/
+*.duckdb
+*.duckdb.wal
+mlflow.db
+mlruns/
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# ---- Terraform ----
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfplan
+
+# ---- Docker ----
+*.log
+
+# ---- Credentials ----
+*.json.key
+service-account*.json
+credentials/

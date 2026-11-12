@@ -1,0 +1,12 @@
+.env
+test.md
+.venv
+.logfire
+service_account.json
+*service_account*.json
+*.key
+credentials.json
+__pycache__/
+*.py[cod]
+Trip*
+Multi*

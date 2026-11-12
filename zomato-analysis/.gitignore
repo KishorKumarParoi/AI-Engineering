@@ -1,0 +1,78 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+*.egg
+
+# ---- Node.js ----
+node_modules/
+.next/
+out/
+.turbo/
+
+# ---- Go ----
+backend/gateway/gateway
+*.exe
+
+# ---- Environment ----
+.env
+.env.local
+.env.*.local
+
+# ---- Data (large files) ----
+data/raw/*.csv
+data/raw/*.parquet
+data/raw/*.json
+zomato-dataset/data/
+*.parquet
+*.duckdb
+*.duckdb.wal
+mlflow.db
+mlops/mlflow.db*
+mlops/artifacts/
+ops/artifacts/
+ops/*.db
+mlruns/
+data/lakehouse/
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# ---- Terraform ----
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform.lock.hcl
+
+# ---- Docker ----
+*.log
+
+# ---- dbt ----
+target/
+dbt_packages/
+dbt.log
+.user.yml
+logs/
+
+# ---- Ignored Old Projects ----
+zomato-ai-data-*
+
+# ---- Microservices & Frontend Runtime ----
+*.pid
+*.log
+services/**/bin/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+Walmart*
+Uber*
+1.*

@@ -1,0 +1,3 @@
+[submodule "env-checker"]
+	path = env-checker
+	url = https://github.com/KishorKumarParoi/env-checker.git

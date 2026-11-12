@@ -1,0 +1,92 @@
+# ────────────────────────────────────────────────────────────────
+#  Python / General
+# ────────────────────────────────────────────────────────────────
+# Byte‑compiled / optimized / C extensions
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cython generated files
+*.c
+*.so
+
+# Distribution / packaging
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+__pypackages__/
+# Conda
+conda-env/
+conda-recipe/
+
+# pytest cache
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# PyCharm / VSCode / IDEs
+.idea/
+.vscode/
+*.iml
+*.sublime-workspace
+*.sublime-project
+
+# macOS Finder metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows thumbnail cache
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs / temporary files
+*.log
+*.tmp
+tmp/
+temp/
+*.swp
+*.swo
+
+# Data files (optional – keep if you don’t track raw data)
+*.csv
+*.tsv
+*.json
+*.parquet
+*.npz
+*.h5
+*.hdf5
+
+# Model binaries (the ones you specifically requested)
+*.pt
+*.pth
+*.safetensors
+
+# Secrets / credentials (never commit!)
+*.pem
+*.key
+*.crt
+*.env
+.env.*
